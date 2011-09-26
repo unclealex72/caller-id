@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>uk.co.unclealex</groupId>
@@ -33,11 +33,11 @@
       <artifactId>hibernate-support</artifactId>
       <version>2.2</version>
     </dependency>
-		<dependency>
-	    <groupId>org.javassist</groupId>
-	    <artifactId>javassist</artifactId>
-	    <version>3.15.0-GA</version>
-		</dependency>    
+    <dependency>
+      <groupId>org.javassist</groupId>
+      <artifactId>javassist</artifactId>
+      <version>3.15.0-GA</version>
+    </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
@@ -60,12 +60,12 @@
       <artifactId>jcl-over-slf4j</artifactId>
       <version>${slf4j.version}</version>
       <scope>runtime</scope>
-   </dependency>
-   <dependency>
-   	<groupId>ch.qos.logback</groupId>
-   	<artifactId>logback-classic</artifactId>
-   	<version>0.9.30</version>
-   </dependency>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>0.9.30</version>
+    </dependency>
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
@@ -295,15 +295,15 @@
           <additionalBuildcommands>
             <buildCommand>
               <name>org.eclipse.jdt.core.javabuilder</name>
-              <arguments />
+              <arguments/>
             </buildCommand>
             <buildCommand>
               <name>com.google.gdt.eclipse.core.webAppProjectValidator</name>
-              <arguments />
+              <arguments/>
             </buildCommand>
             <buildCommand>
               <name>com.google.gwt.eclipse.core.gwtProjectValidator</name>
-              <arguments />
+              <arguments/>
             </buildCommand>
           </additionalBuildcommands>
           <additionalProjectnatures>
@@ -362,8 +362,8 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:svn:http://hurst/svn/trunk/personal/rokta</connection>
-    <developerConnection>scm:svn:http://hurst/svn/trunk/personal/rokta</developerConnection>
-    <url>http://hurst/svn/trunk/personal/rokta</url>
+    <connection>scm:svn:http://hurst/svn/trunk/personal/caller-id</connection>
+    <developerConnection>scm:svn:http://hurst/svn/trunk/personal/caller-id</developerConnection>
+    <url>http://hurst/svn/trunk/personal/caller-id</url>
   </scm>
 </project>
