@@ -7,13 +7,13 @@ import uk.co.unclealex.callerid.server.model.TelephoneNumber;
 public class Call {
 
 	private final Date i_callTime;
-	private final TelephoneNumber i_telephoneNumber;
+	private final PhoneNumber i_phoneNumber;
 	private final String i_contact;
 
-	public Call(Date callTime, TelephoneNumber telephoneNumber, String contact) {
+	public Call(Date callTime, PhoneNumber phoneNumber, String contact) {
 		super();
 		i_callTime = callTime;
-		i_telephoneNumber = telephoneNumber;
+		i_phoneNumber = phoneNumber;
 		i_contact = contact;
 	}
 
@@ -21,8 +21,8 @@ public class Call {
 		return i_callTime;
 	}
 
-	public TelephoneNumber getTelephoneNumber() {
-		return i_telephoneNumber;
+	public PhoneNumber getPhoneNumber() {
+		return i_phoneNumber;
 	}
 
 	public String getContact() {
