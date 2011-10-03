@@ -1,0 +1,17 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder 
+  xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui"
+  xmlns:a="urn:import:uk.co.unclealex.callerid.client.ui">
+
+	<g:HTMLPanel>
+		<a:UnorderedListPanel ui:field="existingUsersPanel"/>
+		<div>
+			<g:TextBox ui:field="newUsername"/>
+			<g:Button ui:field="addNewUserButton">Add</g:Button>
+		</div>
+		<div>
+			<g:Button ui:field="updateContactsButton">Update Contacts</g:Button>
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder>

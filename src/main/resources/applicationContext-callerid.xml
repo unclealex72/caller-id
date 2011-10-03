@@ -45,6 +45,9 @@
 				<value>uk.co.unclealex.callerid.server.model.TelephoneNumber</value>
 				<value>uk.co.unclealex.callerid.server.model.CallRecord</value>
 				<value>uk.co.unclealex.callerid.server.model.Contact</value>
+				<value>uk.co.unclealex.callerid.server.model.User</value>
+				<value>uk.co.unclealex.callerid.server.model.OauthToken</value>
+				
 			</list>
 		</property>
 	</bean>
@@ -56,7 +59,9 @@
 	<bean id="telephoneNumberDao" class="uk.co.unclealex.callerid.server.dao.HibernateTelephoneNumberDao"/>
 	<bean id="callRecordDao" class="uk.co.unclealex.callerid.server.dao.HibernateCallRecordDao"/>
 	<bean id="contactDao" class="uk.co.unclealex.callerid.server.dao.HibernateContactDao"/>
-
+	<bean id="oauthTokenDao" class="uk.co.unclealex.callerid.server.dao.HibernateOauthTokenDao"/>
+	<bean id="userDao" class="uk.co.unclealex.callerid.server.dao.HibernateUserDao"/>
+	
 	<!-- Squeezebox -->
 	<bean id="squeezeboxConnectionFactory" class="uk.co.unclealex.callerid.server.service.squeezebox.SqueezeboxConnectionFactoryImpl">
 		<property name="host" value="hurst"/>
@@ -67,8 +72,9 @@
 
 	<bean id="numberLocationService" class="uk.co.unclealex.callerid.server.service.NumberLocationServiceImpl"/>
 	<bean id="modemListeningService" class="uk.co.unclealex.callerid.server.service.ModemListeningServiceImpl"/>
-	
-	
+	<bean id="callerIdService" class="uk.co.unclealex.callerid.server.service.CallerIdServiceImpl"/>
+	<bean id="googleContactsService" class="uk.co.unclealex.callerid.server.service.GoogleContactsServiceImpl"/>
+	<bean id="telephoneNumberFactory" class="uk.co.unclealex.callerid.server.service.TelephoneNumberFactoryImpl"/>		
   <bean id="hibernateInterceptor" class="org.springframework.orm.hibernate3.HibernateInterceptor"/>
 
   <bean id="numberService" class="org.springframework.aop.framework.ProxyFactoryBean">
@@ -87,11 +93,12 @@
   </bean>
 	
 	<bean id="modemController" class="uk.co.unclealex.callerid.server.service.modem.StreamModemController"/>
+
 	<bean id="modemProvider" class="uk.co.unclealex.callerid.server.service.modem.NetworkModemProvider">
 		<property name="host" value="hurst"/>
 		<property name="port" value="3002"/>
 	</bean>
-	<!-- 
+	<!--
 	<bean id="modemProvider" class="uk.co.unclealex.callerid.server.service.modem.StdioModemProvider"/>
 	-->
 </beans>

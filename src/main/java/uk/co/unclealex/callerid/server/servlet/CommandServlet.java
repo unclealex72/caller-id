@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
-import java.net.URLDecoder;
 import java.nio.charset.Charset;
 
 import javax.servlet.ServletConfig;
@@ -15,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.util.UriUtils;
 
 import uk.co.unclealex.callerid.server.service.modem.Writable;
 
@@ -38,7 +38,7 @@ public class CommandServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String str = req.getQueryString();
-		str = URLDecoder.decode(str);
+		str = UriUtils.decode(str, "UTF-8");
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream(str.length());
 		PrintWriter writer = new PrintWriter(new OutputStreamWriter(buffer, Charset.forName("ASCII")));
 		writer.println(str);

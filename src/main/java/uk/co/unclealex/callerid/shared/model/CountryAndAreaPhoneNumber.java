@@ -10,7 +10,7 @@ public class CountryAndAreaPhoneNumber implements PhoneNumber {
 	private String i_areaCode;
 	private String i_number;
 	
-	public CountryAndAreaPhoneNumber() {
+	protected CountryAndAreaPhoneNumber() {
 		super();
 		// Default constructor for serialisation
 	}

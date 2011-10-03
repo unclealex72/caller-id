@@ -6,12 +6,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
 import uk.co.unclealex.hibernate.model.KeyedBean;
+
+import com.google.common.collect.Sets;
 
 @Entity
 public class TelephoneNumber extends KeyedBean<TelephoneNumber> {
@@ -22,6 +25,7 @@ public class TelephoneNumber extends KeyedBean<TelephoneNumber> {
 
 	private String i_number;
 	private SortedSet<CallRecord> i_callRecords;
+	private SortedSet<Contact> i_contacts;
 	private Boolean i_blocked;
 	
 	protected TelephoneNumber() {
@@ -30,6 +34,8 @@ public class TelephoneNumber extends KeyedBean<TelephoneNumber> {
 
 	public TelephoneNumber(String number, Boolean blocked) {
 		super();
+		i_callRecords = Sets.newTreeSet();
+		i_contacts = Sets.newTreeSet();
 		i_number = number;
 		i_blocked = blocked;
 	}
@@ -70,5 +76,15 @@ public class TelephoneNumber extends KeyedBean<TelephoneNumber> {
 
 	protected void setBlocked(Boolean blocked) {
 		i_blocked = blocked;
+	}
+
+	@ManyToMany
+	@Sort(type=SortType.NATURAL)
+	public SortedSet<Contact> getContacts() {
+		return i_contacts;
+	}
+
+	public void setContacts(SortedSet<Contact> contacts) {
+		i_contacts = contacts;
 	}
 }

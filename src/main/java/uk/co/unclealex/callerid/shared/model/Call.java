@@ -2,8 +2,6 @@ package uk.co.unclealex.callerid.shared.model;
 
 import java.util.Date;
 
-import uk.co.unclealex.callerid.server.model.TelephoneNumber;
-
 public class Call {
 
 	private final Date i_callTime;

@@ -26,18 +26,18 @@ public class NumberLocationServiceTest {
 	
 	@Test
 	public void testLocalNumber() {
-		test("460837", new CountryAndAreaPhoneNumber("United Kingdom", "Basingstoke", "44", "1256", "460837"));
+		test("460837", "+441256460837", new CountryAndAreaPhoneNumber("United Kingdom", "Basingstoke", "44", "1256", "460837"));
 	}
 
 	@Test
 	public void testNationalNumber() {
-		test("01483654321", new CountryAndAreaPhoneNumber("United Kingdom", "Guildford", "44", "1483", "654321"));
+		test("01483654321", "+441483654321", new CountryAndAreaPhoneNumber("United Kingdom", "Guildford", "44", "1483", "654321"));
 	}
 
 	@Test
 	public void testMobileNumber() {
 		test(
-			"07808721396",
+			"07808721396", "+447808721396",
 			new CountriesOnlyPhoneNumber(
 				Sets.newTreeSet(Arrays.asList(new String[] {"United Kingdom", "Guernsey", "Jersey", "Isle of Man"})),
 				"44", "7808721396"));
@@ -45,18 +45,18 @@ public class NumberLocationServiceTest {
 
 	@Test
 	public void testPlusInternationalNumber() {
-		test("+33359123456", new CountryAndAreaPhoneNumber("France", "Nord Pas-de-Calais", "33", "359", "123456"));
+		test("+33359123456", "+33359123456", new CountryAndAreaPhoneNumber("France", "Nord Pas-de-Calais", "33", "359", "123456"));
 	}
 
 	@Test
 	public void testDoubleZeroInternationalNumber() {
-		test("0033359123456", new CountryAndAreaPhoneNumber("France", "Nord Pas-de-Calais", "33", "359", "123456"));
+		test("0033359123456", "+33359123456", new CountryAndAreaPhoneNumber("France", "Nord Pas-de-Calais", "33", "359", "123456"));
 	}
 
 	@Test
 	public void testInternationalNonGeographicNumber() {
 		test(
-			"001800555666",
+			"001800555666", "+1800555666",
 			new CountriesOnlyPhoneNumber(
 					Sets.newTreeSet(Arrays.asList(new String[] {
 							"United States", "Canada", "Dominican Republic", "Puerto Rico", "American Samoa", "Anguilla",
@@ -68,7 +68,7 @@ public class NumberLocationServiceTest {
 
 	}
 
-	protected void test(String number, PhoneNumber expectedPhoneNumber) {
+	protected void test(String number, String expectedNormalisedNumber, PhoneNumber expectedPhoneNumber) {
 		NumberLocationServiceImpl numberLocationService = new NumberLocationServiceImpl();
 		try {
 			numberLocationService.initialise();
@@ -77,6 +77,10 @@ public class NumberLocationServiceTest {
 			log.error("The service faile to initialise.", e);
 			Assert.fail("The service failed to initialise: " + e.getMessage());
 		}
+		String actualNormalisedNumber = numberLocationService.normaliseNumber(number);
+		Assert.assertEquals(
+				"Phone number " + number + " did not normalise properly.", expectedNormalisedNumber, actualNormalisedNumber);
+
 		PhoneNumber actualPhoneNumber = numberLocationService.decomposeNumber(number);
 		Assert.assertEquals(
 				"Phone number " + number + " did not decompose properly.", expectedPhoneNumber, actualPhoneNumber);

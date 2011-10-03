@@ -5,11 +5,15 @@ package uk.co.unclealex.callerid.client.places;
 
 import javax.inject.Inject;
 
+import uk.co.unclealex.callerid.client.presenters.CallListPresenter;
+import uk.co.unclealex.callerid.client.presenters.UsersPresenter;
+
 import com.google.gwt.activity.shared.Activity;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.inject.Provider;
 
 /**
  * Copyright 2011 Alex Jones
@@ -36,8 +40,16 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
  */
 public class CallerIdActivityMapper implements ActivityMapper {
 
+	private final Provider<UsersPresenter> i_usersPresenterProvider;
+	private final Provider<CallListPresenter> i_callListPresenterProvider;
+	
 	@Inject
-	public CallerIdActivityMapper() {
+	public CallerIdActivityMapper(
+			Provider<UsersPresenter> usersPresenterProvider, 
+			Provider<CallListPresenter> callListPresenterProvider) {
+		super();
+		i_usersPresenterProvider = usersPresenterProvider;
+		i_callListPresenterProvider = callListPresenterProvider;
 	}
 
 	@Override
@@ -96,8 +108,13 @@ public class CallerIdActivityMapper implements ActivityMapper {
 		}
 		
 		@Override
+		public Activity visit(ContactsPlace contactsPlace) {
+			return getUsersPresenterProvider().get();
+		}
+		
+		@Override
 		public Activity visit(CallListPlace callListPlace) {
-			return null;
+			return getCallListPresenterProvider().get();
 		}
 		
 		public Activity getActivity() {
@@ -112,5 +129,13 @@ public class CallerIdActivityMapper implements ActivityMapper {
 			return i_place;
 		}
 
+	}
+
+	public Provider<UsersPresenter> getUsersPresenterProvider() {
+		return i_usersPresenterProvider;
+	}
+
+	public Provider<CallListPresenter> getCallListPresenterProvider() {
+		return i_callListPresenterProvider;
 	}
 }

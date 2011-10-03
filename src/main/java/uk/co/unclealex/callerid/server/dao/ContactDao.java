@@ -5,4 +5,5 @@ import uk.co.unclealex.hibernate.dao.KeyedDao;
 
 public interface ContactDao extends KeyedDao<Contact> {
 
+	public void removeAll();
 }

@@ -9,7 +9,9 @@ public abstract class CallerIdPlace extends Place {
 		return obj != null && getClass().equals(obj.getClass()) && isEqual(obj);
 	}
 	
-	public abstract boolean isEqual(Object otherPlace);
+	public boolean isEqual(Object otherPlace) {
+		return true;
+	}
 	
 	public abstract <T> T accept(CallerIdPlaceVisitor<T> visitor);
 }

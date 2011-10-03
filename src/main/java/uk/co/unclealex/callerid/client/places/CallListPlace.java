@@ -5,10 +5,10 @@ import com.google.gwt.place.shared.PlaceTokenizer;
 public class CallListPlace extends CallerIdPlace {
 
 	@Override
-	public boolean isEqual(Object callListPlace) {
-		return true;
+	public int hashCode() {
+		return getClass().hashCode();
 	}
-
+	
 	@Override
 	public <T> T accept(CallerIdPlaceVisitor<T> visitor) {
 		return visitor.visit(this);

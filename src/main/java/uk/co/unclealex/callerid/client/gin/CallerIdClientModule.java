@@ -5,11 +5,27 @@ package uk.co.unclealex.callerid.client.gin;
 
 import javax.inject.Singleton;
 
+import uk.co.unclealex.callerid.client.factories.GoogleAuthenticationPresenterFactory;
+import uk.co.unclealex.callerid.client.factories.UserPresenterFactory;
+import uk.co.unclealex.callerid.client.factory.CallPresenterFactory;
+import uk.co.unclealex.callerid.client.presenters.CallListPresenter;
+import uk.co.unclealex.callerid.client.presenters.CallPresenter;
+import uk.co.unclealex.callerid.client.presenters.GoogleAuthenticationPresenter;
 import uk.co.unclealex.callerid.client.presenters.HasDisplay;
+import uk.co.unclealex.callerid.client.presenters.NavigationPresenter;
+import uk.co.unclealex.callerid.client.presenters.UserPresenter;
+import uk.co.unclealex.callerid.client.presenters.UsersPresenter;
+import uk.co.unclealex.callerid.client.views.Call;
+import uk.co.unclealex.callerid.client.views.CallList;
+import uk.co.unclealex.callerid.client.views.GoogleAuthentication;
+import uk.co.unclealex.callerid.client.views.Navigation;
+import uk.co.unclealex.callerid.client.views.User;
+import uk.co.unclealex.callerid.client.views.Users;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.gwt.inject.client.assistedinject.GinFactoryModuleBuilder;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
  * Copyright 2011 Alex Jones
@@ -38,7 +54,29 @@ public class CallerIdClientModule extends AbstractGinModule {
 
 	@Override
 	protected void configure() {
+		bindPresenterWithDisplay(
+			GoogleAuthenticationPresenter.Display.class, GoogleAuthentication.class,
+			GoogleAuthenticationPresenter.class, GoogleAuthenticationPresenterFactory.class);
+		bindSingletonPresenter(
+				UsersPresenter.class, UsersPresenter.Display.class, Users.class);
+		bindPresenterWithDisplay(
+				UserPresenter.Display.class, User.class,
+				UserPresenter.class, UserPresenterFactory.class);
+
+		bindPresenterWithDisplay(
+				CallListPresenter.Display.class, CallList.class, CallListPresenter.class);
+		bindPresenterWithDisplay(
+				CallPresenter.Display.class, Call.class, CallPresenter.class, CallPresenterFactory.class);
+		bind(SimplePanel.class).in(Singleton.class);
 		
+		bindSingletonPresenter(NavigationPresenter.class, NavigationPresenter.Display.class, Navigation.class);
+	}
+
+	protected <D extends IsWidget, P extends HasDisplay<D>> void bindPresenterWithDisplay(
+			Class<D> displayInterface, Class<? extends D> displayImplementation, 
+			Class<P> presenterImplementation) {
+    bindDisplay(displayInterface, displayImplementation);
+    bind(presenterImplementation);
 	}
 
 	protected <D extends IsWidget, P extends HasDisplay<D>> void bindPresenterWithDisplay(
@@ -46,13 +84,12 @@ public class CallerIdClientModule extends AbstractGinModule {
 			Class<P> presenterImplementation, Class<?> factoryInterface) {
     bindDisplay(displayInterface, displayImplementation);
     bindPresenter(presenterImplementation, factoryInterface);
-
 	}
 
 	protected <D extends IsWidget, P extends HasDisplay<D>> void bindSingletonPresenter(
 			Class<P> presenterClass, Class<D> displayClass, Class<? extends D> displayImplementationClass) {
-		bind(presenterClass).in(Singleton.class);
-		bind(displayClass).to(displayImplementationClass).in(Singleton.class);
+		bind(presenterClass).asEagerSingleton();
+		bind(displayClass).to(displayImplementationClass).asEagerSingleton();
 	}
 	
 	protected <P> void bindPresenter(Class<P> presenterImplementation, Class<?> factoryInterface) {

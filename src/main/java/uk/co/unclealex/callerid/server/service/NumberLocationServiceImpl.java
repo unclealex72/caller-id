@@ -29,9 +29,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class NumberLocationServiceImpl implements NumberLocationService {
-
-	public static final String BASINGSTOKE = "1256";
-	public static final String UK = "44";
 	
 	private Map<String, Map<String, CountryAndArea>> i_countryAndAreasByAreaCodeByCountryCode;
 	private Map<String, Set<String>> i_countriesByCountryCode;
@@ -148,7 +145,7 @@ public class NumberLocationServiceImpl implements NumberLocationService {
 	
 	@Override
 	public PhoneNumber decomposeNumber(String number) {
-		number = normaliseNumber(number);
+		number = normaliseNumberWithoutPlus(number);
 		Entry<String, Map<String, CountryAndArea>> countryEntry = 
 				findEntry(number, getCountryAndAreasByAreaCodeByCountryCode().entrySet());
 		if (countryEntry == null) {
@@ -172,6 +169,10 @@ public class NumberLocationServiceImpl implements NumberLocationService {
 	
 	@Override
 	public String normaliseNumber(String number) {
+		return "+" + normaliseNumberWithoutPlus(number);
+	}
+	
+	protected String normaliseNumberWithoutPlus(String number) {
 		if (number.startsWith("+")) {
 			number = number.substring(1);
 		}
@@ -184,9 +185,8 @@ public class NumberLocationServiceImpl implements NumberLocationService {
 		else {
 			number = number.substring(2);
 		}
-		return number;
+		return number;		
 	}
-	
 	protected <T> Entry<String, T> findEntry(final String number, Set<Entry<String, T>> entrySet) {
 		Predicate<Entry<String, T>> predicate = new Predicate<Entry<String,T>>() {
 			@Override

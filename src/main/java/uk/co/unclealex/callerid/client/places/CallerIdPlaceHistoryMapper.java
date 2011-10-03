@@ -29,7 +29,7 @@ import com.google.gwt.place.shared.WithTokenizers;
  * @author unclealex72
  *
  */
-@WithTokenizers({})
+@WithTokenizers({CallListPlace.Tokenizer.class, ContactsPlace.Tokenizer.class})
 public interface CallerIdPlaceHistoryMapper extends PlaceHistoryMapper {
   // No extra method
 }

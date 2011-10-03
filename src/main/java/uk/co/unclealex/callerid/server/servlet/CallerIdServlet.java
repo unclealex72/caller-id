@@ -19,6 +19,8 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import uk.co.unclealex.callerid.shared.exceptions.GoogleAuthenticationFailedException;
+import uk.co.unclealex.callerid.shared.model.CallRecord;
 import uk.co.unclealex.callerid.shared.remote.CallerIdService;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -64,7 +66,7 @@ public class CallerIdServlet extends RemoteServiceServlet implements CallerIdSer
 	}
 
 	protected CallerIdService createCallerIdService() {
-		final CallerIdService callerIdService = getBeanFactory().getBean("callerIdService", CallerIdService.class);
+		final CallerIdService callerIdService = getBeanFactory().getBean(CallerIdService.class);
 		final Logger log = LoggerFactory.getLogger(getClass());
 		InvocationHandler handler = new InvocationHandler() {
 			@Override
@@ -84,6 +86,31 @@ public class CallerIdServlet extends RemoteServiceServlet implements CallerIdSer
 			}
 		};
 		return (CallerIdService) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { CallerIdService.class }, handler);
+	}
+	
+	@Override
+	public void addUser(String username, String token) throws IOException, GoogleAuthenticationFailedException {
+		createCallerIdService().addUser(username, token);
+	}
+	
+	@Override
+	public void removeUser(String username) {
+		createCallerIdService().removeUser(username);
+	}
+	
+	@Override
+	public String[] getAllUsernames() {
+		return createCallerIdService().getAllUsernames();
+	}
+
+	@Override
+	public void updateContacts() throws GoogleAuthenticationFailedException, IOException {
+		createCallerIdService().updateContacts();
+	}
+	
+	@Override
+	public CallRecord[] getAllCallRecords() {
+		return createCallerIdService().getAllCallRecords();
 	}
 	
 	public BeanFactory getBeanFactory() {
