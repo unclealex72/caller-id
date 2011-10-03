@@ -7,8 +7,7 @@ public interface GoogleConstants {
 	public String CONSUMER_KEY = "720703205602.apps.googleusercontent.com";
 
 	public String AUTHENTICATION_URL =
-		String.format(
-			"%s?client_id=%s&redirect_uri=%s&scope=%s&response_type=code",
-			GOOGLE_OAUTH_URL, CONSUMER_KEY, "urn:ietf:wg:oauth:2.0:oob", CONTACTS_FEED);
+			GOOGLE_OAUTH_URL + "?client_id=" + CONSUMER_KEY + 
+			"&redirect_uri=urn:ietf:wg:oauth:2.0:oob&scope=" + CONTACTS_FEED +"&response_type=code";
 
 }
