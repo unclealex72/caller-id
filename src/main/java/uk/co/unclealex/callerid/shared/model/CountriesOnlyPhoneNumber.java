@@ -1,6 +1,6 @@
 package uk.co.unclealex.callerid.shared.model;
 
-import java.util.Set;
+import java.util.List;
 
 import uk.co.unclealex.callerid.shared.visitor.PhoneNumberVisitor;
 
@@ -8,7 +8,7 @@ import com.google.common.base.Joiner;
 
 public class CountriesOnlyPhoneNumber implements PhoneNumber {
 
-	private Set<String> i_countries;
+	private List<String> i_countries;
 	private String i_countryCode;
 	private String i_number;
 	
@@ -17,7 +17,7 @@ public class CountriesOnlyPhoneNumber implements PhoneNumber {
 		// Default constructor for serialisation.
 	}
 
-	public CountriesOnlyPhoneNumber(Set<String> countries, String countryCode, String number) {
+	public CountriesOnlyPhoneNumber(List<String> countries, String countryCode, String number) {
 		super();
 		i_countries = countries;
 		i_countryCode = countryCode;
@@ -51,7 +51,7 @@ public class CountriesOnlyPhoneNumber implements PhoneNumber {
 		return phoneNumberVisitor.visit(this);
 	}
 
-	public Set<String> getCountries() {
+	public List<String> getCountries() {
 		return i_countries;
 	}
 

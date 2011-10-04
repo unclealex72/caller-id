@@ -9,12 +9,12 @@ import uk.co.unclealex.callerid.client.presenters.NavigationPresenter.Display;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -49,37 +49,17 @@ public class Navigation extends Composite implements Display {
 
 	private static final Binder binder = GWT.create(Binder.class);
 
-	public static interface Style extends CssResource {
-		String selected();
-	}
-	
 	@UiField HasClickHandlers contactsLink;
 	@UiField HasClickHandlers callsLink;
-	@UiField Style style;
-	
+
 	@Inject
 	public Navigation() {
 		initWidget(binder.createAndBindUi(this));
 	}
 
-	/*
 	@UiFactory
 	public Anchor createAnchor() {
 		return new Anchor(true);
-	}
-*/
-	@Override
-	public void select(HasClickHandlers hasClickHandlers) {
-		((IsWidget) hasClickHandlers).asWidget().addStyleName(getStyle().selected());
-	}
-	
-	@Override
-	public void deselect(HasClickHandlers hasClickHandlers) {
-		((IsWidget) hasClickHandlers).asWidget().removeStyleName(getStyle().selected());
-	}
-	
-	public Style getStyle() {
-		return style;
 	}
 
 	public HasClickHandlers getContactsLink() {

@@ -4,16 +4,10 @@
   xmlns:g="urn:import:com.google.gwt.user.client.ui"
   xmlns:a="urn:import:uk.co.unclealex.callerid.client.ui">
 
-	<ui:style type="uk.co.unclealex.callerid.client.views.Navigation.Style">
-		.selected {
-			font-weight: bold;
-		}
-	</ui:style>
-	
 	<g:HTMLPanel>
-		<ul>
-			<li><g:Button ui:field="contactsLink">Contacts</g:Button></li>
-			<li><g:Button ui:field="callsLink">Call List</g:Button></li>
+		<ul class="vmenu">
+			<li><g:Anchor ui:field="contactsLink">Contacts</g:Anchor></li>
+			<li><g:Anchor ui:field="callsLink">Call List</g:Anchor></li>
 		</ul>
 	</g:HTMLPanel>
 </ui:UiBinder>

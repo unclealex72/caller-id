@@ -9,8 +9,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 import uk.co.unclealex.callerid.shared.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.shared.model.CountryAndAreaPhoneNumber;
 import uk.co.unclealex.callerid.shared.model.PhoneNumber;
@@ -39,7 +37,7 @@ public class NumberLocationServiceTest {
 		test(
 			"07808721396", "+447808721396",
 			new CountriesOnlyPhoneNumber(
-				Sets.newTreeSet(Arrays.asList(new String[] {"United Kingdom", "Guernsey", "Jersey", "Isle of Man"})),
+				Arrays.asList(new String[] {"United Kingdom", "Guernsey", "Jersey", "Isle of Man"}),
 				"44", "7808721396"));
 	}
 
@@ -58,12 +56,12 @@ public class NumberLocationServiceTest {
 		test(
 			"001800555666", "+1800555666",
 			new CountriesOnlyPhoneNumber(
-					Sets.newTreeSet(Arrays.asList(new String[] {
+					Arrays.asList(new String[] {
 							"United States", "Canada", "Dominican Republic", "Puerto Rico", "American Samoa", "Anguilla",
 							"Antigua and Barbuda", "Bahamas", "Barbados", "Bermuda", "Cayman Islands", "Dominica", "Grenada", 
 							"Guam", "Jamaica", "Montserrat", "Northern Mariana Islands", "Saint Kitts and Nevis", 
 							"Saint Lucia", "Saint Vincent and the Grenadines", "Trinidad and Tobago", 
-							"Turks and Caicos Islands", "Virgin Islands- British", "Virgin Islands- U.S."})),
+							"Turks and Caicos Islands", "Virgin Islands- British", "Virgin Islands- U.S."}),
 					"1", "800555666"));
 
 	}

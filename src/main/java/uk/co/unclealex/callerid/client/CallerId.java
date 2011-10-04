@@ -12,8 +12,8 @@ public class CallerId implements EntryPoint {
 	public void onModuleLoad() {
 		final CallerIdGinjector injector = GWT.create(CallerIdGinjector.class);
 
-		RootPanel.get("main").add(injector.getMainPanel());
-		injector.getNavigationPresenter().show(RootPanel.get("nav"));
+		RootPanel.get("welcome").add(injector.getMainPanel());
+		injector.getNavigationPresenter().show(RootPanel.get("sidebar"));
 		
 		injector.getPlaceHistoryHandler().handleCurrentHistory();
 	}

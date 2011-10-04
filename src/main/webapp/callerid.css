@@ -1,0 +1,242 @@
+
+/* 
+----------------------------------------------------------------------------------------
+
+Copyright 2010 - Thierry Ruiz - www.dotemplate.com - All rights reserved.
+
+THIS TEMPLATE IS FREE AS LONG AS YOU KEEP THE LINK TO WWW.DOTEMPLATE.COM IN THE FOOTER
+TO REMOVE THE LINK, PLEASE MAKE A 10 DOLLARS DONATION at www.dotemplate.com/#donate
+
+----------------------------------------------------------------------------------------
+*/
+
+
+html {
+	background: #D0D7E7;
+	margin:0 0 0 -1px;
+	padding:0;	
+	overflow-Y: scroll;
+}
+
+
+body {
+	padding:0;
+	margin :0;
+	display:table; 
+	width:100%;	
+}
+
+
+					body {
+	color:#D0D0D0;
+	font-family: 'Trebuchet MS', sans-serif;
+	font-size: 13px;
+	font-style: normal;
+	font-weight: normal;
+	text-transform: normal;
+}
+
+p {
+	letter-spacing: normal;
+	line-height: 1.7em;
+}
+
+h1 {
+	color:#FFE9AD;
+	font-size:22px;
+	margin:25px 0 10px 0;
+	clear:both;
+}
+
+
+h2 {
+	color:#FFE9AD;
+	font-size:20px;
+	margin:20px 0 10px 0;
+	clear:both;
+}
+
+
+h3 {
+	color:#FFE9AD;
+	font-size:18px;
+	margin:20px 0 5px 0;
+	clear:both;
+}
+
+
+
+a:link, a:visited {
+	color:#ffb508;
+	text-decoration:none;
+}
+
+
+a:hover {
+	color:#FFFFFF;
+	text-decoration:underline;
+}
+	
+					
+#wrapper {
+	background: transparent url( images/css/page-vbg.jpg ) repeat-y scroll 50% 0px;
+	margin:0 auto ;
+	width:100%;
+}
+
+					body {
+	background-color:#D0D7E7;
+}
+
+#wrapper {
+	border-top: 1px solid #ffffff;
+}
+	
+
+#bg {
+	margin:0 auto;
+	padding:0;
+	background:transparent ;
+	background-image:url(images/css/hat.jpg);
+ 	background-repeat:no-repeat;	
+	background-position: center top ;
+}
+
+
+
+
+
+#page {
+	background: transparent url( images/css/page-bg.jpg ) no-repeat center top;
+}
+
+
+					
+
+
+
+#container {
+	margin:0 auto;
+	width:800px;
+}
+
+#banner {
+	margin: 0 auto;
+	height:180px;
+	width:100%;
+}
+
+
+#content {
+	width:800px;
+	margin:0 auto ;
+	text-align:left;
+	min-height:800px;
+}
+
+
+#content p {
+	text-align:justify;
+}
+
+	
+
+
+
+#footerWrapper {
+	margin:0 auto;
+	height:160px;
+	padding:0;
+	background:transparent url( images/css/footerWrapper-bg.jpg ) no-repeat scroll center top;
+}
+
+
+#footer {
+	margin:0 auto;
+	padding:0;
+	width:800px;
+	height:80px;
+}
+
+
+					#footer {
+	text-align:center;
+}
+
+	
+	
+					
+
+
+#left {
+	width:120px;
+	padding:20px 20px 20px 20px;
+	float:left;
+}
+
+
+#center {
+	width:600px;
+	padding:10px 20px 20px 20px;
+	float:left;
+}
+
+ 
+#content p {
+	margin-top:10px;
+	text-align:justify;
+}
+
+
+										
+#sidebar ul.vmenu {
+	list-style: none;
+	text-align: left;
+	margin: 7px 0px 8px 0px; 
+	padding: 0;
+	text-decoration: none;	
+	border-top: 1px solid #440400;
+}
+
+
+#sidebar ul.vmenu li {
+	list-style: none;
+	padding: 4px 0 4px 0px;
+	margin: 0 2px;	
+	border-bottom: 1px solid #440400;
+}
+
+
+
+#sidebar ul.vmenu li a {
+	text-decoration: none;
+	color:#ffb508;
+}
+
+
+#sidebar ul.vmenu li a:hover {
+	color:#FFFFFF;
+}
+
+
+#sidebar ul.vmenu ul { margin: 0 0 0 5px; padding: 0; }
+#sidebar ul.vmenu ul li { border: none; }
+
+
+		
+	
+
+
+a img {
+	border:none;
+} 
+
+
+.clear {
+	clear: both;
+	display: block;
+	overflow: hidden;
+	visibility: hidden;
+	width: 0;
+	height: 0;
+}
