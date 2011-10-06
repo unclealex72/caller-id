@@ -2,6 +2,7 @@ package uk.co.unclealex.callerid.server.model;
 
 import java.util.SortedSet;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -78,7 +79,7 @@ public class TelephoneNumber extends KeyedBean<TelephoneNumber> {
 		i_blocked = blocked;
 	}
 
-	@ManyToMany
+	@ManyToMany(cascade={CascadeType.REMOVE, CascadeType.DETACH})
 	@Sort(type=SortType.NATURAL)
 	public SortedSet<Contact> getContacts() {
 		return i_contacts;

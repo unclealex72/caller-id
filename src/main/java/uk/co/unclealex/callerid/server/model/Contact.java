@@ -1,8 +1,14 @@
 package uk.co.unclealex.callerid.server.model;
 
+import java.util.SortedSet;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 
 import uk.co.unclealex.hibernate.model.KeyedBean;
 
@@ -14,6 +20,7 @@ public class Contact extends KeyedBean<Contact> {
 	}	
 	
 	private String i_name;
+	private SortedSet<TelephoneNumber> i_telephoneNumbers;
 	
 	protected Contact() {
 		super();
@@ -51,5 +58,15 @@ public class Contact extends KeyedBean<Contact> {
 
 	public void setName(String name) {
 		i_name = name;
+	}
+
+	@ManyToMany(mappedBy="contacts")
+	@Sort(type=SortType.NATURAL)
+	public SortedSet<TelephoneNumber> getTelephoneNumbers() {
+		return i_telephoneNumbers;
+	}
+
+	public void setTelephoneNumbers(SortedSet<TelephoneNumber> telephoneNumbers) {
+		i_telephoneNumbers = telephoneNumbers;
 	}
 }
