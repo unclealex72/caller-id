@@ -5,7 +5,7 @@ package uk.co.unclealex.callerid.client.places;
 
 import javax.inject.Inject;
 
-import uk.co.unclealex.callerid.client.presenters.CallListPresenter;
+import uk.co.unclealex.callerid.client.factories.CallListPresenterFactory;
 import uk.co.unclealex.callerid.client.presenters.UsersPresenter;
 
 import com.google.gwt.activity.shared.Activity;
@@ -41,15 +41,15 @@ import com.google.inject.Provider;
 public class CallerIdActivityMapper implements ActivityMapper {
 
 	private final Provider<UsersPresenter> i_usersPresenterProvider;
-	private final Provider<CallListPresenter> i_callListPresenterProvider;
+	private final CallListPresenterFactory i_callListPresenterFactory;
 	
 	@Inject
 	public CallerIdActivityMapper(
 			Provider<UsersPresenter> usersPresenterProvider, 
-			Provider<CallListPresenter> callListPresenterProvider) {
+			CallListPresenterFactory callListPresenterFactory) {
 		super();
 		i_usersPresenterProvider = usersPresenterProvider;
-		i_callListPresenterProvider = callListPresenterProvider;
+		i_callListPresenterFactory = callListPresenterFactory;
 	}
 
 	@Override
@@ -114,7 +114,8 @@ public class CallerIdActivityMapper implements ActivityMapper {
 		
 		@Override
 		public Activity visit(CallListPlace callListPlace) {
-			return getCallListPresenterProvider().get();
+			return getCallListPresenterFactory().createCallListPresenter(
+					callListPlace.getPage(), callListPlace.getCallsPerPage());
 		}
 		
 		public Activity getActivity() {
@@ -135,7 +136,7 @@ public class CallerIdActivityMapper implements ActivityMapper {
 		return i_usersPresenterProvider;
 	}
 
-	public Provider<CallListPresenter> getCallListPresenterProvider() {
-		return i_callListPresenterProvider;
+	public CallListPresenterFactory getCallListPresenterFactory() {
+		return i_callListPresenterFactory;
 	}
 }

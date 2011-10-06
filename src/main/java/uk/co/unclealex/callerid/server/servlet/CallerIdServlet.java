@@ -20,7 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import uk.co.unclealex.callerid.shared.exceptions.GoogleAuthenticationFailedException;
-import uk.co.unclealex.callerid.shared.model.CallRecord;
+import uk.co.unclealex.callerid.shared.model.CallRecords;
 import uk.co.unclealex.callerid.shared.remote.CallerIdService;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -107,10 +107,10 @@ public class CallerIdServlet extends RemoteServiceServlet implements CallerIdSer
 	public void updateContacts() throws GoogleAuthenticationFailedException, IOException {
 		createCallerIdService().updateContacts();
 	}
-	
+
 	@Override
-	public CallRecord[] getAllCallRecords() {
-		return createCallerIdService().getAllCallRecords();
+	public CallRecords getAllCallRecords(int page, int callsPerPage) {
+		return createCallerIdService().getAllCallRecords(page, callsPerPage);
 	}
 	
 	public BeanFactory getBeanFactory() {

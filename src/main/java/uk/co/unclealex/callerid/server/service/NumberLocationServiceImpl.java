@@ -20,6 +20,7 @@ import uk.co.unclealex.callerid.shared.model.CountryAndArea;
 import uk.co.unclealex.callerid.shared.model.CountryAndAreaPhoneNumber;
 import uk.co.unclealex.callerid.shared.model.NumberOnlyPhoneNumber;
 import uk.co.unclealex.callerid.shared.model.PhoneNumber;
+import uk.co.unclealex.callerid.shared.service.Constants;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -178,10 +179,10 @@ public class NumberLocationServiceImpl implements NumberLocationService {
 			number = number.substring(1);
 		}
 		else if (!number.startsWith("0")) {
-			number = UK + BASINGSTOKE + number;
+			number = Constants.UK + Constants.BASINGSTOKE + number;
 		}
 		else if (!number.startsWith("00")) {
-			number = UK + number.substring(1);
+			number = Constants.UK + number.substring(1);
 		}
 		else {
 			number = number.substring(2);

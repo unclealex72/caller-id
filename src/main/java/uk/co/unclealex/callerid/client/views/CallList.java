@@ -14,6 +14,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -47,7 +49,9 @@ public class CallList extends Composite implements Display {
     // No extra method
   }
 
-	@UiField HasWidgets callRecordPanel;
+	@UiField FlexTable callRecordTable;
+	@UiField HasWidgets pagesPanel;
+	@UiField HasText resultCountLabel;
 	
 	private static final Binder binder = GWT.create(Binder.class);
 
@@ -61,7 +65,20 @@ public class CallList extends Composite implements Display {
 		return new Anchor(true);
 	}
 
-	public HasWidgets getCallRecordPanel() {
-		return callRecordPanel;
+	public FlexTable getCallRecordTable() {
+		return callRecordTable;
 	}
+
+	public void setCallRecordTable(FlexTable callRecordTable) {
+		this.callRecordTable = callRecordTable;
+	}
+
+	public HasWidgets getPagesPanel() {
+		return pagesPanel;
+	}
+
+	public HasText getResultCountLabel() {
+		return resultCountLabel;
+	}
+
 }

@@ -48,7 +48,7 @@ import uk.co.unclealex.callerid.server.model.OauthToken;
 import uk.co.unclealex.callerid.server.model.OauthTokenType;
 import uk.co.unclealex.callerid.server.model.User;
 import uk.co.unclealex.callerid.shared.exceptions.GoogleAuthenticationFailedException;
-import uk.co.unclealex.callerid.shared.service.GoogleConstants;
+import uk.co.unclealex.callerid.shared.service.Constants;
 
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
@@ -101,7 +101,7 @@ public class GoogleContactsServiceImpl implements GoogleContactsService {
 
 	protected void addAllContactsByTelephoneNumber(Multimap<String, String> allContactsByTelephoneNumber, User user) throws GoogleAuthenticationFailedException, IOException, ServiceException {
 		ContactsService contactsService = createContactsService(user);
-	  ContactFeed resultFeed = contactsService.getFeed(new URL(GoogleConstants.CONTACTS_FEED), ContactFeed.class);
+	  ContactFeed resultFeed = contactsService.getFeed(new URL(Constants.CONTACTS_FEED), ContactFeed.class);
 	  for (ContactEntry entry : resultFeed.getEntries()) {
 	  	if (entry.hasName()) {
 	  		String name = entry.getName().getFullName().getValue();
@@ -201,7 +201,7 @@ public class GoogleContactsServiceImpl implements GoogleContactsService {
 
 	@Override
 	public String getClientId() {
-		return GoogleConstants.CONSUMER_KEY;
+		return Constants.CONSUMER_KEY;
 	}
 	
 	public UserDao getUserDao() {

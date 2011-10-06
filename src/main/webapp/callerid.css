@@ -240,3 +240,33 @@ a img {
 	width: 0;
 	height: 0;
 }
+
+.pagesPanel {
+	float: right;
+}
+
+.pagesPanel a, .pagesPanel span {
+	padding-left: 0.5em;	
+}
+
+.callrecords {
+	width: 480px;
+}
+
+.callrecords table {
+	width: 100%;
+}
+
+.callrecords td {
+	padding-left: 0.5em;
+	text-align: right;	
+}
+
+td.callrecordheader {
+	font-size: larger;
+	font-weight: bold;
+	background-color: #FFE9AD;
+	color: #000000;
+	padding: 0.25em;
+	text-align: left;
+}

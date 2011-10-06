@@ -5,6 +5,10 @@
   xmlns:a="urn:import:uk.co.unclealex.callerid.client.ui">
 
 	<g:HTMLPanel>
-		<a:UnorderedListPanel ui:field="callRecordPanel"/>
+		<h1><g:InlineLabel ui:field="resultCountLabel"/></h1>
+		<div class="callrecords">
+			<g:FlexTable ui:field="callRecordTable"/>
+			<g:FlowPanel ui:field="pagesPanel" addStyleNames="pagesPanel"/>
+		</div>
 	</g:HTMLPanel>
 </ui:UiBinder>

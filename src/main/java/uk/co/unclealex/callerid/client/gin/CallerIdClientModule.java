@@ -5,17 +5,15 @@ package uk.co.unclealex.callerid.client.gin;
 
 import javax.inject.Singleton;
 
+import uk.co.unclealex.callerid.client.factories.CallListPresenterFactory;
 import uk.co.unclealex.callerid.client.factories.GoogleAuthenticationPresenterFactory;
 import uk.co.unclealex.callerid.client.factories.UserPresenterFactory;
-import uk.co.unclealex.callerid.client.factory.CallPresenterFactory;
 import uk.co.unclealex.callerid.client.presenters.CallListPresenter;
-import uk.co.unclealex.callerid.client.presenters.CallPresenter;
 import uk.co.unclealex.callerid.client.presenters.GoogleAuthenticationPresenter;
 import uk.co.unclealex.callerid.client.presenters.HasDisplay;
 import uk.co.unclealex.callerid.client.presenters.NavigationPresenter;
 import uk.co.unclealex.callerid.client.presenters.UserPresenter;
 import uk.co.unclealex.callerid.client.presenters.UsersPresenter;
-import uk.co.unclealex.callerid.client.views.Call;
 import uk.co.unclealex.callerid.client.views.CallList;
 import uk.co.unclealex.callerid.client.views.GoogleAuthentication;
 import uk.co.unclealex.callerid.client.views.Navigation;
@@ -64,9 +62,7 @@ public class CallerIdClientModule extends AbstractGinModule {
 				UserPresenter.class, UserPresenterFactory.class);
 
 		bindPresenterWithDisplay(
-				CallListPresenter.Display.class, CallList.class, CallListPresenter.class);
-		bindPresenterWithDisplay(
-				CallPresenter.Display.class, Call.class, CallPresenter.class, CallPresenterFactory.class);
+				CallListPresenter.Display.class, CallList.class, CallListPresenter.class, CallListPresenterFactory.class);
 		bind(SimplePanel.class).in(Singleton.class);
 		
 		bindSingletonPresenter(NavigationPresenter.class, NavigationPresenter.Display.class, Navigation.class);

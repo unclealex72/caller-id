@@ -7,28 +7,25 @@ import java.util.SortedSet;
 
 import org.springframework.web.util.UriUtils;
 
+import uk.co.unclealex.callerid.server.dao.ContactDao;
+import uk.co.unclealex.callerid.server.model.Contact;
+import uk.co.unclealex.callerid.server.model.TelephoneNumber;
+import uk.co.unclealex.callerid.server.service.squeezebox.SqueezeboxConnection;
+import uk.co.unclealex.callerid.server.service.squeezebox.SqueezeboxConnectionFactory;
+import uk.co.unclealex.callerid.shared.model.PhoneNumber;
+import uk.co.unclealex.callerid.shared.service.PhoneNumberFormatter;
+
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 import com.google.gdata.util.common.base.Joiner;
 
-import uk.co.unclealex.callerid.server.dao.ContactDao;
-import uk.co.unclealex.callerid.server.model.Contact;
-import uk.co.unclealex.callerid.server.model.TelephoneNumber;
-import uk.co.unclealex.callerid.server.service.NumberLocationService;
-import uk.co.unclealex.callerid.server.service.squeezebox.SqueezeboxConnection;
-import uk.co.unclealex.callerid.server.service.squeezebox.SqueezeboxConnectionFactory;
-import uk.co.unclealex.callerid.shared.model.CountriesOnlyPhoneNumber;
-import uk.co.unclealex.callerid.shared.model.CountryAndAreaPhoneNumber;
-import uk.co.unclealex.callerid.shared.model.NumberOnlyPhoneNumber;
-import uk.co.unclealex.callerid.shared.model.PhoneNumber;
-import uk.co.unclealex.callerid.shared.visitor.PhoneNumberVisitor;
-
-public class SqueezeboxDisplayingNumberListener extends AbstractOnRingNumberListener implements PhoneNumberVisitor<String> {
+public class SqueezeboxDisplayingNumberListener extends AbstractOnRingNumberListener {
 	
 	private String i_messageToDisplay;
 	private SqueezeboxConnectionFactory i_squeezeboxConnectionFactory;
 	private ContactDao i_contactDao;
+	private PhoneNumberFormatter i_phoneNumberFormatter;
 	
 	@Override
 	protected boolean beforeFirstRing(String number, TelephoneNumber telephoneNumber, PhoneNumber phoneNumber)
@@ -37,13 +34,13 @@ public class SqueezeboxDisplayingNumberListener extends AbstractOnRingNumberList
 		String phoneNumberMessage;
 		SortedSet<Contact> contacts = telephoneNumber.getContacts();
 		if (!contacts.isEmpty()) {
-			Function<Contact, String> contactNumberFunction = new Function<Contact, String>() {
+			Function<Contact, String> contactNameFunction = new Function<Contact, String>() {
 				@Override
 				public String apply(Contact contact) {
 					return contact.getName();
 				}
 			};
-			contactsMessage = Joiner.on(", ").join(Iterables.transform(contacts, contactNumberFunction));
+			contactsMessage = Joiner.on(", ").join(Iterables.transform(contacts, contactNameFunction));
 		}
 		else {
 			contactsMessage = null;
@@ -52,56 +49,19 @@ public class SqueezeboxDisplayingNumberListener extends AbstractOnRingNumberList
 			phoneNumberMessage = "Unknown caller";
 		}
 		else {
-			phoneNumberMessage = phoneNumber.accept(this);
+			PhoneNumberFormatter phoneNumberFormatter = getPhoneNumberFormatter();
+			String prettyPrintedNumber = phoneNumberFormatter.prettyPrintNumber(phoneNumber);
+			String prettyPrintedGeographicalInformation = phoneNumberFormatter.prettyPrintGeographicInformation(phoneNumber);
+			phoneNumberMessage =
+				prettyPrintedGeographicalInformation==null?
+						prettyPrintedNumber:
+						(prettyPrintedNumber + " (" + prettyPrintedGeographicalInformation + ")");
 		}
 		Iterable<String> messageComponents = 
 				Iterables.filter(Arrays.asList(contactsMessage, phoneNumberMessage), Predicates.notNull());
 		String message = Joiner.on(": ").join(messageComponents);
 		setMessageToDisplay(encode(message));
 		return true;
-	}
-	
-	@Override
-	public String visit(CountriesOnlyPhoneNumber countriesOnlyPhoneNumber) {
-		String countryCode = countriesOnlyPhoneNumber.getCountryCode();
-		String number = countriesOnlyPhoneNumber.getNumber();
-		if (NumberLocationService.UK.equals(countryCode)) {
-			return "0" + number;
-		}
-		else {
-			return String.format(
-				"+%s %s (%s)", countryCode, number, Joiner.on(", ").join(countriesOnlyPhoneNumber.getCountries()));
-		}
-	}
-	
-	@Override
-	public String visit(CountryAndAreaPhoneNumber countryAndAreaPhoneNumber) {
-		String countryCode = countryAndAreaPhoneNumber.getCountryCode();
-		String areaCode = countryAndAreaPhoneNumber.getAreaCode();
-		String area = countryAndAreaPhoneNumber.getArea();
-		String number = countryAndAreaPhoneNumber.getNumber();
-		if (NumberLocationService.UK.equals(countryCode)) {
-			if (NumberLocationService.BASINGSTOKE.equals(areaCode)) {
-				return number;
-			}
-			else {
-				return String.format(
-					"0%s %s (%s)", areaCode, number, area);
-			}
-		}
-		else {
-			return String.format("+%s %s%s (%s, %s)", countryCode, areaCode, number, area, countryAndAreaPhoneNumber.getCountry());
-		}
-	}
-	
-	@Override
-	public String visit(NumberOnlyPhoneNumber numberOnlyPhoneNumber) {
-		return numberOnlyPhoneNumber.getNumber();
-	}
-	
-	@Override
-	public String visit(PhoneNumber phoneNumber) {
-		return phoneNumber.toString();
 	}
 	
 	@Override
@@ -148,5 +108,13 @@ public class SqueezeboxDisplayingNumberListener extends AbstractOnRingNumberList
 
 	public void setContactDao(ContactDao contactDao) {
 		i_contactDao = contactDao;
+	}
+
+	public PhoneNumberFormatter getPhoneNumberFormatter() {
+		return i_phoneNumberFormatter;
+	}
+
+	public void setPhoneNumberFormatter(PhoneNumberFormatter phoneNumberFormatter) {
+		i_phoneNumberFormatter = phoneNumberFormatter;
 	}
 }

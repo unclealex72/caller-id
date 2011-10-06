@@ -43,7 +43,7 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
     <url-pattern>/callerid/callerid</url-pattern>
   </servlet-mapping>
 
-	<!--
+	<!-- 
 	<servlet>
 		<servlet-name>commandServlet</servlet-name>
 		<servlet-class>uk.co.unclealex.callerid.server.servlet.CommandServlet</servlet-class>

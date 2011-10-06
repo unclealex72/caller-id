@@ -3,6 +3,7 @@ package uk.co.unclealex.callerid.server.service;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedSet;
@@ -19,11 +20,13 @@ import uk.co.unclealex.callerid.server.model.TelephoneNumber;
 import uk.co.unclealex.callerid.server.model.User;
 import uk.co.unclealex.callerid.shared.exceptions.GoogleAuthenticationFailedException;
 import uk.co.unclealex.callerid.shared.model.CallRecord;
+import uk.co.unclealex.callerid.shared.model.CallRecords;
 import uk.co.unclealex.callerid.shared.model.PhoneNumber;
 import uk.co.unclealex.callerid.shared.remote.CallerIdService;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Maps.EntryTransformer;
 import com.google.common.collect.Sets;
@@ -92,7 +95,7 @@ public class CallerIdServiceImpl implements CallerIdService {
 	}
 
 	@Override
-	public CallRecord[] getAllCallRecords() {
+	public CallRecords getAllCallRecords(int page, int callsPerPage) {
 		final NumberLocationService numberLocationService = getNumberLocationService();
 		final Function<Contact, String> nameFunction = new Function<Contact, String>() {
 			@Override
@@ -122,9 +125,13 @@ public class CallerIdServiceImpl implements CallerIdService {
 				return new CallRecord(callTime, phoneNumber, blocked, contacts);
 			}
 		};
-		return Iterables.toArray(
-				Sets.newTreeSet(Iterables.transform(getCallRecordDao().getAll(), callRecordFunction)),
-				CallRecord.class);
+		
+		CallRecordDao callRecordDao = getCallRecordDao();
+		List<CallRecord> callRecords = 
+			Lists.newArrayList(Iterables.transform(callRecordDao.getCallRecords(page, callsPerPage), callRecordFunction));
+		int callRecordCount = (int) callRecordDao.count();
+		int pageCount = 1 + (callRecordCount / callsPerPage);
+		return new CallRecords(callRecords, pageCount, callRecordCount);
 	}
 	
 	public UserDao getUserDao() {

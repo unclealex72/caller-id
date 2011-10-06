@@ -10,7 +10,7 @@ import uk.co.unclealex.callerid.client.util.AsyncCallbackExecutor;
 import uk.co.unclealex.callerid.client.util.CanWait;
 import uk.co.unclealex.callerid.client.util.ClickHandlerAndFailureAsPopupExecutableAsyncCallback;
 import uk.co.unclealex.callerid.shared.remote.CallerIdServiceAsync;
-import uk.co.unclealex.callerid.shared.service.GoogleConstants;
+import uk.co.unclealex.callerid.shared.service.Constants;
 
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -81,8 +81,8 @@ public class GoogleAuthenticationPresenter extends AbstractPopupPresenter<PopupP
 			}
 		};
 		display.getSubmitButton().addClickHandler(handler);
-    display.getAuthenticationAnchor().setHref(GoogleConstants.AUTHENTICATION_URL);
-		Window.open(GoogleConstants.AUTHENTICATION_URL, "google-oauth", "width=800,height=600");
+    display.getAuthenticationAnchor().setHref(Constants.AUTHENTICATION_URL);
+		Window.open(Constants.AUTHENTICATION_URL, "google-oauth", "width=800,height=600");
 	}
 
 	public Display getDisplay() {

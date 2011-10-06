@@ -14,6 +14,8 @@ import uk.co.unclealex.callerid.client.util.CanWaitSupportImpl;
 import uk.co.unclealex.callerid.client.util.DefaultAsyncCallbackExecutor;
 import uk.co.unclealex.callerid.client.util.WaitingController;
 import uk.co.unclealex.callerid.client.util.WaitingControllerImpl;
+import uk.co.unclealex.callerid.shared.service.PhoneNumberFormatter;
+import uk.co.unclealex.callerid.shared.service.PhoneNumberFormatterImpl;
 
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.activity.shared.ActivityMapper;
@@ -61,7 +63,7 @@ public class CallerIdInternalModule extends AbstractGinModule {
 		bind(AsyncCallbackExecutor.class).to(DefaultAsyncCallbackExecutor.class).in(Singleton.class);
 		bind(WaitingController.class).to(WaitingControllerImpl.class);
 		bind(CanWaitSupport.class).to(CanWaitSupportImpl.class);
-
+		bind(PhoneNumberFormatter.class).to(PhoneNumberFormatterImpl.class);
 	}
 
 	@Provides
