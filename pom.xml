@@ -8,7 +8,7 @@
   <artifactId>caller-id</artifactId>
   <packaging>war</packaging>
   <name>Caller ID</name>
-  <version>1.0.5</version>
+  <version>1.0.6-SNAPSHOT</version>
   <description>Caller ID</description>
   <licenses>
     <license>
@@ -413,8 +413,8 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:svn:http://hurst/svn/tags/personal/caller-id/1.0.5</connection>
-    <developerConnection>scm:svn:http://hurst/svn/tags/personal/caller-id/1.0.5</developerConnection>
-    <url>http://hurst/svn/tags/personal/caller-id/1.0.5</url>
+    <connection>scm:svn:http://hurst/svn/trunk/personal/caller-id</connection>
+    <developerConnection>scm:svn:http://hurst/svn/trunk/personal/caller-id</developerConnection>
+    <url>http://hurst/svn/trunk/personal/caller-id</url>
   </scm>
 </project>
