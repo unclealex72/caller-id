@@ -6,15 +6,19 @@ package uk.co.unclealex.callerid.client.gin;
 import javax.inject.Singleton;
 
 import uk.co.unclealex.callerid.client.factories.CallListPresenterFactory;
+import uk.co.unclealex.callerid.client.factories.ContactSelectionPopupDisplayFactory;
+import uk.co.unclealex.callerid.client.factories.ContactSelectionPopupPresenterFactory;
 import uk.co.unclealex.callerid.client.factories.GoogleAuthenticationPresenterFactory;
 import uk.co.unclealex.callerid.client.factories.UserPresenterFactory;
 import uk.co.unclealex.callerid.client.presenters.CallListPresenter;
+import uk.co.unclealex.callerid.client.presenters.ContactSelectionPopupPresenter;
 import uk.co.unclealex.callerid.client.presenters.GoogleAuthenticationPresenter;
 import uk.co.unclealex.callerid.client.presenters.HasDisplay;
 import uk.co.unclealex.callerid.client.presenters.NavigationPresenter;
 import uk.co.unclealex.callerid.client.presenters.UserPresenter;
 import uk.co.unclealex.callerid.client.presenters.UsersPresenter;
 import uk.co.unclealex.callerid.client.views.CallList;
+import uk.co.unclealex.callerid.client.views.ContactSelectionPopup;
 import uk.co.unclealex.callerid.client.views.GoogleAuthentication;
 import uk.co.unclealex.callerid.client.views.Navigation;
 import uk.co.unclealex.callerid.client.views.User;
@@ -66,7 +70,13 @@ public class CallerIdClientModule extends AbstractGinModule {
 		bind(SimplePanel.class).in(Singleton.class);
 		
 		bindSingletonPresenter(NavigationPresenter.class, NavigationPresenter.Display.class, Navigation.class);
-	}
+
+		bindPresenterWithDisplayFactory(
+				ContactSelectionPopupPresenter.Display.class, ContactSelectionPopup.class, 
+				ContactSelectionPopupDisplayFactory.class, 
+				ContactSelectionPopupPresenter.class, ContactSelectionPopupPresenterFactory.class);
+
+}
 
 	protected <D extends IsWidget, P extends HasDisplay<D>> void bindPresenterWithDisplay(
 			Class<D> displayInterface, Class<? extends D> displayImplementation, 
@@ -80,6 +90,15 @@ public class CallerIdClientModule extends AbstractGinModule {
 			Class<P> presenterImplementation, Class<?> factoryInterface) {
     bindDisplay(displayInterface, displayImplementation);
     bindPresenter(presenterImplementation, factoryInterface);
+	}
+
+	protected <D extends IsWidget, P extends HasDisplay<D>> void bindPresenterWithDisplayFactory(
+			Class<D> displayInterface, Class<? extends D> displayImplementation,
+			Class<?> displayFactoryInterface,
+			Class<P> presenterImplementation, Class<?> presenterFactoryInterface) {
+		install(new GinFactoryModuleBuilder().implement(displayInterface, displayImplementation).
+        build(displayFactoryInterface));
+    bindPresenter(presenterImplementation, presenterFactoryInterface);
 	}
 
 	protected <D extends IsWidget, P extends HasDisplay<D>> void bindSingletonPresenter(

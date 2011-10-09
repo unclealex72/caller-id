@@ -18,6 +18,12 @@ public interface CallerIdMessages extends Messages {
 	@DefaultMessage("{0}, {1}")
 	String area(String area, String country);
 
+	@DefaultMessage(", ")
+	String separator();
+	
+	@DefaultMessage(" or ")
+	String finalSeparator();
+	
 	@DefaultMessage("Unknown")
 	String unknownLocation();
 
@@ -26,4 +32,7 @@ public interface CallerIdMessages extends Messages {
 
 	@DefaultMessage("Calls {0} to {1} of {2}")
 	String records(int firstRecord, int lastRecord, int callRecordCount);
+	
+	@DefaultMessage("Are you sure you want to remove contact {0}?")
+	String removeContactConfirm(String contactName);
 }

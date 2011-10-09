@@ -2,23 +2,21 @@ package uk.co.unclealex.callerid.server.model;
 
 import java.util.SortedSet;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
-import uk.co.unclealex.hibernate.model.KeyedBean;
-
 import com.google.common.collect.Sets;
 
 @Entity
-public class TelephoneNumber extends KeyedBean<TelephoneNumber> {
+public class TelephoneNumber extends BusinessKeyedBean<TelephoneNumber, String> {
 
 	public static TelephoneNumber example() {
 		return new TelephoneNumber();
@@ -48,7 +46,8 @@ public class TelephoneNumber extends KeyedBean<TelephoneNumber> {
 	}
 
 	@Override
-	public String toString() {
+	@Transient
+	public String getBusinessKey() {
 		return getNumber();
 	}
 	
@@ -79,7 +78,7 @@ public class TelephoneNumber extends KeyedBean<TelephoneNumber> {
 		i_blocked = blocked;
 	}
 
-	@ManyToMany(cascade={CascadeType.REMOVE, CascadeType.DETACH})
+	@ManyToMany
 	@Sort(type=SortType.NATURAL)
 	public SortedSet<Contact> getContacts() {
 		return i_contacts;

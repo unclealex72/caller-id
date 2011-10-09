@@ -11,9 +11,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-
-import uk.co.unclealex.hibernate.model.KeyedBean;
+import javax.persistence.Transient;
 
 /**
  * Copyright 2011 Alex Jones
@@ -39,7 +37,7 @@ import uk.co.unclealex.hibernate.model.KeyedBean;
  *
  */
 @Entity
-public class OauthToken extends KeyedBean<OauthToken> {
+public class OauthToken extends BusinessKeyedBean<OauthToken, OauthTokenType> {
 
 	public static OauthToken example() {
 		return new OauthToken();
@@ -49,29 +47,19 @@ public class OauthToken extends KeyedBean<OauthToken> {
 		super();
 	}
 
-	public OauthToken(OauthTokenType tokenType, User user) {
+	public OauthToken(OauthTokenType tokenType) {
 		super();
 		i_tokenType = tokenType;
-		i_user = user;
 	}
 
 
 	private OauthTokenType i_tokenType;
 	private String i_token;
 	private Date i_expiryDate;
-	private User i_user;
-	
-	@Override
-	public boolean equals(Object obj) {
-		OauthToken other;
-		return obj instanceof OauthToken && (other = (OauthToken) obj).getTokenType().equals(getTokenType()) &&
-				other.getUser().equals(getUser());
-				
-	}
 	
 	@Override
 	public String toString() {
-		return String.format("%s:%s:%s", getUser(), getTokenType(), getToken());
+		return String.format("%s:%s", getTokenType(), getToken());
 	}
 	
 	@Id @GeneratedValue
@@ -79,6 +67,12 @@ public class OauthToken extends KeyedBean<OauthToken> {
 		return super.getId();
 	}
 
+	@Override
+	@Transient
+	public OauthTokenType getBusinessKey() {
+		return getTokenType();
+	}
+	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable=false)
 	public OauthTokenType getTokenType() {
@@ -104,14 +98,5 @@ public class OauthToken extends KeyedBean<OauthToken> {
 
 	public void setToken(String token) {
 		i_token = token;
-	}
-
-	@ManyToOne(optional=false)
-	public User getUser() {
-		return i_user;
-	}
-	
-	public void setUser(User user) {
-		i_user = user;
 	}
 }

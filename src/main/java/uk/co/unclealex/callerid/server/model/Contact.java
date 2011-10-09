@@ -2,18 +2,18 @@ package uk.co.unclealex.callerid.server.model;
 
 import java.util.SortedSet;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
-import uk.co.unclealex.hibernate.model.KeyedBean;
-
 @Entity
-public class Contact extends KeyedBean<Contact> {
+public class Contact extends BusinessKeyedBean<Contact, String> {
 
 	public static Contact example() {
 		return new Contact();
@@ -21,6 +21,7 @@ public class Contact extends KeyedBean<Contact> {
 	
 	private String i_name;
 	private SortedSet<TelephoneNumber> i_telephoneNumbers;
+	private SortedSet<User> i_users;
 	
 	protected Contact() {
 		super();
@@ -38,20 +39,12 @@ public class Contact extends KeyedBean<Contact> {
 	}
 
 	@Override
-	public String toString() {
+	@Transient
+	public String getBusinessKey() {
 		return getName();
 	}
 	
-	@Override
-	public boolean equals(Object obj) {
-		return (obj instanceof Contact) && compareTo((Contact) obj) == 0;
-	}
-	
-	@Override
-	public int compareTo(Contact o) {
-		return getName().compareTo(o.getName());
-	}
-	
+	@Column(nullable=false, unique=true)
 	public String getName() {
 		return i_name;
 	}
@@ -69,4 +62,16 @@ public class Contact extends KeyedBean<Contact> {
 	public void setTelephoneNumbers(SortedSet<TelephoneNumber> telephoneNumbers) {
 		i_telephoneNumbers = telephoneNumbers;
 	}
+
+	@ManyToMany(mappedBy="contacts")
+	@Sort(type=SortType.NATURAL)
+	public SortedSet<User> getUsers() {
+		return i_users;
+	}
+
+	public void setUsers(SortedSet<User> users) {
+		i_users = users;
+	}
+
+	
 }

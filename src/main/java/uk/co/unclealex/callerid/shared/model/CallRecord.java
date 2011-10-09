@@ -9,14 +9,14 @@ public class CallRecord implements Serializable, Comparable<CallRecord> {
 	private Date i_callTime;
 	private PhoneNumber i_phoneNumber;
 	private boolean i_blocked;
-	private SortedSet<String> i_contacts;
+	private SortedSet<CallRecordContact> i_contacts;
 	
 	protected CallRecord() {
 		// Default constructor for serialisation.
 		super();
 	}
 
-	public CallRecord(Date callTime, PhoneNumber phoneNumber, boolean blocked, SortedSet<String> contacts) {
+	public CallRecord(Date callTime, PhoneNumber phoneNumber, boolean blocked, SortedSet<CallRecordContact> contacts) {
 		super();
 		i_callTime = callTime;
 		i_phoneNumber = phoneNumber;
@@ -41,7 +41,7 @@ public class CallRecord implements Serializable, Comparable<CallRecord> {
 		return i_blocked;
 	}
 
-	public SortedSet<String> getContacts() {
+	public SortedSet<CallRecordContact> getContacts() {
 		return i_contacts;
 	}
 	

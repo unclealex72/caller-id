@@ -2,15 +2,15 @@ package uk.co.unclealex.callerid.server.model;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-
-import uk.co.unclealex.hibernate.model.KeyedBean;
+import javax.persistence.Transient;
 
 @Entity
-public class CallRecord extends KeyedBean<CallRecord> {
+public class CallRecord extends BusinessKeyedBean<CallRecord, Date> {
 
 	public static CallRecord example() {
 		return new CallRecord();
@@ -18,7 +18,6 @@ public class CallRecord extends KeyedBean<CallRecord> {
 
 	private Date i_callDate;
 	private TelephoneNumber i_telephoneNumber;
-	
 	
 	protected CallRecord() {
 		super();
@@ -37,20 +36,22 @@ public class CallRecord extends KeyedBean<CallRecord> {
 	}
 
 	@Override
+	@Transient
+	public Date getBusinessKey() {
+		return getCallDate();
+	}
+	
+	@Override
 	public String toString() {
 		return getTelephoneNumber() + " @ " + getCallDate();
 	}
 	
-	@Override
-	public int compareTo(CallRecord o) {
-		return o.getCallDate().compareTo(getCallDate());
-	}
-	
+	@Column(nullable=false, unique=true)
 	public Date getCallDate() {
 		return i_callDate;
 	}
 
-	protected void setCallDate(Date callDate) {
+	public void setCallDate(Date callDate) {
 		i_callDate = callDate;
 	}
 

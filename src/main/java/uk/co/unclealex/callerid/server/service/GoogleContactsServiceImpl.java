@@ -28,10 +28,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -44,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.unclealex.callerid.server.dao.OauthTokenDao;
 import uk.co.unclealex.callerid.server.dao.UserDao;
+import uk.co.unclealex.callerid.server.model.GoogleContact;
 import uk.co.unclealex.callerid.server.model.OauthToken;
 import uk.co.unclealex.callerid.server.model.OauthTokenType;
 import uk.co.unclealex.callerid.server.model.User;
@@ -51,11 +50,10 @@ import uk.co.unclealex.callerid.shared.exceptions.GoogleAuthenticationFailedExce
 import uk.co.unclealex.callerid.shared.service.Constants;
 
 import com.google.common.base.Function;
-import com.google.common.base.Supplier;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.Sets;
 import com.google.common.io.Closeables;
 import com.google.gdata.data.contacts.ContactEntry;
 import com.google.gdata.data.contacts.ContactFeed;
@@ -79,67 +77,59 @@ public class GoogleContactsServiceImpl implements GoogleContactsService {
 	private OauthTokenDao i_oauthTokenDao;
 	
 	@Override
-	public Map<String, Collection<String>> getAllContactsByTelephoneNumber() throws GoogleAuthenticationFailedException, IOException {
-		Supplier<Set<String>> factory = new Supplier<Set<String>>() {
-			@Override
-			public Set<String> get() {
-				return Sets.newHashSet();
-			}
-		};
-		Map<String, Collection<String>> map = Maps.newHashMap();
-		Multimap<String, String> multimap = Multimaps.newSetMultimap(map, factory);
+	public Map<User, List<GoogleContact>> getAllContactsByUser() throws GoogleAuthenticationFailedException, IOException {
+		Map<User, List<GoogleContact>> contactsByUser = Maps.newTreeMap();
 		for (User user : getUserDao().getAll()) {
 			try {
-				addAllContactsByTelephoneNumber(multimap, user);
+				contactsByUser.put(user, getAllContactsForUser(user));
 			}
 			catch (ServiceException e) {
 				throw new IOException(e);
 			}
 		}
-		return map;
+		return contactsByUser;
 	}
 
-	protected void addAllContactsByTelephoneNumber(Multimap<String, String> allContactsByTelephoneNumber, User user) throws GoogleAuthenticationFailedException, IOException, ServiceException {
+	protected List<GoogleContact> getAllContactsForUser(User user) throws IOException, ServiceException, GoogleAuthenticationFailedException {
 		ContactsService contactsService = createContactsService(user);
 	  ContactFeed resultFeed = contactsService.getFeed(new URL(Constants.CONTACTS_FEED), ContactFeed.class);
+	  List<GoogleContact> googleContacts = Lists.newArrayList();
 	  for (ContactEntry entry : resultFeed.getEntries()) {
 	  	if (entry.hasName()) {
 	  		String name = entry.getName().getFullName().getValue();
 	  		for (PhoneNumber phoneNumber : entry.getPhoneNumbers()) {
 	  			String number = phoneNumber.getPhoneNumber();
-	  			allContactsByTelephoneNumber.put(number, name);
+	  			googleContacts.add(new GoogleContact(name, number));
 	  		}
 	  	}
 	  }
+	  return googleContacts;
 	}
+	
 	protected ContactsService createContactsService(User user) throws GoogleAuthenticationFailedException, IOException {
 		return new ContactsService("callerid.unclealex.co.uk", getOauthToken(user));
 	}
 	
 	protected String getOauthToken(User user) throws GoogleAuthenticationFailedException, IOException {
-		OauthTokenDao oauthTokenDao = getOauthTokenDao();
-		OauthToken accessToken = oauthTokenDao.findByUserAndType(user, OauthTokenType.ACCESS);
+		OauthToken accessToken = findTokenByUserAndType(user, OauthTokenType.ACCESS);
 		if (accessToken == null || accessToken.getExpiryDate().getTime() - EXPIRY_LEEWAY < System.currentTimeMillis()) {
 			if (accessToken == null) {
-				accessToken = new OauthToken(OauthTokenType.ACCESS, user);
-				accessToken.setTokenType(OauthTokenType.ACCESS);
-				accessToken.setUser(user);
+				accessToken = new OauthToken(OauthTokenType.ACCESS);
 			}
 			updateAccessToken(user, accessToken);
-			oauthTokenDao.store(accessToken);
 		}
 		return accessToken.getToken();
 	}
 
 	@Override
 	public void installSuccessCode(final User user, String successCode) throws IOException, GoogleAuthenticationFailedException {
-		final OauthTokenDao oauthTokenDao = getOauthTokenDao();
 		Function<OauthTokenType, OauthToken> tokenFactory = new Function<OauthTokenType, OauthToken>() {
 			@Override
-			public OauthToken apply(OauthTokenType oauthTokenType) {
-				OauthToken token = oauthTokenDao.findByUserAndType(user, oauthTokenType);
+			public OauthToken apply(final OauthTokenType oauthTokenType) {
+				OauthToken token = findTokenByUserAndType(user, oauthTokenType);
 				if (token == null) {
-					token = new OauthToken(oauthTokenType, user);
+					token = new OauthToken(oauthTokenType);
+					user.getOauthTokens().add(token);
 				}
 				return token;
 			}
@@ -150,9 +140,7 @@ public class GoogleContactsServiceImpl implements GoogleContactsService {
 		accessToken.setToken(tokenResponse.getAccessToken());
 		accessToken.setExpiryDate(tokenResponse.getExpiryDate());
 		refreshToken.setToken(tokenResponse.getRefreshToken());
-		for (OauthToken token : new OauthToken[] { accessToken, refreshToken }) {
-			oauthTokenDao.store(token);
-		}
+		getUserDao().store(user);
 	}
 
 	/**
@@ -161,14 +149,14 @@ public class GoogleContactsServiceImpl implements GoogleContactsService {
 	 * @throws IOException 
 	 */
 	protected void updateAccessToken(User user, OauthToken accessToken) throws GoogleAuthenticationFailedException, IOException {
-		OauthToken refreshToken = getOauthTokenDao().findByUserAndType(user, OauthTokenType.REFRESH);
+		OauthToken refreshToken = findTokenByUserAndType(user, OauthTokenType.REFRESH);
 		if (refreshToken == null) {
 			throw new GoogleAuthenticationFailedException("No refresh token found.");
 		}
 		TokenResponse tokenResponse = requestToken("refresh_token", refreshToken.getToken(), "refresh_token", false);
 		accessToken.setToken(tokenResponse.getAccessToken());
 		accessToken.setExpiryDate(tokenResponse.getExpiryDate());
-		getOauthTokenDao().store(accessToken);
+		getUserDao().store(user);
 	}
 
 	protected TokenResponse requestToken(String tokenType, String token, String grantType, boolean includeRedirect) throws IOException, GoogleAuthenticationFailedException {
@@ -218,5 +206,16 @@ public class GoogleContactsServiceImpl implements GoogleContactsService {
 
 	public void setOauthTokenDao(OauthTokenDao oauthTokenDao) {
 		i_oauthTokenDao = oauthTokenDao;
+	}
+
+	protected OauthToken findTokenByUserAndType(final User user, final OauthTokenType oauthTokenType) {
+		Predicate<OauthToken> predicate = new Predicate<OauthToken>() {
+			@Override
+			public boolean apply(OauthToken oauthToken) {
+				return oauthTokenType.equals(oauthToken.getTokenType());
+			}
+		};
+		OauthToken token = Iterables.find(user.getOauthTokens(), predicate, null);
+		return token;
 	}
 }

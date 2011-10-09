@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Date;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -111,6 +112,21 @@ public class CallerIdServlet extends RemoteServiceServlet implements CallerIdSer
 	@Override
 	public CallRecords getAllCallRecords(int page, int callsPerPage) {
 		return createCallerIdService().getAllCallRecords(page, callsPerPage);
+	}
+	
+	@Override
+	public String[] getAllContactNames() {
+		return createCallerIdService().getAllContactNames();
+	}
+	
+	@Override
+	public void associateCallRecordToContactName(Date callRecordTime, String contactName) {
+		createCallerIdService().associateCallRecordToContactName(callRecordTime, contactName);
+	}
+	
+	@Override
+	public void removeContact(String name) {
+		createCallerIdService().removeContact(name);
 	}
 	
 	public BeanFactory getBeanFactory() {

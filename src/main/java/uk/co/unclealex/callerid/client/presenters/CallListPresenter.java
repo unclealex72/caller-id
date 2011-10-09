@@ -6,13 +6,16 @@ import java.util.SortedSet;
 
 import javax.inject.Inject;
 
+import uk.co.unclealex.callerid.client.factories.ContactSelectionPopupPresenterFactory;
 import uk.co.unclealex.callerid.client.messages.CallerIdMessages;
 import uk.co.unclealex.callerid.client.places.CallListPlace;
 import uk.co.unclealex.callerid.client.presenters.CallListPresenter.Display;
 import uk.co.unclealex.callerid.client.util.AsyncCallbackExecutor;
+import uk.co.unclealex.callerid.client.util.ClickHandlerAndFailureAsPopupExecutableAsyncCallback;
 import uk.co.unclealex.callerid.client.util.ExecutableAsyncCallback;
 import uk.co.unclealex.callerid.client.util.FailureAsPopupExecutableAsyncCallback;
 import uk.co.unclealex.callerid.shared.model.CallRecord;
+import uk.co.unclealex.callerid.shared.model.CallRecordContact;
 import uk.co.unclealex.callerid.shared.model.CallRecords;
 import uk.co.unclealex.callerid.shared.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.shared.model.CountryAndAreaPhoneNumber;
@@ -29,15 +32,18 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.place.shared.PlaceController;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.assistedinject.Assisted;
 
@@ -57,12 +63,13 @@ public class CallListPresenter extends AbstractActivity implements HasDisplay<Di
 	private final CallerIdMessages i_callerIdMessages;
 	private final PhoneNumberFormatter i_phoneNumberFormatter;
 	private final PlaceController i_placeController;
-	
+	private final ContactSelectionPopupPresenterFactory i_contactSelectionPopupPresenterFactory;
+
 	@Inject
 	public CallListPresenter(
 		Display display, AsyncCallbackExecutor asyncCallbackExecutor,
 		CallerIdMessages callerIdMessages, PhoneNumberFormatter phoneNumberFormatter,
-		PlaceController placeController,
+		PlaceController placeController, ContactSelectionPopupPresenterFactory contactSelectionPopupPresenterFactory,
 		@Assisted("page") int page, @Assisted("callsPerPage") int callsPerPage) {
 		super();
 		i_display = display;
@@ -72,6 +79,7 @@ public class CallListPresenter extends AbstractActivity implements HasDisplay<Di
 		i_callerIdMessages = callerIdMessages;
 		i_phoneNumberFormatter = phoneNumberFormatter;
 		i_placeController = placeController;
+		i_contactSelectionPopupPresenterFactory = contactSelectionPopupPresenterFactory;
 	}
 
 	@Override
@@ -138,12 +146,12 @@ public class CallListPresenter extends AbstractActivity implements HasDisplay<Di
 	protected void populateTable(CallRecords callRecords, Display display) {
 		FlexTable callRecordTable = display.getCallRecordTable();
 		Date previousCallTime = null;
-		PhoneNumberFormatter phoneNumberFormatter = getPhoneNumberFormatter();
+		final PhoneNumberFormatter phoneNumberFormatter = getPhoneNumberFormatter();
 		CallerIdMessages callerIdMessages = getCallerIdMessages();
 		String unknownNumber = callerIdMessages.unknownNumber();
 		int row = 0;
 		FlexCellFormatter flexCellFormatter = callRecordTable.getFlexCellFormatter();
-		for (CallRecord callRecord : callRecords.getCallRecords()) {
+		for (final CallRecord callRecord : callRecords.getCallRecords()) {
 			Date callTime = callRecord.getCallTime();
 			if (notSameDay(previousCallTime, callTime)) {
 				callRecordTable.setText(row, 0, callerIdMessages.callDate(callTime));
@@ -153,26 +161,88 @@ public class CallListPresenter extends AbstractActivity implements HasDisplay<Di
 			}
 			previousCallTime = callTime;
 			callRecordTable.setText(row, 0, callerIdMessages.callTime(callTime));
-			PhoneNumber phoneNumber = callRecord.getPhoneNumber();
+			final PhoneNumber phoneNumber = callRecord.getPhoneNumber();
 			if (phoneNumber != null) {
-				SortedSet<String> contacts = callRecord.getContacts();
-				String prettyPrintedNumber = phoneNumberFormatter.prettyPrintNumber(phoneNumber);
+				SortedSet<CallRecordContact> contacts = callRecord.getContacts();
+				final String prettyPrintedNumber = phoneNumberFormatter.prettyPrintNumber(phoneNumber);
 				if (contacts.isEmpty()) {
-					Anchor phoneSearchLink = new Anchor(prettyPrintedNumber, "http://www.google.com/search?q="
-							+ phoneNumberFormatter.formatForSearch(phoneNumber));
+					final Anchor phoneSearchLink = new Anchor(prettyPrintedNumber);
+					ClickHandler searchClickHandler = 
+						new ClickHandlerAndFailureAsPopupExecutableAsyncCallback<String[]>(
+								getAsyncCallbackExecutor(), "Finding all contact names.") {
+						@Override
+						public void execute(CallerIdServiceAsync callerIdService, AsyncCallback<String[]> callback) {
+							callerIdService.getAllContactNames(callback);
+						}
+						@Override
+						public void onSuccess(String[] contactNames) {
+							ContactSelectionPopupPresenter contactSelectionPopupPresenter = 
+									getContactSelectionPopupPresenterFactory().createContactSelectionPopupPresenter(
+											contactNames, callRecord.getCallTime());
+							contactSelectionPopupPresenter.showRelativeTo(phoneSearchLink);
+						}
+					};
+					phoneSearchLink.setHref("http://www.google.com/search?q=" + phoneNumberFormatter.formatForSearch(phoneNumber));
 					phoneSearchLink.setTarget("_blank");
+					phoneSearchLink.addClickHandler(searchClickHandler);
 					callRecordTable.setWidget(row, 1, phoneSearchLink);
 					callRecordTable.setWidget(row, 2, phoneNumber.accept(this));
 				}
 				else {
 					callRecordTable.setText(row, 1, prettyPrintedNumber);
-					callRecordTable.setText(row, 2, or(contacts));
+					callRecordTable.setWidget(row, 2, listContacts(contacts));
 				}
 			}
 			else {
 				callRecordTable.setText(row, 1, unknownNumber);
 			}
 			row++;
+		}
+	}
+
+	protected Widget listContacts(SortedSet<CallRecordContact> googleContacts) {
+		CallRecordContact lastContact = googleContacts.last();
+		SortedSet<CallRecordContact> allButLastContact = googleContacts.headSet(lastContact);
+		Widget lastContactWidget = asContactWidget(lastContact);
+		if (allButLastContact.isEmpty()) {
+			return lastContactWidget;
+		}
+		Panel contactsPanel = new FlowPanel();
+		boolean isNotFirstElement = false;
+		CallerIdMessages callerIdMessages = getCallerIdMessages();
+		for (CallRecordContact contact : allButLastContact) {
+			if (isNotFirstElement) {
+				contactsPanel.add(new InlineLabel(callerIdMessages.separator()));
+			}
+			isNotFirstElement = true;
+			contactsPanel.add(asContactWidget(contact));
+		}
+		contactsPanel.add(new InlineLabel(callerIdMessages.finalSeparator()));
+		contactsPanel.add(lastContactWidget);
+		return contactsPanel;
+	}
+	
+	protected Widget asContactWidget(CallRecordContact contact) {
+		final String name = contact.getName();
+		if (contact.isGoogleContact()) {
+			return new InlineLabel(name);
+		}
+		else {
+			Anchor contactLink = new Anchor(name);
+			ClickHandler removeContactClickHandler =
+					new ClickHandlerAndFailureAsPopupExecutableAsyncCallback<Void>(
+							getAsyncCallbackExecutor(), "Removing contact " + name) {
+				public void execute(CallerIdServiceAsync callerIdService, AsyncCallback<Void> callback) {
+					if (Window.confirm(getCallerIdMessages().removeContactConfirm(name))) {
+						callerIdService.removeContact(name, callback);
+					}
+				}
+				public void onSuccess(Void result) {
+					Window.Location.reload();
+				}
+			};
+			contactLink.addClickHandler(removeContactClickHandler);
+			return contactLink;
 		}
 	}
 
@@ -185,7 +255,9 @@ public class CallListPresenter extends AbstractActivity implements HasDisplay<Di
 		}
 		else {
 			List<String> allButLastElement = elements.subList(0, lastIndex);
-			return Joiner.on(" or ").join(Joiner.on(", ").join(allButLastElement), lastElement);
+			CallerIdMessages callerIdMessages = getCallerIdMessages();
+			return Joiner.on(callerIdMessages.finalSeparator()).join(
+					Joiner.on(callerIdMessages.separator()).join(allButLastElement), lastElement);
 		}
 	}
 
@@ -249,5 +321,9 @@ public class CallListPresenter extends AbstractActivity implements HasDisplay<Di
 
 	public PlaceController getPlaceController() {
 		return i_placeController;
+	}
+
+	public ContactSelectionPopupPresenterFactory getContactSelectionPopupPresenterFactory() {
+		return i_contactSelectionPopupPresenterFactory;
 	}
 }

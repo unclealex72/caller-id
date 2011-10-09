@@ -1,8 +1,11 @@
 package uk.co.unclealex.callerid.server.service;
 
+import java.util.TreeSet;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.unclealex.callerid.server.dao.TelephoneNumberDao;
+import uk.co.unclealex.callerid.server.model.Contact;
 import uk.co.unclealex.callerid.server.model.TelephoneNumber;
 
 @Transactional
@@ -18,6 +21,7 @@ public class TelephoneNumberFactoryImpl implements TelephoneNumberFactory {
 		TelephoneNumber telephoneNumber = telephoneNumberDao.findByNumber(number);
 		if (telephoneNumber == null) {
 			telephoneNumber = new TelephoneNumber(number, false);
+			telephoneNumber.setContacts(new TreeSet<Contact>());
 			telephoneNumberDao.store(telephoneNumber);
 		}
 		return telephoneNumber;

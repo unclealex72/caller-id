@@ -3,12 +3,22 @@
  */
 package uk.co.unclealex.callerid.server.model;
 
+import java.util.SortedSet;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import uk.co.unclealex.hibernate.model.KeyedBean;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
+
+import com.google.common.collect.Sets;
 
 /**
  * Copyright 2011 Alex Jones
@@ -35,13 +45,15 @@ import uk.co.unclealex.hibernate.model.KeyedBean;
  */
 @Entity
 @Table(name="users")
-public class User extends KeyedBean<User> {
+public class User extends BusinessKeyedBean<User, String> {
 
 	public static User example() {
 		return new User();
 	}
 
 	private String i_username;
+	private SortedSet<Contact> i_contacts;
+	private SortedSet<OauthToken> i_oauthTokens;
 	
 	protected User() {
 		super();
@@ -50,16 +62,13 @@ public class User extends KeyedBean<User> {
 	public User(String username) {
 		super();
 		i_username = username;
+		i_contacts = Sets.newTreeSet();
+		i_oauthTokens = Sets.newTreeSet();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		return obj instanceof User && ((User) obj).getUsername().equals(getUsername());
-				
-	}
-	
-	@Override
-	public String toString() {
+	@Transient
+	public String getBusinessKey() {
 		return getUsername();
 	}
 	
@@ -68,11 +77,32 @@ public class User extends KeyedBean<User> {
 		return super.getId();
 	}
 
+	@Column(nullable=false, unique=true)
 	public String getUsername() {
 		return i_username;
 	}
 
 	public void setUsername(String username) {
 		i_username = username;
+	}
+
+	@ManyToMany
+	@Sort(type=SortType.NATURAL)
+	public SortedSet<Contact> getContacts() {
+		return i_contacts;
+	}
+
+	public void setContacts(SortedSet<Contact> contacts) {
+		i_contacts = contacts;
+	}
+
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	@Sort(type=SortType.NATURAL)
+	public SortedSet<OauthToken> getOauthTokens() {
+		return i_oauthTokens;
+	}
+
+	public void setOauthTokens(SortedSet<OauthToken> oauthTokens) {
+		i_oauthTokens = oauthTokens;
 	}
 }

@@ -1,27 +1,27 @@
 package uk.co.unclealex.callerid.server.dao;
 
+import java.util.SortedSet;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.unclealex.callerid.server.model.Contact;
-import uk.co.unclealex.callerid.server.model.TelephoneNumber;
 import uk.co.unclealex.hibernate.dao.HibernateKeyedDao;
-
-import com.google.common.collect.Lists;
 
 @Transactional
 public class HibernateContactDao extends HibernateKeyedDao<Contact> implements ContactDao {
 
 	private TelephoneNumberDao i_telephoneNumberDao;
+
+	@Override
+	public Contact findByName(String name) {
+		Contact contact = createExampleBean();
+		contact.setName(name);
+		return findByExample(contact);
+	}
 	
 	@Override
-	public void removeAll() {
-		for (TelephoneNumber telephoneNumber : getTelephoneNumberDao().getAll()) {
-			telephoneNumber.getContacts().clear();
-		}
-		for (Contact contact : Lists.newArrayList(getAll())) {
-			remove(contact);
-		}
-		
+	public SortedSet<String> getAllContactNames() {
+		return asSortedSet(getSession().createQuery("select name from Contact"), String.class);
 	}
 	
 	@Override

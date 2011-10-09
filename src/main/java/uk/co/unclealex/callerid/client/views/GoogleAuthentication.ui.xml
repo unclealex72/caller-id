@@ -19,8 +19,9 @@
 				popup windows will not be used again by this application.
 			</p>
 			<div>
-				<g:TextBox ui:field="successCode" width="300px"/>
+				<g:TextBox ui:field="successCode" width="396px"/>
 				<div class="buttonbar">
+				  <g:Button ui:field="cancelButton">Cancel</g:Button>
 				  <g:Button ui:field="submitButton">Proceed</g:Button>
 				</div>			
 			</div>

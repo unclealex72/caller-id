@@ -10,5 +10,4 @@ public interface UserDao extends KeyedDao<User> {
 	public User getUserByName(String username);
 
 	public SortedSet<String> getAllUsernames();
-
 }

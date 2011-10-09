@@ -8,6 +8,7 @@
 		<ul class="vmenu">
 			<li><g:Anchor ui:field="contactsLink">Contacts</g:Anchor></li>
 			<li><g:Anchor ui:field="callsLink">Call List</g:Anchor></li>
+			<li><g:Anchor href="http://www.google.com/contacts" target="_blank">Google Contacts</g:Anchor></li>
 		</ul>
 	</g:HTMLPanel>
 </ui:UiBinder>

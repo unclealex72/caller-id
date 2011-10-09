@@ -1,11 +1,8 @@
 package uk.co.unclealex.callerid.server.service;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.SortedSet;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +17,7 @@ import uk.co.unclealex.callerid.server.model.TelephoneNumber;
 import uk.co.unclealex.callerid.server.model.User;
 import uk.co.unclealex.callerid.shared.exceptions.GoogleAuthenticationFailedException;
 import uk.co.unclealex.callerid.shared.model.CallRecord;
+import uk.co.unclealex.callerid.shared.model.CallRecordContact;
 import uk.co.unclealex.callerid.shared.model.CallRecords;
 import uk.co.unclealex.callerid.shared.model.PhoneNumber;
 import uk.co.unclealex.callerid.shared.remote.CallerIdService;
@@ -27,8 +25,6 @@ import uk.co.unclealex.callerid.shared.remote.CallerIdService;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Maps.EntryTransformer;
 import com.google.common.collect.Sets;
 
 @Transactional(rollbackFor={IOException.class, GoogleAuthenticationFailedException.class})
@@ -37,11 +33,12 @@ public class CallerIdServiceImpl implements CallerIdService {
 	private UserDao i_userDao;
 	private OauthTokenDao i_oauthTokenDao;
 	private GoogleContactsService i_googleContactsService;
-	private ContactDao i_contactDao;
 	private TelephoneNumberFactory i_telephoneNumberFactory;
 	private TelephoneNumberDao i_telephoneNumberDao;
 	private NumberLocationService i_numberLocationService;
 	private CallRecordDao i_callRecordDao;
+	private ContactService i_contactService;
+	private ContactDao i_contactDao;
 	
 	@Override
 	public void addUser(String username, String token) throws IOException, GoogleAuthenticationFailedException {
@@ -51,9 +48,18 @@ public class CallerIdServiceImpl implements CallerIdService {
 	}
 
 	@Override
+	public String[] getAllContactNames() {
+		return Iterables.toArray(getContactDao().getAllContactNames(), String.class);
+	}
+	
+	@Override
+	public void associateCallRecordToContactName(Date callRecordTime, String contactName) {
+		getContactService().associateCallRecordToContactName(callRecordTime, contactName);
+	}
+	
+	@Override
 	public void removeUser(String username) {
 		User user = getUserDao().getUserByName(username);
-		getOauthTokenDao().removeByUser(user);
 		getUserDao().remove(user);
 	}
 
@@ -64,43 +70,16 @@ public class CallerIdServiceImpl implements CallerIdService {
 	
 	@Override
 	public void updateContacts() throws GoogleAuthenticationFailedException, IOException {
-		ContactDao contactDao = getContactDao();
-		TelephoneNumberDao telephoneNumberDao = getTelephoneNumberDao();
-		contactDao.removeAll();
-		Map<String, Collection<String>> allContactsByTelephoneNumber = getGoogleContactsService().getAllContactsByTelephoneNumber();
-		final TelephoneNumberFactory telephoneNumberFactory = getTelephoneNumberFactory();
-		EntryTransformer<String, Collection<String>, TelephoneNumber> transformer = 
-				new EntryTransformer<String, Collection<String>, TelephoneNumber>() {
-			@Override
-			public TelephoneNumber transformEntry(String number, Collection<String> value) {
-				return telephoneNumberFactory.findOrCreateTelephoneNumber(number);
-			}
-		};
-		Map<String, TelephoneNumber> telephoneNumbers = Maps.transformEntries(allContactsByTelephoneNumber, transformer);
-		Map<String, Contact> contactCache = Maps.newHashMap();
-		for (Entry<String, Collection<String>> entry : allContactsByTelephoneNumber.entrySet()) {
-			TelephoneNumber telephoneNumber = telephoneNumbers.get(entry.getKey());
-			SortedSet<Contact> contacts = telephoneNumber.getContacts();
-			for (String name : entry.getValue()) {
-				Contact contact = contactCache.get(name);
-				if (contact == null) {
-					contact = new Contact(name);
-					contactDao.store(contact);
-					contactCache.put(name, contact);
-				}
-				contacts.add(contact);
-			}
-			telephoneNumberDao.store(telephoneNumber);
-		}
+		getContactService().updateContacts();
 	}
 
 	@Override
 	public CallRecords getAllCallRecords(int page, int callsPerPage) {
 		final NumberLocationService numberLocationService = getNumberLocationService();
-		final Function<Contact, String> nameFunction = new Function<Contact, String>() {
+		final Function<Contact, CallRecordContact> contactFunction = new Function<Contact, CallRecordContact>() {
 			@Override
-			public String apply(Contact contact) {
-				return contact.getName();
+			public CallRecordContact apply(Contact contact) {
+				return new CallRecordContact(contact.getName(), !contact.getUsers().isEmpty());
 			}
 		};
 		Function<uk.co.unclealex.callerid.server.model.CallRecord, CallRecord> callRecordFunction = 
@@ -108,14 +87,14 @@ public class CallerIdServiceImpl implements CallerIdService {
 			@Override
 			public CallRecord apply(uk.co.unclealex.callerid.server.model.CallRecord callRecord) {
 				Date callTime = callRecord.getCallDate();
-				SortedSet<String> contacts;
+				SortedSet<CallRecordContact> contacts;
 				TelephoneNumber telephoneNumber = callRecord.getTelephoneNumber();
 				PhoneNumber phoneNumber;
 				boolean blocked;
 				if (telephoneNumber != null) {
 					phoneNumber = numberLocationService.decomposeNumber(telephoneNumber.getNumber());
 					blocked = telephoneNumber.isBlocked();
-					contacts = Sets.newTreeSet(Iterables.transform(telephoneNumber.getContacts(), nameFunction));
+					contacts = Sets.newTreeSet(Iterables.transform(telephoneNumber.getContacts(), contactFunction));
 				}
 				else {
 					phoneNumber = null;
@@ -132,6 +111,11 @@ public class CallerIdServiceImpl implements CallerIdService {
 		int callRecordCount = (int) callRecordDao.count();
 		int pageCount = 1 + (callRecordCount / callsPerPage);
 		return new CallRecords(callRecords, pageCount, callRecordCount);
+	}
+	
+	@Override
+	public void removeContact(String name) {
+		getContactService().removeContact(name);
 	}
 	
 	public UserDao getUserDao() {
@@ -156,14 +140,6 @@ public class CallerIdServiceImpl implements CallerIdService {
 
 	public void setGoogleContactsService(GoogleContactsService googleContactsService) {
 		i_googleContactsService = googleContactsService;
-	}
-
-	public ContactDao getContactDao() {
-		return i_contactDao;
-	}
-
-	public void setContactDao(ContactDao contactDao) {
-		i_contactDao = contactDao;
 	}
 
 	public TelephoneNumberFactory getTelephoneNumberFactory() {
@@ -196,5 +172,21 @@ public class CallerIdServiceImpl implements CallerIdService {
 	
 	public CallRecordDao getCallRecordDao() {
 		return i_callRecordDao;
+	}
+
+	public ContactService getContactService() {
+		return i_contactService;
+	}
+
+	public void setContactService(ContactService contactService) {
+		i_contactService = contactService;
+	}
+
+	public ContactDao getContactDao() {
+		return i_contactDao;
+	}
+
+	public void setContactDao(ContactDao contactDao) {
+		i_contactDao = contactDao;
 	}
 }

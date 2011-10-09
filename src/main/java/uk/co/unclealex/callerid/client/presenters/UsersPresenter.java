@@ -59,7 +59,7 @@ public class UsersPresenter extends AbstractActivity implements HasDisplay<Displ
 		ClickHandler newUserHandler = new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				String username = display.getNewUsername().getValue();
+				String username = display.getNewUsername().getValue().trim();
 				if (!username.isEmpty() && !getUsernames().contains(username));
 				GoogleAuthenticationPresenter googleAuthenticationPresenter =
 					getGoogleAuthenticationPresenterFactory().createGoogleAuthenticationPresenter(username);

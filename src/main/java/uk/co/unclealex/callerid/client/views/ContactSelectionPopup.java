@@ -3,22 +3,25 @@
  */
 package uk.co.unclealex.callerid.client.views;
 
+import java.util.Arrays;
+
 import javax.inject.Inject;
 
-import uk.co.unclealex.callerid.client.presenters.GoogleAuthenticationPresenter.Display;
-import uk.co.unclealex.callerid.client.util.CanWaitSupport;
+import uk.co.unclealex.callerid.client.presenters.ContactSelectionPopupPresenter.Display;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.inject.assistedinject.Assisted;
 
 /**
  * Copyright 2011 Alex Jones
@@ -43,65 +46,46 @@ import com.google.gwt.user.client.ui.Widget;
  * @author unclealex72
  *
  */
-public class GoogleAuthentication extends SimplePanel implements Display {
+public class ContactSelectionPopup extends SimplePanel implements Display {
 
-	@UiTemplate("GoogleAuthentication.ui.xml")
-	public interface Binder extends UiBinder<Widget, GoogleAuthentication> {
+	@UiTemplate("ContactSelectionPopup.ui.xml")
+	public interface Binder extends UiBinder<Widget, ContactSelectionPopup> {
     // No extra method
   }
 	
 	private static final Binder binder = GWT.create(Binder.class);
 
-	private final CanWaitSupport i_canWaitSupport;
-	
-	@UiField PopupPanel popupPanel;
-	@UiField Anchor authenticationAnchor;
-	@UiField TextBox successCode;
-	@UiField Button cancelButton;
+	@UiField DialogBox popupPanel;
 	@UiField Button submitButton;
+	@UiField SuggestBox contactName;
+	private final String[] i_suggestions;
 	
 	@Inject
-	public GoogleAuthentication(CanWaitSupport canWaitSupport) {
-	  i_canWaitSupport = canWaitSupport;
+	public ContactSelectionPopup(@Assisted String[] suggestions) {
+		i_suggestions = suggestions;
 		add(binder.createAndBindUi(this));
-		canWaitSupport.wrap(successCode, submitButton);
 	}
 
-	@Override
-	public void startWaiting(String message, int waitingHandler) {
-	  getCanWaitSupport().startWaiting(message, waitingHandler);
+	@UiFactory
+	public SuggestBox createSuggestBox() {
+		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
+		oracle.addAll(Arrays.asList(getSuggestions()));
+		return new SuggestBox(oracle);
 	}
 	
-  @Override
-  public void stopWaiting(int waitingHandler) {
-    getCanWaitSupport().stopWaiting(waitingHandler);
-  }
-	
-	public HasText getSuccessCode() {
-		return successCode;
-	}
-
 	public Button getSubmitButton() {
 		return submitButton;
 	}
 
-	public Button getCancelButton() {
-		return cancelButton;
-	}
-	
-	public PopupPanel getPopupPanel() {
+	public DialogBox getPopupPanel() {
 		return popupPanel;
 	}
 
-  public CanWaitSupport getCanWaitSupport() {
-    return i_canWaitSupport;
-  }
+	public String[] getSuggestions() {
+		return i_suggestions;
+	}
 
-  @Override
-  public Anchor getAuthenticationAnchor() {
-    return authenticationAnchor;
-  }
-
-
-
+	public HasText getContactName() {
+		return contactName;
+	}
 }

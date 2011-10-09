@@ -22,17 +22,17 @@
 	<context:annotation-config/>
 	<tx:annotation-driven/>
 
-	<!-- 	   
+	<!-- 
   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
   	<property name="driverClassName" value="org.postgresql.Driver"/>
   	<property name="username" value="callerid-dev"/>
   	<property name="password" value="c@ll3r1d-d3v"/>
   	<property name="url" value="jdbc:postgresql://hurst:5432/callerid-dev"/>
   </bean>  
-	 -->
-	
+ 	-->
+
 	<jee:jndi-lookup id="dataSource" jndi-name="jdbc/callerid" />
-	
+	  
 	<bean id="hibernateProperties"
 		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="properties">
@@ -81,7 +81,8 @@
 	<bean id="telephoneNumberFactory" class="uk.co.unclealex.callerid.server.service.TelephoneNumberFactoryImpl"/>		
   <bean id="hibernateInterceptor" class="org.springframework.orm.hibernate3.HibernateInterceptor"/>
 	<bean id="phoneNumberFormatter" class="uk.co.unclealex.callerid.shared.service.PhoneNumberFormatterImpl"/>
-	
+	<bean id="contactService" class="uk.co.unclealex.callerid.server.service.ContactServiceImpl"/>
+		
   <bean id="numberService" class="org.springframework.aop.framework.ProxyFactoryBean">
     <property name="target">
 			<bean class="uk.co.unclealex.callerid.server.service.NumberServiceImpl">

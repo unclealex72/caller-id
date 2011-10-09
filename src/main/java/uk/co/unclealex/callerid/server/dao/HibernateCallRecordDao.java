@@ -1,5 +1,6 @@
 package uk.co.unclealex.callerid.server.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -19,6 +20,13 @@ public class HibernateCallRecordDao extends HibernateKeyedDao<CallRecord> implem
 		c.setFirstResult(page * pageSize);
 		c.setMaxResults(pageSize);
 		return asList(c);
+	}
+	
+	@Override
+	public CallRecord findByTime(Date callRecordTime) {
+		CallRecord example = createExampleBean();
+		example.setCallDate(callRecordTime);
+		return findByExample(example);
 	}
 	
 	@Override

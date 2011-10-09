@@ -12,6 +12,7 @@ import uk.co.unclealex.callerid.client.util.ClickHandlerAndFailureAsPopupExecuta
 import uk.co.unclealex.callerid.shared.remote.CallerIdServiceAsync;
 import uk.co.unclealex.callerid.shared.service.Constants;
 
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.Window;
@@ -50,6 +51,7 @@ public class GoogleAuthenticationPresenter extends AbstractPopupPresenter<PopupP
 		
 		HasText getSuccessCode();
 		HasClickHandlers getSubmitButton();
+		HasClickHandlers getCancelButton();
     Anchor getAuthenticationAnchor();
 	}
 	
@@ -72,15 +74,23 @@ public class GoogleAuthenticationPresenter extends AbstractPopupPresenter<PopupP
 
 	@Override
 	protected void prepare(final Display display) {
-		ClickHandler handler = 
+		ClickHandler submitHandler = 
 				new ClickHandlerAndFailureAsPopupExecutableAsyncCallback<Void>(getAsyncCallbackExecutor(), "Authenticating") {
-			public void execute(CallerIdServiceAsync callerIdService, AsyncCallback<Void> callback) {
-				callerIdService.addUser(getUsername(), display.getSuccessCode().getText(), callback);
+			public void onSuccess(Void result) {
 				getUsersPresenter().refreshUsernames();
 				hide();
 			}
+			public void execute(CallerIdServiceAsync callerIdService, AsyncCallback<Void> callback) {
+				callerIdService.addUser(getUsername(), display.getSuccessCode().getText(), callback);
+			}
 		};
-		display.getSubmitButton().addClickHandler(handler);
+		ClickHandler cancelHandler = new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				hide();
+			}
+		};
+		display.getSubmitButton().addClickHandler(submitHandler);
+		display.getCancelButton().addClickHandler(cancelHandler);
     display.getAuthenticationAnchor().setHref(Constants.AUTHENTICATION_URL);
 		Window.open(Constants.AUTHENTICATION_URL, "google-oauth", "width=800,height=600");
 	}
