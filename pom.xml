@@ -165,14 +165,14 @@
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
       <version>1</version>
+      <classifier>sources</classifier>
+      <scope>provided</scope>
+      <type>jar</type>
     </dependency>
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
       <version>1</version>
-      <classifier>sources</classifier>
-      <scope>provided</scope>
-      <type>jar</type>
     </dependency>
     <dependency>
       <groupId>com.google.gwt.inject</groupId>
@@ -252,17 +252,11 @@
       <version>1.8.0.7</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>r09</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>r09</version>
-      <classifier>gwt</classifier>
-    </dependency>
+		<dependency>
+		    <groupId>com.google.guava</groupId>
+		    <artifactId>guava-gwt</artifactId>
+		    <version>11.0.1</version>
+		</dependency>
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
