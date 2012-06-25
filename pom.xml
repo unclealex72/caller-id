@@ -12,5 +12,6 @@
 
   <modules>
     <module>google</module>
+	<module>phonenumbers</module>
   </modules>
 </project>

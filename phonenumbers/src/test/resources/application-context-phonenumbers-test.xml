@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="rawPersistenceManagerFactory"
+		class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean"
+		autowire-candidate="false">
+		<property name="jdoProperties">
+			<props>
+				<prop key="javax.jdo.PersistenceManagerFactoryClass">
+					org.datanucleus.api.jdo.JDOPersistenceManagerFactory
+				</prop>
+				<prop key="datanucleus.ConnectionURL">neodatis:file:target/datastore.odb</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="persistenceManagerFactory"
+		class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">
+		<property name="targetPersistenceManagerFactory" ref="rawPersistenceManagerFactory"/>
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager">
+		<property name="persistenceManagerFactory" ref="rawPersistenceManagerFactory"/>
+	</bean>
+</beans>
