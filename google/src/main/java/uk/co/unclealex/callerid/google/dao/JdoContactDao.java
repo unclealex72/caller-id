@@ -22,34 +22,26 @@
  *
  */
 
-package uk.co.unclealex.callerid.phonenumber.dao;
+package uk.co.unclealex.callerid.google.dao;
+
+import java.util.List;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
+import javax.jdo.Query;
 
-import org.springframework.transaction.annotation.Transactional;
-
-import uk.co.unclealex.callerid.phonenumber.model.QTelephoneNumber;
+import uk.co.unclealex.callerid.google.model.Contact;
 import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
-
-import com.mysema.query.jdo.JDOQLQuery;
-import com.mysema.query.jdo.JDOQLQueryImpl;
 
 /**
  * @author alex
  * 
  */
-@Transactional
-public class JdoTelephoneNumberDao implements TelephoneNumberDao {
+public class JdoContactDao implements ContactDao {
 
-  /**
-   * The JDO {@link PersistenceManagerFactory} used to get
-   * {@link PersistenceManager}s.
-   * 
-   */
   private final PersistenceManagerFactory persistenceManagerFactory;
 
-  public JdoTelephoneNumberDao(PersistenceManagerFactory persistenceManagerFactory) {
+  public JdoContactDao(PersistenceManagerFactory persistenceManagerFactory) {
     super();
     this.persistenceManagerFactory = persistenceManagerFactory;
   }
@@ -58,40 +50,45 @@ public class JdoTelephoneNumberDao implements TelephoneNumberDao {
    * {@inheritDoc}
    */
   @Override
-  public TelephoneNumber findByNumber(String internationalPrefix, String stdCode, String number) {
-    try (JDOQLQuery query = new JDOQLQueryImpl(getPersistenceManager())) {
-      QTelephoneNumber telephoneNumber = QTelephoneNumber.telephoneNumber;
-      return query
-          .from(telephoneNumber)
-          .where(
-              telephoneNumber.internationalPrefix.eq(internationalPrefix),
-              telephoneNumber.stdCode.eq(stdCode),
-              telephoneNumber.number.eq(number))
-          .uniqueResult(telephoneNumber);
-    }
+  public void store(Contact contact) {
+    getPersistenceManager().makePersistent(contact);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public List<Contact> findByTelephoneNumber(TelephoneNumber telephoneNumber) {
+    Query query = getPersistenceManager().newQuery(Contact.class);
+    query.declareImports("import " + TelephoneNumber.class.getName());
+    query.setFilter("telephoneNumbers.contains(telephoneNumber) "
+        + "&& telephoneNumber.internationalPrefix == internationalPrefix "
+        + "&& telephoneNumber.stdCode == stdCode "
+        + "&& telephoneNumber.number == number");
+    query.declareVariables("TelephoneNumber telephoneNumber");
+    query.declareParameters("String internationalPrefix, "
+        + "String stdCode, "
+        + "String number");
+    return (List<Contact>) query.execute(
+        telephoneNumber.getInternationalPrefix(),
+        telephoneNumber.getStdCode(),
+        telephoneNumber.getNumber());
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void store(TelephoneNumber telephoneNumber) {
-    getPersistenceManager().makePersistent(telephoneNumber);
+  public Contact findByName(String name) {
+    Query query = getPersistenceManager().newQuery(Contact.class);
+    query.setFilter("name == name");
+    query.declareVariables("String name");
+    @SuppressWarnings("unchecked")
+    List<Contact> contacts = (List<Contact>) query.execute(name);
+    return contacts.isEmpty() ? null : contacts.get(0);
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void remove(TelephoneNumber telephoneNumber) {
-    getPersistenceManager().deletePersistent(telephoneNumber);
-  }
-
-  /**
-   * Get the JDO {@link PersistenceManager}.
-   * 
-   * @return The JDO {@link PersistenceManager}
-   */
   public PersistenceManager getPersistenceManager() {
     return getPersistenceManagerFactory().getPersistenceManager();
   }

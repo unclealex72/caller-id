@@ -22,14 +22,16 @@
 
 package uk.co.unclealex.callerid.phonenumber.model;
 
-import java.util.Objects;
-
 import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.Unique;
-import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * A telephone number encapsulates the three parts of a telephone number: the
@@ -38,122 +40,114 @@ import javax.validation.constraints.NotNull;
  * @author alex
  * 
  */
-@PersistenceCapable
-@Unique(name="fullNumberIndex", members={"internationalPrefix", "stdCode", "number"})
+@PersistenceCapable(identityType = IdentityType.DATASTORE)
+@Unique(name = "fullNumberIndex", members = { "internationalPrefix", "stdCode", "number" })
 public class TelephoneNumber {
 
-	/**
-	 * The telephone number's persistent ID.
-	 */
-	@PrimaryKey
-	@Persistent(valueStrategy=IdGeneratorStrategy.NATIVE)
-	private String id;
-	
-	/**
-	 * The local part of a telephone number.
-	 */
-	@NotNull
-	private String number;
+  /**
+   * This telephone number's primary key.
+   */
+  @PrimaryKey
+  @Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
+  private Integer id;
 
-	/**
-	 * The telephone number's STD code.
-	 */
-	@NotNull
-	private String stdCode;
+  /**
+   * The local part of a telephone number.
+   */
+  private String number;
 
-	/**
-	 * The telephone number's international prefix.
-	 */
-	@NotNull
-	private String internationalPrefix;
+  /**
+   * The telephone number's STD code.
+   */
+  private String stdCode;
 
-	/**
-	 * Default constructor for serlialisation.
-	 */
-	protected TelephoneNumber() {
-		super();
-	}
+  /**
+   * The telephone number's international prefix.
+   */
+  private String internationalPrefix;
 
-	/**
-	 * Create a new telephone number.
-	 * @param internationalPrefix The telephone number's international prefix.
-	 * @param stdCode The telephone number's STD code.
-	 * @param number The local part of the telephone number.
-	 */
-	public TelephoneNumber(String internationalPrefix, String stdCode, String number) {
-		super();
-		this.number = number;
-		this.stdCode = stdCode;
-		this.internationalPrefix = internationalPrefix;
-	}
+  /**
+   * Default constructor for serlialisation.
+   */
+  protected TelephoneNumber() {
+    super();
+  }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int hashCode() {
-		return Objects.hash(getId(), getNumber(), getStdCode(), getInternationalPrefix());
-	}
+  /**
+   * Create a new telephone number.
+   * 
+   * @param internationalPrefix
+   *          The telephone number's international prefix.
+   * @param stdCode
+   *          The telephone number's STD code.
+   * @param number
+   *          The local part of the telephone number.
+   */
+  public TelephoneNumber(String internationalPrefix, String stdCode, String number) {
+    super();
+    this.number = number;
+    this.stdCode = stdCode;
+    this.internationalPrefix = internationalPrefix;
+  }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		return obj instanceof TelephoneNumber
-				&& Objects.equals(getId(), ((TelephoneNumber) obj).getId())
-				&& Objects.equals(getNumber(), ((TelephoneNumber) obj).getNumber())
-				&& Objects.equals(getStdCode(), ((TelephoneNumber) obj).getStdCode())
-				&& Objects.equals(getInternationalPrefix(), ((TelephoneNumber) obj).getInternationalPrefix());
-	}
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int hashCode() {
+    return HashCodeBuilder.reflectionHashCode(this);
+  }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return com.google.common.base.Objects
-				.toStringHelper(this)
-				.add("id", getId())
-				.add("internationalPrefix", getInternationalPrefix())
-				.add("stdcode", getStdCode())
-				.add("number", getNumber())
-				.toString();
-	}
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean equals(Object obj) {
+    return EqualsBuilder.reflectionEquals(this, obj);
+  }
 
-	/**
-	 * Gets the local part of a telephone number.
-	 * 
-	 * @return the local part of a telephone number
-	 */
-	public String getNumber() {
-		return number;
-	}
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return ToStringBuilder.reflectionToString(this);
+  }
 
-	/**
-	 * Gets the telephone number's STD code.
-	 * 
-	 * @return the telephone number's STD code
-	 */
-	public String getStdCode() {
-		return stdCode;
-	}
+  /**
+   * Gets the local part of a telephone number.
+   * 
+   * @return the local part of a telephone number
+   */
+  public String getNumber() {
+    return number;
+  }
 
-	/**
-	 * Gets the telephone number's international prefix.
-	 * 
-	 * @return the telephone number's international prefix
-	 */
-	public String getInternationalPrefix() {
-		return internationalPrefix;
-	}
+  /**
+   * Gets the telephone number's STD code.
+   * 
+   * @return the telephone number's STD code
+   */
+  public String getStdCode() {
+    return stdCode;
+  }
 
-	/**
-	 * Gets the telephone number's persistent ID.
-	 * 
-	 * @return the telephone number's persistent ID
-	 */
-	public String getId() {
-		return id;
-	}
+  /**
+   * Gets the telephone number's international prefix.
+   * 
+   * @return the telephone number's international prefix
+   */
+  public String getInternationalPrefix() {
+    return internationalPrefix;
+  }
+
+  /**
+   * Gets the id.
+   *
+   * @return the id
+   */
+  public Integer getId() {
+    return id;
+  }
+
 }

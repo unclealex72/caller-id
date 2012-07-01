@@ -35,13 +35,6 @@ import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
 public interface TelephoneNumberDao {
 
 	/**
-	 * Find a {@link TelephoneNumber} by its id.
-	 * @param id The id of the {@link TelephoneNumber} to find.
-	 * @return The {@link TelephoneNumber} with the given id or null if one could not be found.
-	 */
-	public TelephoneNumber findById(String id);
-	
-	/**
 	 * Find a {@link TelephoneNumber} by its full number.
 	 * @param internationalPrefix The international prefix of the {@link TelephoneNumber} to find.
 	 * @param stdCode The STD code of the {@link TelephoneNumber} to find.
@@ -58,7 +51,6 @@ public interface TelephoneNumberDao {
 	
 	/**
 	 * Remove a {@link TelephoneNumber}.
-	 * @param id The id of the {@link TelephoneNumber} to remove.
 	 */
-	public void remove(String id);
+	public void remove(TelephoneNumber telephoneNumber);
 }

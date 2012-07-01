@@ -24,9 +24,10 @@
 
 package uk.co.unclealex.callerid.phonenumber.dao;
 
-import javax.jdo.JDOUserException;
+import java.util.List;
+
+import javax.jdo.JDODataStoreException;
 import javax.jdo.PersistenceManagerFactory;
-import javax.jdo.Transaction;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -64,38 +65,14 @@ public class JdoTelephoneNumberDaoTest {
 	}
 
 	@Test
-	public void testStoreAndFindByValues() {
-		TelephoneNumberFinder telephoneNumberFinder = new TelephoneNumberFinder() {
-
-			@Override
-			public TelephoneNumber findTelephoneNumber(TelephoneNumberDao telephoneNumberDao, String id) {
-				return telephoneNumberDao.findByNumber("33", "114", "225566");
-			}
-		};
-		testStoreAndFind("33", "114", "225566", telephoneNumberFinder);
-	}
-
-	@Test
-	public void testStoreAndFindById() {
-		TelephoneNumberFinder telephoneNumberFinder = new TelephoneNumberFinder() {
-
-			@Override
-			public TelephoneNumber findTelephoneNumber(TelephoneNumberDao telephoneNumberDao, String id) {
-				return telephoneNumberDao.findById(id);
-			}
-		};
-		testStoreAndFind("44", "1783", "224466", telephoneNumberFinder);
-	}
-
-	protected void testStoreAndFind(
-			String expectedInternationalPrefix,
-			String expectedStdCode,
-			String expectedNumber,
-			TelephoneNumberFinder telephoneNumberFinder) {
+	public void testStoreAndFind() {
+		String expectedInternationalPrefix = "44";
+		String expectedStdCode = "1783";
+		String expectedNumber = "224466";
 		TelephoneNumber telephoneNumber = new TelephoneNumber(expectedInternationalPrefix, expectedStdCode, expectedNumber);
 		getTelephoneNumberDao().store(telephoneNumber);
 		TelephoneNumber actualTelephoneNumber =
-				telephoneNumberFinder.findTelephoneNumber(getTelephoneNumberDao(), telephoneNumber.getId());
+				getTelephoneNumberDao().findByNumber(expectedInternationalPrefix, expectedStdCode, expectedNumber);
 		Assert.assertNotNull("Could not retrieve a stored telephone number.", actualTelephoneNumber);
 		Assert.assertEquals(
 				"The telephone number had the wrong international prefix.",
@@ -116,14 +93,11 @@ public class JdoTelephoneNumberDaoTest {
 		telephoneNumberDao.store(new TelephoneNumber("1", "808", "5551123"));
 	}
 
-	@Test(expected = JDOUserException.class)
+	@Test(expected=JDODataStoreException.class)
 	public void testStoreUnique() {
 		TelephoneNumberDao telephoneNumberDao = getTelephoneNumberDao();
 		for (int idx = 0; idx < 2; idx++) {
 			telephoneNumberDao.store(new TelephoneNumber("1", "800", "5551122"));
-			Transaction tx = getPersistenceManagerFactory().getPersistenceManager().currentTransaction();
-			tx.commit();
-			tx.begin();
 		}
 	}
 
@@ -132,10 +106,10 @@ public class JdoTelephoneNumberDaoTest {
 		TelephoneNumber telephoneNumber = new TelephoneNumber("44", "1208", "732908");
 		TelephoneNumberDao telephoneNumberDao = getTelephoneNumberDao();
 		telephoneNumberDao.store(telephoneNumber);
-		String id = telephoneNumber.getId();
-		telephoneNumberDao.remove(id);
-		getPersistenceManagerFactory().getPersistenceManager().currentTransaction().commit();
-		Assert.assertNull("The telephone number was not removed.", telephoneNumberDao.findById(id));
+		telephoneNumberDao.remove(telephoneNumber);
+		List<?> managedObjects =
+				(List<?>) getPersistenceManagerFactory().getPersistenceManager().newQuery(TelephoneNumber.class, "").execute();
+		Assert.assertEquals("The telephone number was not removed.", 0, managedObjects.size());
 	}
 
 	interface TelephoneNumberFinder {
