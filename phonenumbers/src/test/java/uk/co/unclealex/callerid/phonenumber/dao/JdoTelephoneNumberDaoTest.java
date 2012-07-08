@@ -24,104 +24,122 @@
 
 package uk.co.unclealex.callerid.phonenumber.dao;
 
+import java.io.IOException;
 import java.util.List;
 
-import javax.jdo.JDODataStoreException;
 import javax.jdo.PersistenceManagerFactory;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
+import uk.co.unclealex.hbase.testing.DatanucleusContext;
+import uk.co.unclealex.hbase.testing.HBaseTestContainer;
+import uk.co.unclealex.hbase.testing.HBaseTestContainer.Port;
 
 /**
  * @author alex
  * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({
-		"classpath:application-context-phonenumbers.xml",
-		"classpath:application-context-phonenumbers-test.xml" })
+@ContextConfiguration(classes = { uk.co.unclealex.callerid.phonenumber.dao.JdoTelephoneNumberDaoTest.Context.class })
 @Transactional
 @TransactionConfiguration
 public class JdoTelephoneNumberDaoTest {
 
-	@Autowired
-	private TelephoneNumberDao telephoneNumberDao;
+  static HBaseTestContainer container;
+  
+  @BeforeClass
+  public static void initialiseHBase() throws Exception {
+    container = new HBaseTestContainer().withPort(Port.ZOOKEEPER_CLIENT, 2181).start();
+  }
 
-	@Autowired
-	private PersistenceManagerFactory persistenceManagerFactory;
+  @AfterClass
+  public static void destroyHBase() throws Exception {
+    container.stop();
+  }
 
-	@Before
-	public void clear() {
-		getPersistenceManagerFactory().getPersistenceManager().newQuery(TelephoneNumber.class, "").deletePersistentAll();
-	}
+  @Autowired
+  private TelephoneNumberDao telephoneNumberDao;
 
-	@Test
-	public void testStoreAndFind() {
-		String expectedInternationalPrefix = "44";
-		String expectedStdCode = "1783";
-		String expectedNumber = "224466";
-		TelephoneNumber telephoneNumber = new TelephoneNumber(expectedInternationalPrefix, expectedStdCode, expectedNumber);
-		getTelephoneNumberDao().store(telephoneNumber);
-		TelephoneNumber actualTelephoneNumber =
-				getTelephoneNumberDao().findByNumber(expectedInternationalPrefix, expectedStdCode, expectedNumber);
-		Assert.assertNotNull("Could not retrieve a stored telephone number.", actualTelephoneNumber);
-		Assert.assertEquals(
-				"The telephone number had the wrong international prefix.",
-				expectedInternationalPrefix,
-				actualTelephoneNumber.getInternationalPrefix());
-		Assert.assertEquals(
-				"The telephone number had the wrong std code.",
-				expectedStdCode,
-				actualTelephoneNumber.getStdCode());
-		Assert
-				.assertEquals("The telephone number had the wrong number.", expectedNumber, actualTelephoneNumber.getNumber());
-	}
+  @Autowired
+  private PersistenceManagerFactory persistenceManagerFactory;
 
-	@Test
-	public void testStoreNonUnique() {
-		TelephoneNumberDao telephoneNumberDao = getTelephoneNumberDao();
-		telephoneNumberDao.store(new TelephoneNumber("1", "800", "5551122"));
-		telephoneNumberDao.store(new TelephoneNumber("1", "808", "5551123"));
-	}
+  @Before
+  public void clear() throws IOException {
+    getPersistenceManagerFactory().getPersistenceManager().newQuery(TelephoneNumber.class, "").deletePersistentAll();
+  }
 
-	@Test(expected=JDODataStoreException.class)
-	public void testStoreUnique() {
-		TelephoneNumberDao telephoneNumberDao = getTelephoneNumberDao();
-		for (int idx = 0; idx < 2; idx++) {
-			telephoneNumberDao.store(new TelephoneNumber("1", "800", "5551122"));
-		}
-	}
+  @Test
+  public void testStoreAndFind() {
+    String expectedInternationalPrefix = "44";
+    String expectedStdCode = "1783";
+    String expectedNumber = "224466";
+    TelephoneNumber telephoneNumber = new TelephoneNumber(expectedInternationalPrefix, expectedStdCode, expectedNumber);
+    getTelephoneNumberDao().store(telephoneNumber);
+    TelephoneNumber actualTelephoneNumber =
+        getTelephoneNumberDao().findByNumber(expectedInternationalPrefix, expectedStdCode, expectedNumber);
+    Assert.assertNotNull("Could not retrieve a stored telephone number.", actualTelephoneNumber);
+    Assert.assertEquals(
+        "The telephone number had the wrong international prefix.",
+        expectedInternationalPrefix,
+        actualTelephoneNumber.getInternationalPrefix());
+    Assert.assertEquals(
+        "The telephone number had the wrong std code.",
+        expectedStdCode,
+        actualTelephoneNumber.getStdCode());
+    Assert
+        .assertEquals("The telephone number had the wrong number.", expectedNumber, actualTelephoneNumber.getNumber());
+  }
 
-	@Test
-	public void testRemove() {
-		TelephoneNumber telephoneNumber = new TelephoneNumber("44", "1208", "732908");
-		TelephoneNumberDao telephoneNumberDao = getTelephoneNumberDao();
-		telephoneNumberDao.store(telephoneNumber);
-		telephoneNumberDao.remove(telephoneNumber);
-		List<?> managedObjects =
-				(List<?>) getPersistenceManagerFactory().getPersistenceManager().newQuery(TelephoneNumber.class, "").execute();
-		Assert.assertEquals("The telephone number was not removed.", 0, managedObjects.size());
-	}
+  @Test
+  public void testStoreNonUnique() {
+    TelephoneNumberDao telephoneNumberDao = getTelephoneNumberDao();
+    telephoneNumberDao.store(new TelephoneNumber("1", "800", "5551122"));
+    telephoneNumberDao.store(new TelephoneNumber("1", "808", "5551123"));
+  }
 
-	interface TelephoneNumberFinder {
-		public TelephoneNumber findTelephoneNumber(TelephoneNumberDao telephoneNumberDao, String id);
-	}
+  @Test
+  public void testRemove() {
+    TelephoneNumber telephoneNumber = new TelephoneNumber("44", "1208", "732908");
+    TelephoneNumberDao telephoneNumberDao = getTelephoneNumberDao();
+    telephoneNumberDao.store(telephoneNumber);
+    telephoneNumberDao.remove(telephoneNumber);
+    List<?> managedObjects =
+        (List<?>) getPersistenceManagerFactory().getPersistenceManager().newQuery(TelephoneNumber.class, "").execute();
+    Assert.assertEquals("The telephone number was not removed.", 0, managedObjects.size());
+  }
 
-	public TelephoneNumberDao getTelephoneNumberDao() {
-		return telephoneNumberDao;
-	}
+  interface TelephoneNumberFinder {
+    public TelephoneNumber findTelephoneNumber(TelephoneNumberDao telephoneNumberDao, String id);
+  }
 
-	public PersistenceManagerFactory getPersistenceManagerFactory() {
-		return persistenceManagerFactory;
-	}
+  @Configuration
+  @ImportResource({"classpath:application-context-datanucleus-test.xml", "classpath:application-context-phonenumbers.xml"})
+  public static class Context extends DatanucleusContext {
+    
+    public HBaseTestContainer getContainer() {
+      return container;
+    }
+  }
+
+  public TelephoneNumberDao getTelephoneNumberDao() {
+    return telephoneNumberDao;
+  }
+
+  public PersistenceManagerFactory getPersistenceManagerFactory() {
+    return persistenceManagerFactory;
+  }
 
 }

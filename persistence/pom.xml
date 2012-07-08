@@ -9,7 +9,7 @@
   <groupId>uk.co.unclealex.callerid</groupId>
   <artifactId>persistence</artifactId>
   <packaging>pom</packaging>
-  
+
   <name>Persistence</name>
   <dependencies>
 
@@ -18,8 +18,8 @@
       <artifactId>querydsl-jdo</artifactId>
       <version>${querydsl-version}</version>
     </dependency>
-    
-        <dependency>
+
+    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>12.0</version>
@@ -54,6 +54,5 @@
       <artifactId>datanucleus-api-jdo</artifactId>
       <version>3.1.0-m2</version>
     </dependency>
-    
   </dependencies>
 </project>

@@ -27,7 +27,6 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import javax.jdo.annotations.Unique;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -41,7 +40,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * 
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE)
-@Unique(name = "fullNumberIndex", members = { "internationalPrefix", "stdCode", "number" })
 public class TelephoneNumber {
 
   /**

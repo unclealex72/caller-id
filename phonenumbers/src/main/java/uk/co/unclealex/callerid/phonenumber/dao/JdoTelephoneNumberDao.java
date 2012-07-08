@@ -59,7 +59,8 @@ public class JdoTelephoneNumberDao implements TelephoneNumberDao {
    */
   @Override
   public TelephoneNumber findByNumber(String internationalPrefix, String stdCode, String number) {
-    try (JDOQLQuery query = new JDOQLQueryImpl(getPersistenceManager())) {
+    JDOQLQuery query = new JDOQLQueryImpl(getPersistenceManager());
+    try {
       QTelephoneNumber telephoneNumber = QTelephoneNumber.telephoneNumber;
       return query
           .from(telephoneNumber)
@@ -68,6 +69,9 @@ public class JdoTelephoneNumberDao implements TelephoneNumberDao {
               telephoneNumber.stdCode.eq(stdCode),
               telephoneNumber.number.eq(number))
           .uniqueResult(telephoneNumber);
+    }
+    finally {
+      query.close();
     }
   }
 

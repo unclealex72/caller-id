@@ -28,10 +28,14 @@ import java.util.List;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
-import javax.jdo.Query;
 
 import uk.co.unclealex.callerid.google.model.Contact;
+import uk.co.unclealex.callerid.google.model.QContact;
+import uk.co.unclealex.callerid.phonenumber.model.QTelephoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
+
+import com.mysema.query.jdo.JDOQLQuery;
+import com.mysema.query.jdo.JDOQLQueryImpl;
 
 /**
  * @author alex
@@ -57,23 +61,24 @@ public class JdoContactDao implements ContactDao {
   /**
    * {@inheritDoc}
    */
-  @SuppressWarnings("unchecked")
   @Override
   public List<Contact> findByTelephoneNumber(TelephoneNumber telephoneNumber) {
-    Query query = getPersistenceManager().newQuery(Contact.class);
-    query.declareImports("import " + TelephoneNumber.class.getName());
-    query.setFilter("telephoneNumbers.contains(telephoneNumber) "
-        + "&& telephoneNumber.internationalPrefix == internationalPrefix "
-        + "&& telephoneNumber.stdCode == stdCode "
-        + "&& telephoneNumber.number == number");
-    query.declareVariables("TelephoneNumber telephoneNumber");
-    query.declareParameters("String internationalPrefix, "
-        + "String stdCode, "
-        + "String number");
-    return (List<Contact>) query.execute(
-        telephoneNumber.getInternationalPrefix(),
-        telephoneNumber.getStdCode(),
-        telephoneNumber.getNumber());
+    JDOQLQuery query = new JDOQLQueryImpl(getPersistenceManager());
+    try {
+      QContact contact = QContact.contact;
+      QTelephoneNumber tn = QTelephoneNumber.telephoneNumber;
+      return query
+          .from(contact, tn)
+          .where(
+              contact.telephoneNumbers.contains(tn),
+              tn.internationalPrefix.eq(telephoneNumber.getInternationalPrefix()),
+              tn.stdCode.eq(telephoneNumber.getStdCode()),
+              tn.number.eq(telephoneNumber.getNumber()))
+          .list(contact);
+    }
+    finally {
+      query.close();
+    }
   }
 
   /**
@@ -81,12 +86,14 @@ public class JdoContactDao implements ContactDao {
    */
   @Override
   public Contact findByName(String name) {
-    Query query = getPersistenceManager().newQuery(Contact.class);
-    query.setFilter("name == name");
-    query.declareVariables("String name");
-    @SuppressWarnings("unchecked")
-    List<Contact> contacts = (List<Contact>) query.execute(name);
-    return contacts.isEmpty() ? null : contacts.get(0);
+    JDOQLQuery query = new JDOQLQueryImpl(getPersistenceManager());
+    try {
+      QContact contact = QContact.contact;
+      return query.from(contact).where(contact.name.eq(name)).uniqueResult(contact);
+    }
+    finally {
+      query.close();
+    }
   }
 
   public PersistenceManager getPersistenceManager() {
