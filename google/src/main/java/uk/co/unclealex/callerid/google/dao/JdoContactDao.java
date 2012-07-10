@@ -26,82 +26,66 @@ package uk.co.unclealex.callerid.google.dao;
 
 import java.util.List;
 
-import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 
 import uk.co.unclealex.callerid.google.model.Contact;
 import uk.co.unclealex.callerid.google.model.QContact;
+import uk.co.unclealex.callerid.persistence.JdoBasicDao;
 import uk.co.unclealex.callerid.phonenumber.model.QTelephoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
 
 import com.mysema.query.jdo.JDOQLQuery;
-import com.mysema.query.jdo.JDOQLQueryImpl;
 
 /**
  * @author alex
  * 
  */
-public class JdoContactDao implements ContactDao {
-
-  private final PersistenceManagerFactory persistenceManagerFactory;
+public class JdoContactDao extends JdoBasicDao<Contact, QContact> implements ContactDao {
 
   public JdoContactDao(PersistenceManagerFactory persistenceManagerFactory) {
-    super();
-    this.persistenceManagerFactory = persistenceManagerFactory;
+    super(persistenceManagerFactory);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void store(Contact contact) {
-    getPersistenceManager().makePersistent(contact);
+  public List<Contact> findByTelephoneNumber(final TelephoneNumber telephoneNumber) {
+    ListQueryCallback callback = new ListQueryCallback() {
+      @Override
+      public List<Contact> doInQuery(JDOQLQuery query) {
+        QContact contact = QContact.contact;
+        QTelephoneNumber tn = QTelephoneNumber.telephoneNumber;
+        return query
+            .from(contact, tn)
+            .where(
+                contact.telephoneNumbers.contains(tn),
+                tn.internationalPrefix.eq(telephoneNumber.getInternationalPrefix()),
+                tn.stdCode.eq(telephoneNumber.getStdCode()),
+                tn.number.eq(telephoneNumber.getNumber()))
+            .list(contact);
+      }
+    };
+    return execute(callback);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public List<Contact> findByTelephoneNumber(TelephoneNumber telephoneNumber) {
-    JDOQLQuery query = new JDOQLQueryImpl(getPersistenceManager());
-    try {
-      QContact contact = QContact.contact;
-      QTelephoneNumber tn = QTelephoneNumber.telephoneNumber;
-      return query
-          .from(contact, tn)
-          .where(
-              contact.telephoneNumbers.contains(tn),
-              tn.internationalPrefix.eq(telephoneNumber.getInternationalPrefix()),
-              tn.stdCode.eq(telephoneNumber.getStdCode()),
-              tn.number.eq(telephoneNumber.getNumber()))
-          .list(contact);
-    }
-    finally {
-      query.close();
-    }
+  public Contact findByName(final String name) {
+    UniqueQueryCallback callback = new UniqueQueryCallback() {
+      @Override
+      public Contact doInQuery(JDOQLQuery query) {
+        QContact contact = QContact.contact;
+        return query.from(contact).where(contact.name.eq(name)).uniqueResult(contact);
+      }
+    };
+    return execute(callback);
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
-  public Contact findByName(String name) {
-    JDOQLQuery query = new JDOQLQueryImpl(getPersistenceManager());
-    try {
-      QContact contact = QContact.contact;
-      return query.from(contact).where(contact.name.eq(name)).uniqueResult(contact);
-    }
-    finally {
-      query.close();
-    }
+  public QContact candidate() {
+    return QContact.contact;
   }
-
-  public PersistenceManager getPersistenceManager() {
-    return getPersistenceManagerFactory().getPersistenceManager();
-  }
-
-  public PersistenceManagerFactory getPersistenceManagerFactory() {
-    return persistenceManagerFactory;
-  }
-
 }

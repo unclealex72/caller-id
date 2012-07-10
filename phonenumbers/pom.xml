@@ -9,7 +9,7 @@
   <groupId>uk.co.unclealex.callerid</groupId>
   <artifactId>phonenumbers</artifactId>
   <packaging>jar</packaging>
-  <name>Caller ID</name>
+  <name>phonenumbers</name>
   <description>Caller ID telephone numbers</description>
   <licenses>
     <license>
@@ -24,7 +24,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>persistence</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
     </dependency>
 
     <dependency>

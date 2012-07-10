@@ -22,25 +22,14 @@
  *
  */
 
-package uk.co.unclealex.callerid.phonenumber.dao;
+package uk.co.unclealex.callerid.persitence.test.dao;
+
+import java.util.List;
 
 import uk.co.unclealex.callerid.persistence.BasicDao;
-import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
+import uk.co.unclealex.callerid.persitence.test.model.Persistable;
 
-/**
- * A data access object for {@link TelephoneNumber}s. Note that this is not really expected to be used directly but is
- * included for testing annotations on {@link TelephoneNumber}.
- * @author alex
- *
- */
-public interface TelephoneNumberDao extends BasicDao<TelephoneNumber> {
+public interface PersistableDao extends BasicDao<Persistable> {
 
-	/**
-	 * Find a {@link TelephoneNumber} by its full number.
-	 * @param internationalPrefix The international prefix of the {@link TelephoneNumber} to find.
-	 * @param stdCode The STD code of the {@link TelephoneNumber} to find.
-	 * @param number The local number of the {@link TelephoneNumber} to find.
-	 * @return The {@link TelephoneNumber} with the given attributes or null if one could not be found.
-	 */
-	public TelephoneNumber findByNumber(String internationalPrefix, String stdCode, String number);	
+  public List<Persistable> getByValue(String value);
 }

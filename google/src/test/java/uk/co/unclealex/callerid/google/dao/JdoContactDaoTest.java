@@ -82,11 +82,14 @@ public class JdoContactDaoTest {
   @Autowired
   private PersistenceManagerFactory persistenceManagerFactory;
 
+  @SuppressWarnings("unchecked")
   @Before
   public void clear() {
-    for (Class<?> clazz : new Class[] { Contact.class /* , TelephoneNumber.class */}) {
-      getPersistenceManagerFactory().getPersistenceManager().newQuery(clazz, "").deletePersistentAll();
-    }
+    PersistenceManager persistenceManager = getPersistenceManagerFactory().getPersistenceManager();
+    persistenceManager.newQuery(Contact.class, "").deletePersistentAll();
+    Assert.assertFalse(
+        "Not all object references were removed.",
+        ((Iterable<Object>) persistenceManager.newQuery(Contact.class, "").execute()).iterator().hasNext());
   }
 
   @Test
@@ -124,7 +127,7 @@ public class JdoContactDaoTest {
   }
 
   @Configuration
-  @ImportResource({ "classpath:application-context-datanucleus-test.xml", "classpath:application-context-google.xml" })
+  @ImportResource({ "classpath:application-context-persistence.xml", "classpath:application-context-google.xml" })
   public static class Context extends DatanucleusContext {
     public HBaseTestContainer getContainer() {
       return container;

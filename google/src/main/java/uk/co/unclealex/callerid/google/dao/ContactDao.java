@@ -27,17 +27,27 @@ package uk.co.unclealex.callerid.google.dao;
 import java.util.List;
 
 import uk.co.unclealex.callerid.google.model.Contact;
+import uk.co.unclealex.callerid.persistence.BasicDao;
 import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
 
 /**
+ * The data access object for persisting {@link Contact}s.
  * @author alex
  *
  */
-public interface ContactDao {
+public interface ContactDao extends BasicDao<Contact> {
 
-	public void store(Contact contact);
-	
+	/**
+	 * Find all {@link Contact}s who have the given telephone number.
+	 * @param telephoneNumber The {@link TelephoneNumber} to search for.
+	 * @return The list of all {@link Contact}s who have the given telephone number.
+	 */
 	public List<Contact> findByTelephoneNumber(TelephoneNumber telephoneNumber);
 	
+	/**
+	 * Find a {@link Contact} by their unique name.
+	 * @param name The name of the {@link Contact} to look for.
+	 * @return The {@link Contact} with the given name or null if no such contact exists.
+	 */
 	public Contact findByName(String name);
 }

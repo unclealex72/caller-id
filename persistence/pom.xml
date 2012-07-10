@@ -8,7 +8,7 @@
   </parent>
   <groupId>uk.co.unclealex.callerid</groupId>
   <artifactId>persistence</artifactId>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
 
   <name>Persistence</name>
   <dependencies>
@@ -55,4 +55,5 @@
       <version>3.1.0-m2</version>
     </dependency>
   </dependencies>
+  
 </project>

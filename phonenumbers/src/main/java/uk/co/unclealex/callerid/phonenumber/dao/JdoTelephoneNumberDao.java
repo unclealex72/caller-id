@@ -24,84 +24,50 @@
 
 package uk.co.unclealex.callerid.phonenumber.dao;
 
-import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import com.mysema.query.jdo.JDOQLQuery;
+
+import uk.co.unclealex.callerid.persistence.JdoBasicDao;
 import uk.co.unclealex.callerid.phonenumber.model.QTelephoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
-
-import com.mysema.query.jdo.JDOQLQuery;
-import com.mysema.query.jdo.JDOQLQueryImpl;
 
 /**
  * @author alex
  * 
  */
 @Transactional
-public class JdoTelephoneNumberDao implements TelephoneNumberDao {
-
-  /**
-   * The JDO {@link PersistenceManagerFactory} used to get
-   * {@link PersistenceManager}s.
-   * 
-   */
-  private final PersistenceManagerFactory persistenceManagerFactory;
+public class JdoTelephoneNumberDao extends JdoBasicDao<TelephoneNumber, QTelephoneNumber> implements TelephoneNumberDao {
 
   public JdoTelephoneNumberDao(PersistenceManagerFactory persistenceManagerFactory) {
-    super();
-    this.persistenceManagerFactory = persistenceManagerFactory;
+    super(persistenceManagerFactory);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public TelephoneNumber findByNumber(String internationalPrefix, String stdCode, String number) {
-    JDOQLQuery query = new JDOQLQueryImpl(getPersistenceManager());
-    try {
-      QTelephoneNumber telephoneNumber = QTelephoneNumber.telephoneNumber;
-      return query
-          .from(telephoneNumber)
-          .where(
-              telephoneNumber.internationalPrefix.eq(internationalPrefix),
-              telephoneNumber.stdCode.eq(stdCode),
-              telephoneNumber.number.eq(number))
-          .uniqueResult(telephoneNumber);
-    }
-    finally {
-      query.close();
-    }
+  public TelephoneNumber findByNumber(final String internationalPrefix, final String stdCode, final String number) {
+    UniqueQueryCallback callback = new UniqueQueryCallback() {
+      public TelephoneNumber doInQuery(JDOQLQuery query) {
+        QTelephoneNumber telephoneNumber = QTelephoneNumber.telephoneNumber;
+        return query
+            .from(telephoneNumber)
+            .where(
+                telephoneNumber.internationalPrefix.eq(internationalPrefix),
+                telephoneNumber.stdCode.eq(stdCode),
+                telephoneNumber.number.eq(number))
+            .uniqueResult(telephoneNumber);
+
+      }
+    };
+    return execute(callback);
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
-  public void store(TelephoneNumber telephoneNumber) {
-    getPersistenceManager().makePersistent(telephoneNumber);
+  public QTelephoneNumber candidate() {
+    return QTelephoneNumber.telephoneNumber;
   }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void remove(TelephoneNumber telephoneNumber) {
-    getPersistenceManager().deletePersistent(telephoneNumber);
-  }
-
-  /**
-   * Get the JDO {@link PersistenceManager}.
-   * 
-   * @return The JDO {@link PersistenceManager}
-   */
-  public PersistenceManager getPersistenceManager() {
-    return getPersistenceManagerFactory().getPersistenceManager();
-  }
-
-  public PersistenceManagerFactory getPersistenceManagerFactory() {
-    return persistenceManagerFactory;
-  }
-
 }

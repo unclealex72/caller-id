@@ -25,7 +25,6 @@
 package uk.co.unclealex.callerid.phonenumber.dao;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.jdo.PersistenceManagerFactory;
 
@@ -87,7 +86,7 @@ public class JdoTelephoneNumberDaoTest {
     String expectedStdCode = "1783";
     String expectedNumber = "224466";
     TelephoneNumber telephoneNumber = new TelephoneNumber(expectedInternationalPrefix, expectedStdCode, expectedNumber);
-    getTelephoneNumberDao().store(telephoneNumber);
+    getTelephoneNumberDao().storeOrUpdate(telephoneNumber);
     TelephoneNumber actualTelephoneNumber =
         getTelephoneNumberDao().findByNumber(expectedInternationalPrefix, expectedStdCode, expectedNumber);
     Assert.assertNotNull("Could not retrieve a stored telephone number.", actualTelephoneNumber);
@@ -103,30 +102,12 @@ public class JdoTelephoneNumberDaoTest {
         .assertEquals("The telephone number had the wrong number.", expectedNumber, actualTelephoneNumber.getNumber());
   }
 
-  @Test
-  public void testStoreNonUnique() {
-    TelephoneNumberDao telephoneNumberDao = getTelephoneNumberDao();
-    telephoneNumberDao.store(new TelephoneNumber("1", "800", "5551122"));
-    telephoneNumberDao.store(new TelephoneNumber("1", "808", "5551123"));
-  }
-
-  @Test
-  public void testRemove() {
-    TelephoneNumber telephoneNumber = new TelephoneNumber("44", "1208", "732908");
-    TelephoneNumberDao telephoneNumberDao = getTelephoneNumberDao();
-    telephoneNumberDao.store(telephoneNumber);
-    telephoneNumberDao.remove(telephoneNumber);
-    List<?> managedObjects =
-        (List<?>) getPersistenceManagerFactory().getPersistenceManager().newQuery(TelephoneNumber.class, "").execute();
-    Assert.assertEquals("The telephone number was not removed.", 0, managedObjects.size());
-  }
-
   interface TelephoneNumberFinder {
     public TelephoneNumber findTelephoneNumber(TelephoneNumberDao telephoneNumberDao, String id);
   }
 
   @Configuration
-  @ImportResource({"classpath:application-context-datanucleus-test.xml", "classpath:application-context-phonenumbers.xml"})
+  @ImportResource({"classpath:application-context-persistence.xml", "classpath:application-context-phonenumbers.xml"})
   public static class Context extends DatanucleusContext {
     
     public HBaseTestContainer getContainer() {

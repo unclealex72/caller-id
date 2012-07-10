@@ -19,6 +19,7 @@
     <module>phonenumbers</module>
     <module>persistence</module>
     <module>hbase</module>
+    <module>persistence-test</module>
   </modules>
 
   <build>

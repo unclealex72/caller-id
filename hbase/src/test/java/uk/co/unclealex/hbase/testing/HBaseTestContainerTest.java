@@ -12,6 +12,8 @@ import org.apache.zookeeper.ZooKeeper;
 import org.junit.Assert;
 import org.junit.Test;
 
+import uk.co.unclealex.hbase.testing.HBaseTestContainer.Port;
+
 public class HBaseTestContainerTest {
 
   @Test
@@ -20,7 +22,7 @@ public class HBaseTestContainerTest {
     container.start();
     HMaster master = container.getCluster().getActiveMaster();
     Assert.assertTrue("The hbase master node is not running.", master.isMasterRunning());
-    final BlockingQueue<KeeperState> queue = new ArrayBlockingQueue<KeeperState>(1000);
+    final BlockingQueue<KeeperState> queue = new ArrayBlockingQueue<KeeperState>(100);
     Watcher watcher = new Watcher() {
       @Override
       public void process(WatchedEvent event) {
@@ -33,7 +35,7 @@ public class HBaseTestContainerTest {
       }
     };
     ZooKeeper zooKeeper =
-        new ZooKeeper("localhost:" + container.getPorts().get("hbase.zookeeper.property.clientPort"), 1000, watcher);
+        new ZooKeeper("localhost:" + container.getPorts().get(Port.ZOOKEEPER_CLIENT), 1000, watcher);
     KeeperState keeperState = queue.poll(1, TimeUnit.SECONDS);
     Assert.assertEquals("The wrong keeper state was returned.", KeeperState.SyncConnected, keeperState);
     zooKeeper.close();
