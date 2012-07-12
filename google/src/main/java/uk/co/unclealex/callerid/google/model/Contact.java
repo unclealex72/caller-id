@@ -25,7 +25,6 @@
 package uk.co.unclealex.callerid.google.model;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -51,16 +50,6 @@ import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
 @PersistenceCapable(identityType = IdentityType.DATASTORE)
 public class Contact {
 
-  /**
-   * A {@link Comparator} that can be used to sort contacts by their name.
-   */
-  public static Comparator<Contact> NAME_COMPARATOR = new Comparator<Contact>() {
-    @Override
-    public int compare(Contact o1, Contact o2) {
-      return o1.getName().compareTo(o2.getName());
-    }
-  };
-  
   /**
    * The contact's primary id.
    */

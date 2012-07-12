@@ -24,7 +24,6 @@
 
 package uk.co.unclealex.callerid.google.dao;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -47,11 +46,12 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.co.unclealex.callerid.google.dao.JdoContactDaoTest.Context;
 import uk.co.unclealex.callerid.google.model.Contact;
 import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
+import uk.co.unclealex.callerid.testing.AssertIterables;
 import uk.co.unclealex.hbase.testing.DatanucleusContext;
 import uk.co.unclealex.hbase.testing.HBaseTestContainer;
 import uk.co.unclealex.hbase.testing.HBaseTestContainer.Port;
+import ch.lambdaj.Lambda;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 /**
@@ -103,14 +103,10 @@ public class JdoContactDaoTest {
     @SuppressWarnings("unused")
     Contact harry = createContact("harry", numberFour);
     List<Contact> contacts = getContactDao().findByTelephoneNumber(numberOne);
-    List<Contact> actualContacts = Lists.newArrayList(contacts);
-    Collections.sort(actualContacts, Contact.NAME_COMPARATOR);
-    List<Contact> expectedContacts = Lists.newArrayList(tom, dick);
-    Collections.sort(expectedContacts, Contact.NAME_COMPARATOR);
-    Assert.assertArrayEquals(
-        "The wrong contacts were returned for a telephone number.",
-        Iterables.toArray(expectedContacts, Contact.class),
-        Iterables.toArray(actualContacts, Contact.class));
+    List<Contact> actualContacts = Lists.newArrayList(tom, dick);
+    AssertIterables.iterablesEqual("The wrong contacts were returned for a telephone number.", Lambda
+        .on(Contact.class)
+        .getName(), contacts, actualContacts);
   }
 
   protected TelephoneNumber createTelephoneNumber(String internationalPrefix, String stdCode, String number) {
