@@ -20,6 +20,7 @@
     <module>persistence</module>
     <module>hbase</module>
     <module>persistence-test</module>
+    <module>testing-utilities</module>
   </modules>
 
   <build>
