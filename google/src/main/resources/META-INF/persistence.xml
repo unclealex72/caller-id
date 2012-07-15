@@ -7,6 +7,7 @@
     <!-- Online Store -->
     <persistence-unit name="google">
         <class>uk.co.unclealex.callerid.google.model.Contact</class>
+        <class>uk.co.unclealex.callerid.google.model.ContactTelephoneNumber</class>
         <exclude-unlisted-classes/>
     </persistence-unit>
 </persistence>

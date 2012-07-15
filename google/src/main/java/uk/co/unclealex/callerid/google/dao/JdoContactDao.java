@@ -28,11 +28,15 @@ import java.util.List;
 
 import javax.jdo.PersistenceManagerFactory;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import uk.co.unclealex.callerid.google.model.Contact;
 import uk.co.unclealex.callerid.google.model.QContact;
-import uk.co.unclealex.callerid.persistence.JdoBasicDao;
+import uk.co.unclealex.callerid.google.model.QContactTelephoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.QTelephoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
+import uk.co.unclealex.persistence.jdo.JdoBasicDao;
+import uk.co.unclealex.persistence.paging.PagingService;
 
 import com.mysema.query.jdo.JDOQLQuery;
 
@@ -40,10 +44,15 @@ import com.mysema.query.jdo.JDOQLQuery;
  * @author alex
  * 
  */
+@Transactional
 public class JdoContactDao extends JdoBasicDao<Contact, QContact> implements ContactDao {
 
-  public JdoContactDao(PersistenceManagerFactory persistenceManagerFactory) {
-    super(persistenceManagerFactory);
+  /**
+   * @param persistenceManagerFactory
+   * @param pagingService
+   */
+  public JdoContactDao(PersistenceManagerFactory persistenceManagerFactory, PagingService pagingService) {
+    super(persistenceManagerFactory, pagingService);
   }
 
   /**
@@ -53,16 +62,17 @@ public class JdoContactDao extends JdoBasicDao<Contact, QContact> implements Con
   public List<Contact> findByTelephoneNumber(final TelephoneNumber telephoneNumber) {
     ListQueryCallback callback = new ListQueryCallback() {
       @Override
-      public List<Contact> doInQuery(JDOQLQuery query) {
+      public List<Contact> listInQuery(JDOQLQuery query) {
         QContact contact = QContact.contact;
-        QTelephoneNumber tn = QTelephoneNumber.telephoneNumber;
+        QContactTelephoneNumber tn = QContactTelephoneNumber.contactTelephoneNumber;
+        QTelephoneNumber number = tn.telephoneNumber;
         return query
             .from(contact, tn)
             .where(
                 contact.telephoneNumbers.contains(tn),
-                tn.internationalPrefix.eq(telephoneNumber.getInternationalPrefix()),
-                tn.stdCode.eq(telephoneNumber.getStdCode()),
-                tn.number.eq(telephoneNumber.getNumber()))
+                number.internationalPrefix.eq(telephoneNumber.getInternationalPrefix()),
+                number.stdCode.eq(telephoneNumber.getStdCode()),
+                number.number.eq(telephoneNumber.getNumber()))
             .list(contact);
       }
     };

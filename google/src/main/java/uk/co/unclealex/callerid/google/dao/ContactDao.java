@@ -27,8 +27,8 @@ package uk.co.unclealex.callerid.google.dao;
 import java.util.List;
 
 import uk.co.unclealex.callerid.google.model.Contact;
-import uk.co.unclealex.callerid.persistence.BasicDao;
 import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
+import uk.co.unclealex.persistence.dao.BasicDao;
 
 /**
  * The data access object for persisting {@link Contact}s.

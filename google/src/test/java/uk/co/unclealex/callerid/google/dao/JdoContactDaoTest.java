@@ -24,57 +24,37 @@
 
 package uk.co.unclealex.callerid.google.dao;
 
+import static ch.lambdaj.Lambda.on;
+import static ch.lambdaj.Lambda.project;
+
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 
-import org.junit.AfterClass;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import uk.co.unclealex.callerid.google.dao.JdoContactDaoTest.Context;
 import uk.co.unclealex.callerid.google.model.Contact;
 import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
-import uk.co.unclealex.callerid.testing.AssertIterables;
-import uk.co.unclealex.hbase.testing.DatanucleusContext;
-import uk.co.unclealex.hbase.testing.HBaseTestContainer;
-import uk.co.unclealex.hbase.testing.HBaseTestContainer.Port;
-import ch.lambdaj.Lambda;
-
-import com.google.common.collect.Lists;
 
 /**
  * @author alex
  * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { Context.class })
+@ContextConfiguration("classpath:application-context-callerid-google-test.xml")
 @Transactional
 @TransactionConfiguration
 public class JdoContactDaoTest {
-
-  static HBaseTestContainer container = new HBaseTestContainer().withPort(Port.ZOOKEEPER_CLIENT, 2181);
-
-  @BeforeClass
-  public static void setup() throws Exception {
-    container.start();
-  }
-
-  @AfterClass
-  public static void close() {
-    container.stop();
-  }
 
   @Autowired
   private ContactDao contactDao;
@@ -94,40 +74,29 @@ public class JdoContactDaoTest {
 
   @Test
   public void testFindByTelephoneNumber() {
-    TelephoneNumber numberOne = createTelephoneNumber("44", "800", "118118");
-    TelephoneNumber numberTwo = createTelephoneNumber("1", "214", "555976");
-    TelephoneNumber numberThree = createTelephoneNumber("1", "714", "888888");
-    TelephoneNumber numberFour = createTelephoneNumber("33", "999", "000000");
-    Contact tom = createContact("tom", numberOne, numberTwo);
-    Contact dick = createContact("dick", numberThree, numberOne);
-    @SuppressWarnings("unused")
-    Contact harry = createContact("harry", numberFour);
+    TelephoneNumber numberOne = telephoneNumber("44", "800", "118118");
+    TelephoneNumber numberTwo = telephoneNumber("1", "214", "555976");
+    TelephoneNumber numberThree = telephoneNumber("1", "714", "888888");
+    TelephoneNumber numberFour = telephoneNumber("33", "999", "000000");
+    createContact("tom", numberOne, numberTwo);
+    createContact("dick", numberThree, numberOne);
+    createContact("harry", numberFour);
+    flush();
     List<Contact> contacts = getContactDao().findByTelephoneNumber(numberOne);
-    List<Contact> actualContacts = Lists.newArrayList(tom, dick);
-    AssertIterables.iterablesEqual("The wrong contacts were returned for a telephone number.", Lambda
-        .on(Contact.class)
-        .getName(), contacts, actualContacts);
+    Assert.assertThat("The wrong contacts were returned for a telephone number.", 
+        project(contacts, String.class, on(Contact.class).getName()),
+        Matchers.containsInAnyOrder("tom", "dick"));
   }
 
-  protected TelephoneNumber createTelephoneNumber(String internationalPrefix, String stdCode, String number) {
-    TelephoneNumber telephoneNumber = new TelephoneNumber(internationalPrefix, stdCode, number);
-    getPersistenceManagerFactory().getPersistenceManager().makePersistent(telephoneNumber);
-    return telephoneNumber;
+  protected TelephoneNumber telephoneNumber(String internationalPrefix, String stdCode, String number) {
+    return new TelephoneNumber(internationalPrefix, stdCode, number);
   }
 
   protected Contact createContact(String name, TelephoneNumber... telephoneNumbers) {
-    Contact contact = new Contact(name, telephoneNumbers);
+    Contact contact = Contact.create(name, telephoneNumbers);
     PersistenceManager persistenceManager = getPersistenceManagerFactory().getPersistenceManager();
     persistenceManager.makePersistent(contact);
     return contact;
-  }
-
-  @Configuration
-  @ImportResource({ "classpath:application-context-persistence.xml", "classpath:application-context-google.xml" })
-  public static class Context extends DatanucleusContext {
-    public HBaseTestContainer getContainer() {
-      return container;
-    }
   }
 
   public ContactDao getContactDao() {
@@ -138,6 +107,14 @@ public class JdoContactDaoTest {
     this.contactDao = contactDao;
   }
 
+  public void flush() {
+    persistenceManager().flush();
+  }
+  
+  public PersistenceManager persistenceManager() {
+    return getPersistenceManagerFactory().getPersistenceManager();
+  }
+  
   public PersistenceManagerFactory getPersistenceManagerFactory() {
     return persistenceManagerFactory;
   }

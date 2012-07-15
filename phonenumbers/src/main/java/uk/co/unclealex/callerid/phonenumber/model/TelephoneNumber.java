@@ -22,11 +22,8 @@
 
 package uk.co.unclealex.callerid.phonenumber.model;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.EmbeddedOnly;
 import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -39,15 +36,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * @author alex
  * 
  */
-@PersistenceCapable(identityType = IdentityType.DATASTORE)
+@PersistenceCapable
+@EmbeddedOnly
 public class TelephoneNumber {
-
-  /**
-   * This telephone number's primary key.
-   */
-  @PrimaryKey
-  @Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
-  private Integer id;
 
   /**
    * The local part of a telephone number.
@@ -138,14 +129,4 @@ public class TelephoneNumber {
   public String getInternationalPrefix() {
     return internationalPrefix;
   }
-
-  /**
-   * Gets the id.
-   *
-   * @return the id
-   */
-  public Integer getId() {
-    return id;
-  }
-
 }

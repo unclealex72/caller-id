@@ -27,6 +27,7 @@ package uk.co.unclealex.callerid.google.model;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -40,6 +41,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+
 /**
  * A contact represents a single Google contact. Only their name and telephone
  * numbers are stored.
@@ -49,6 +54,26 @@ import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
  */
 @PersistenceCapable(identityType = IdentityType.DATASTORE)
 public class Contact {
+
+  /**
+   * Create a new contact.
+   * @param name The name of the contact.
+   * @param telephoneNumbers The telephone numbers owned by this contact.
+   * @return A new contact.
+   */
+  public static Contact create(String name, TelephoneNumber... telephoneNumbers) {
+    return create(name, Arrays.asList(telephoneNumbers));
+  }
+  
+  /**
+   * Create a new contact.
+   * @param name The name of the contact.
+   * @param telephoneNumbers The telephone numbers owned by this contact.
+   * @return A new contact.
+   */
+  public static Contact create(String name, Iterable<TelephoneNumber> telephoneNumbers) {
+    return new Contact(name, telephoneNumbers, ContactTelephoneNumber.FROM_NUMBER);
+  }
 
   /**
    * The contact's primary id.
@@ -67,14 +92,8 @@ public class Contact {
 	 * A list of telephone numbers associated with the contact.
 	 */
 	@Persistent
-	private List<TelephoneNumber> telephoneNumbers;
-
-	/**
-	 * Default constructor for serialisation.
-	 */
-	protected Contact() {
-		super();
-	}
+	@Element(dependent="true")
+	private List<ContactTelephoneNumber> telephoneNumbers;
 
 	/**
 	 * Instantiates a new contact.
@@ -82,23 +101,13 @@ public class Contact {
 	 * @param name the name
 	 * @param telephoneNumbers the telephone numbers
 	 */
-	public Contact(String name, List<TelephoneNumber> telephoneNumbers) {
+	protected <E> Contact(String name, Iterable<E> telephoneNumbers, Function<E, ContactTelephoneNumber> f) {
 		super();
 		this.name = name;
-		this.telephoneNumbers = telephoneNumbers;
+		this.telephoneNumbers = Lists.newArrayList(Iterables.transform(telephoneNumbers, f));
 	}
 
-	/**
-	 * Instantiates a new contact.
-	 *
-	 * @param name the name
-	 * @param telephoneNumbers the telephone numbers
-	 */
-	public Contact(String name, TelephoneNumber... telephoneNumbers) {
-		this(name, Arrays.asList(telephoneNumbers));
-	}
-
-	/**
+  /**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -136,7 +145,7 @@ public class Contact {
 	 *
 	 * @return the telephone numbers
 	 */
-	public List<TelephoneNumber> getTelephoneNumbers() {
+	public List<ContactTelephoneNumber> getTelephoneNumbers() {
 		return telephoneNumbers;
 	}
 
