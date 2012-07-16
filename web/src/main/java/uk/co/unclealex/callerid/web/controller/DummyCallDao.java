@@ -24,47 +24,54 @@
 
 package uk.co.unclealex.callerid.web.controller;
 
-import javax.inject.Inject;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
+import java.util.List;
 
 import uk.co.unclealex.callerid.calls.dao.CallDao;
+import uk.co.unclealex.callerid.calls.model.Call;
+import uk.co.unclealex.persistence.paging.Page;
 
 /**
- * A controller for listing all recieved calls.
  * @author alex
  *
  */
-@RequestMapping("/calls")
-@Controller
-public class CallsController {
+public class DummyCallDao implements CallDao {
 
   /**
-   * The {@link CallDao} used to list received calls.
+   * {@inheritDoc}
    */
-  private final CallDao callDao;
-  
-  @Inject
-  public CallsController(CallDao callDao) {
-    super();
-    this.callDao = callDao;
-  }
-
-  @RequestMapping(value="/calls.html", method=RequestMethod.GET)
-  public ModelAndView listCalls() {
-    return listCalls(1);
-  }
-  
-  @RequestMapping(value="/{page}/calls.html", method=RequestMethod.GET)
-  public ModelAndView listCalls(@PathVariable("page") int page) {
+  @Override
+  public Call store(Call entity) {
     return null;
   }
 
-  public CallDao getCallDao() {
-    return callDao;
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void delete(Call entity) {
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<Call> getAll() {
+    return null;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Page<Call> pageAllByTimeReceived(long pageNumber, long pageSize) {
+    return null;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void updateContactName(int callId, String newContactName) {
+  }
+
 }

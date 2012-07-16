@@ -60,9 +60,21 @@
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
+        
+        <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>calls</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>google</artifactId>
+          <version>${project.version}</version>
+        </dependency>
   </dependencies>
 
   <build>
-    <finalName>SpringMVC</finalName>
+    <finalName>caller-id</finalName>
   </build>
 </project>
