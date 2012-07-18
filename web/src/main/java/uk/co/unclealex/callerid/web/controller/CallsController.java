@@ -61,7 +61,7 @@ public class CallsController {
   
   @RequestMapping(value="/{page}/calls.html", method=RequestMethod.GET)
   public ModelAndView listCalls(@PathVariable("page") int page) {
-    return null;
+    return new ModelAndView("calls");
   }
 
   public CallDao getCallDao() {

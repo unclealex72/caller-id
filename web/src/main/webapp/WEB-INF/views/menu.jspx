@@ -1,0 +1,27 @@
+<div xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:spring="http://www.springframework.org/tags" version="2.0"
+	class="container">
+
+	<jsp:directive.page contentType="text/html;charset=UTF-8" />
+	<jsp:output omit-xml-declaration="yes" />
+	<!--
+        <a id="logo" href="index.html">It Fits</a>
+        <ul class="social-icons">
+          <li><a href="http://www.facebook.com/blog.cssjuntion" class="icon flip">^</a></li>
+          <li><a href="" class="icon">T</a></li>
+          <li><a href="http://www.twitter.com/cssjunction" class="icon">^</a></li>
+        </ul>
+        -->
+	<nav class="clearfix">
+		<ul role="navigation">
+			<li><a href="index.html" class="activePage"><span
+					class="icon">S</span>Home</a></li>
+			<li><a href="portfolio.html"><span class="icon">Û</span>Portfolio</a>
+			</li>
+			<li><a href="page.html"><span class="icon">E</span>Page</a></li>
+			<li><a href="blog.html"><span class="icon">E</span>Blog</a></li>
+			<li><a href="contact.html"><span class="icon">M</span>Contact
+					us</a></li>
+		</ul>
+	</nav>
+</div>

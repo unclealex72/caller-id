@@ -1,0 +1,82 @@
+<div xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:spring="http://www.springframework.org/tags" version="2.0">
+
+	<jsp:directive.page contentType="text/html;charset=UTF-8" />
+	<jsp:output omit-xml-declaration="yes" />
+
+	<div class="columns">
+		<article>
+			<figure>
+				<img src="http://lorempixel.com/210/140/technics/"
+					alt="Lorem ipsum dolor..."/>
+				<figcaption>
+					<h3>Micro-formatted HTML5</h3>
+					<p>
+						Pellentesque mi arcu, sollicitudin vel malesu, <a href="#">volutpat
+							vitae nisi.</a> Nulla luctus lacus at tortor blandit semper. Donec
+						gravida aliquet urna, eu pulvinar ligula pellentesque ornare. <a
+							href="#" class="more-link">Read more &#x2192;</a>
+					</p>
+				</figcaption>
+			</figure>
+		</article>
+		<article>
+			<figure>
+				<img src="http://lorempixel.com/210/140/sports/"
+					alt="Lorem ipsum dolor..." class="alt-col"/>
+				<figcaption>
+					<h3>Responsive</h3>
+					<p>
+						Pellentesque mi arcu, sollicitudin vel malesu, volutpat vitae
+						nisi. Nulla luctus lacus at tortor blandit semper. Donec gravida
+						aliquet urna, eu pulvinar ligula pellentesque ornare. <a href="#"
+							class="more-link">Read more &amp;rarr;</a>
+					</p>
+				</figcaption>
+			</figure>
+		</article>
+		<article>
+			<figure>
+				<img src="http://lorempixel.com/210/140/people/"
+					alt="Lorem ipsum dolor..."/>
+				<figcaption>
+					<h3>Pure CSS3</h3>
+					<p>
+						Pellentesque mi arcu, sollicitudin vel malesu, <strong>volutpat
+							vitae nisi. Nulla luctus</strong> lacus at tortor blandit semper. Donec
+						gravida aliquet urna, eu pulvinar ligula pellentesque ornare. <a
+							href="#" class="more-link">Read more &amp;rarr;</a>
+					</p>
+				</figcaption>
+			</figure>
+		</article>
+		<article>
+			<figure>
+				<img src="http://lorempixel.com/210/140/nightlife/"
+					alt="Lorem ipsum dolor..." class="alt-col"/>
+				<figcaption>
+					<h3>Browser compatible</h3>
+					<p>
+						Pellentesque mi arcu, sollicitudin vel malesu, volutpat vitae
+						nisi. Nulla luctus lacus at tortor blandit semper. Donec gravida
+						aliquet urna, eu pulvinar ligula pellentesque ornare. <a href="#"
+							class="more-link">Read more &amp;rarr;</a>
+					</p>
+				</figcaption>
+			</figure>
+		</article>
+	</div>
+	<!-- //.columns -->
+	<ul class="thumb-rotator">
+		<li><a href=""><img src="http://flickholdr.com/165/65/logo"
+				alt=""/></a></li>
+		<li><a href=""><img src="http://flickholdr.com/165/65/brand"
+				alt=""/></a></li>
+		<li><a href=""><img src="http://flickholdr.com/165/65/apple"
+				alt=""/></a></li>
+		<li><a href=""><img src="http://flickholdr.com/165/65/nike"
+				alt=""/></a></li>
+		<li><a href=""><img src="http://flickholdr.com/165/65/levi"
+				alt=""/></a></li>
+	</ul>
+</div>
