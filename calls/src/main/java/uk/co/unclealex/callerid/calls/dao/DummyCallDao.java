@@ -22,11 +22,10 @@
  *
  */
 
-package uk.co.unclealex.callerid.web.controller;
+package uk.co.unclealex.callerid.calls.dao;
 
 import java.util.List;
 
-import uk.co.unclealex.callerid.calls.dao.CallDao;
 import uk.co.unclealex.callerid.calls.model.Call;
 import uk.co.unclealex.persistence.paging.Page;
 
@@ -39,7 +38,6 @@ public class DummyCallDao implements CallDao {
   /**
    * {@inheritDoc}
    */
-  @Override
   public Call store(Call entity) {
     return null;
   }
@@ -47,14 +45,12 @@ public class DummyCallDao implements CallDao {
   /**
    * {@inheritDoc}
    */
-  @Override
   public void delete(Call entity) {
   }
 
   /**
    * {@inheritDoc}
    */
-  @Override
   public List<Call> getAll() {
     return null;
   }
@@ -62,7 +58,6 @@ public class DummyCallDao implements CallDao {
   /**
    * {@inheritDoc}
    */
-  @Override
   public Page<Call> pageAllByTimeReceived(long pageNumber, long pageSize) {
     return null;
   }
@@ -70,7 +65,6 @@ public class DummyCallDao implements CallDao {
   /**
    * {@inheritDoc}
    */
-  @Override
   public void updateContactName(int callId, String newContactName) {
   }
 

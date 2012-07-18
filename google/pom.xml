@@ -140,18 +140,26 @@
           </dependency>
         </dependencies>
       </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <annotationProcessors>
-            <annotationProcessor>
-              com.mysema.query.apt.jdo.JDOAnnotationProcessor
-            </annotationProcessor>
-          </annotationProcessors>
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
-      </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.3.2</version>
+          <configuration>
+            <annotationProcessors>
+              <annotationProcessor>
+                com.mysema.query.apt.jdo.JDOAnnotationProcessor
+              </annotationProcessor>
+            </annotationProcessors>
+            <source>1.7</source>
+            <target>1.7</target>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>com.mysema.querydsl</groupId>
+              <artifactId>querydsl-apt</artifactId>
+              <version>2.7.0</version>
+            </dependency>
+          </dependencies>
+        </plugin>
     </plugins>
   </build>
 
