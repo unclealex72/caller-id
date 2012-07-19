@@ -1,17 +1,17 @@
 <div xmlns:jsp="http://java.sun.com/JSP/Page"
-	 xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:spring="http://www.springframework.org/tags" version="2.0"
 	class="container">
 
 	<jsp:directive.page contentType="text/html;charset=UTF-8" />
 	<jsp:output omit-xml-declaration="yes" />
 
-	<c:url var="nav_home" value="/r/home.html"/>
-	<c:url var="nav_portfolio" value="/r/portfolio.html"/>
-	<c:url var="nav_page" value="/r/page.html"/>
-		<c:url var="nav_blog" value="/r/blog.html"/>
-		<c:url var="nav_contact" value="/r/contact.html"/>
-	
+	<c:url var="nav_home" value="/r/home.html" />
+	<c:url var="nav_portfolio" value="/r/portfolio.html" />
+	<c:url var="nav_page" value="/r/page.html" />
+	<c:url var="nav_blog" value="/r/blog.html" />
+	<c:url var="nav_contact" value="/r/contact.html" />
+
 	<!--
         <a id="logo" href="index.html">It Fits</a>
         <ul class="social-icons">
@@ -20,10 +20,11 @@
           <li><a href="http://www.twitter.com/cssjunction" class="icon">^</a></li>
         </ul>
         -->
+        
 	<nav class="clearfix">
 		<ul role="navigation">
-			<li>
-			<a href="${nav_home}" class="activePage"><span class="icon">S</span>Home</a></li>
+			<li><a href="${nav_home}" class="activePage"><span
+					class="icon">S</span>Home</a></li>
 			<li><a href="${nav_portfolio}"><span class="icon">Û</span>Portfolio</a>
 			</li>
 			<li><a href="${nav_page}"><span class="icon">E</span>Page</a></li>
