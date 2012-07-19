@@ -48,7 +48,8 @@
 		<tiles:insertAttribute name="menu" />
 	</header>
 	<section role="banner">
-		<tiles:insertAttribute name="banner" />
+		<tiles:insertAttribute name="header" />
+		<tiles:insertAttribute name="subheader" />
 	</section>
 	<section class="container">
 		<tiles:insertAttribute name="content" />

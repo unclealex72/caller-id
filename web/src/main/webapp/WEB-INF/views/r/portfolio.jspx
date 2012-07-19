@@ -1,0 +1,117 @@
+<section class="container" xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:spring="http://www.springframework.org/tags" version="2.0">
+
+	<jsp:directive.page contentType="text/html;charset=UTF-8" />
+	<jsp:output omit-xml-declaration="yes" />
+	<div class="sort-bar">
+		Filter: <a href="">Private firms</a> | <a href="">Government
+			houses</a> | <a href="">Corporate</a> | <a href="">Industrials</a>
+	</div>
+	<ul class="thumb-list">
+		<li>
+			<h3>
+				<a href="">Project name 1</a>
+			</h3>
+			<figure>
+				<a href="#"><img src="http://lorempixel.com/215/120/city/"
+					alt="Lorem ipsum dolor..." /></a>
+				<figcaption>
+					<p>Cursus pellentesque mauris vitae ultricies. Donec lacinia
+						nunc in nisl hendrerit scelerisque</p>
+				</figcaption>
+			</figure>
+		</li>
+		<li>
+			<h3>
+				<a href="">Project name 2</a>
+			</h3>
+			<figure>
+				<a href="#"><img src="http://lorempixel.com/215/120/city/"
+					alt="Lorem ipsum dolor..." /></a>
+				<figcaption>
+					<p>Donec cursus pellentesque mauris vitae ultricies. Donec
+						lacinia nunc in nisl hendrerit scelerisque</p>
+				</figcaption>
+			</figure>
+		</li>
+		<li>
+			<h3>
+				<a href="">Project name 3</a>
+			</h3>
+			<figure>
+				<a href="#"><img src="http://lorempixel.com/215/120/city/"
+					alt="Lorem ipsum dolor..." /></a>
+				<figcaption>
+					<p>Vitae ultricies. Donec lacinia nunc in nisl hendrerit
+						scelerisque</p>
+				</figcaption>
+			</figure>
+		</li>
+		<li>
+			<h3>
+				<a href="">Project name 4</a>
+			</h3>
+			<figure>
+				<a href="#"><img src="http://lorempixel.com/215/120/city/"
+					alt="Lorem ipsum dolor..." /></a>
+				<figcaption>
+					<p>Faucibus sit amet elementum in, interdum eu ipsum.</p>
+				</figcaption>
+			</figure>
+		</li>
+		<li>
+			<h3>
+				<a href="">Project name 5</a>
+			</h3>
+			<figure>
+				<a href="#"><img src="http://lorempixel.com/215/120/city/"
+					alt="Lorem ipsum dolor..." /></a>
+				<figcaption>
+					<p>Cursus pellentesque mauris vitae ultricies. Donec lacinia
+						nunc in nisl hendrerit scelerisque</p>
+				</figcaption>
+			</figure>
+		</li>
+		<li>
+			<h3>
+				<a href="">Project name 6</a>
+			</h3>
+			<figure>
+				<a href="#"><img src="http://lorempixel.com/215/120/city/"
+					alt="Lorem ipsum dolor..." /></a>
+				<figcaption>
+					<p>Donec cursus pellentesque mauris vitae ultricies. Donec
+						lacinia nunc in nisl hendrerit scelerisque</p>
+				</figcaption>
+			</figure>
+		</li>
+		<li>
+			<h3>Project name 7</h3>
+			<figure>
+				<a href="#"><img src="http://lorempixel.com/215/120/city/"
+					alt="Lorem ipsum dolor..." /></a>
+				<figcaption>
+					<p>Vitae ultricies. Donec lacinia nunc in nisl hendrerit
+						scelerisque</p>
+				</figcaption>
+			</figure>
+		</li>
+		<li>
+			<h3>
+				<a href="">Project name 8</a>
+			</h3>
+			<figure>
+				<a href="#"><img src="http://lorempixel.com/215/120/city/"
+					alt="Lorem ipsum dolor..." /></a>
+				<figcaption>
+					<p>Faucibus sit amet elementum in, interdum eu ipsum.</p>
+				</figcaption>
+			</figure>
+		</li>
+	</ul>
+	<footer class="foo-slogan">
+		<h2>Pellentesque vestibulum erat eget urna pretium ultricies.</h2>
+		<a href="contact.html" class="button orange">Contact me <span
+			class="icon">M</span></a>
+	</footer>
+</section>

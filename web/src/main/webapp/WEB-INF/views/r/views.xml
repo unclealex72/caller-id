@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+  <definition extends="default" name="r/home">
+    <put-attribute name="subheader" value="/WEB-INF/views/r/subheader.jspx" />
+    <put-attribute name="content" value="/WEB-INF/views/r/home.jspx" />
+  </definition>
+
+  <definition extends="default" name="r/portfolio">
+    <put-attribute name="content" value="/WEB-INF/views/r/portfolio.jspx" />
+  </definition>
+
+  <definition extends="default" name="r/page">
+    <put-attribute name="content" value="/WEB-INF/views/r/page.jspx" />
+  </definition>
+
+  <definition extends="default" name="r/blog">
+    <put-attribute name="content" value="/WEB-INF/views/r/blog.jspx" />
+  </definition>
+
+  <definition extends="default" name="r/contact">
+    <put-attribute name="content" value="/WEB-INF/views/r/contact.jspx" />
+  </definition>
+</tiles-definitions>
