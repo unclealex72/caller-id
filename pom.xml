@@ -23,6 +23,7 @@
     <module>calls</module>
     <module>areacodes</module>
     <module>defaults</module>
+    <module>received</module>
   </modules>
 
   <build>
