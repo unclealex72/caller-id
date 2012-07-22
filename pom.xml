@@ -21,7 +21,6 @@
     <module>phonenumbers</module>
     <module>web</module>
     <module>calls</module>
-    <module>legacy</module>
     <module>areacodes</module>
     <module>defaults</module>
   </modules>
