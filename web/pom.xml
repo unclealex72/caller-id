@@ -18,12 +18,6 @@
     <!-- Spring 3 dependencies -->
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
-      <version>${spring-version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
       <version>${spring-version}</version>
     </dependency>
@@ -63,13 +57,7 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>calls</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>google</artifactId>
+      <artifactId>server</artifactId>
       <version>${project.version}</version>
     </dependency>
 

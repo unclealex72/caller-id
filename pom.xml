@@ -17,13 +17,8 @@
     <persistence-version>1.0.0-SNAPSHOT</persistence-version>
   </properties>
   <modules>
-    <module>google</module>
-    <module>phonenumbers</module>
+    <module>server</module>
     <module>web</module>
-    <module>calls</module>
-    <module>areacodes</module>
-    <module>defaults</module>
-    <module>received</module>
   </modules>
 
   <build>
