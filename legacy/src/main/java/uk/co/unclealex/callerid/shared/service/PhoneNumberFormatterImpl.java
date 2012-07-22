@@ -1,10 +1,10 @@
 package uk.co.unclealex.callerid.shared.service;
 
-import uk.co.unclealex.callerid.shared.model.CountriesOnlyPhoneNumber;
-import uk.co.unclealex.callerid.shared.model.CountryAndAreaPhoneNumber;
-import uk.co.unclealex.callerid.shared.model.NumberOnlyPhoneNumber;
-import uk.co.unclealex.callerid.shared.model.PhoneNumber;
-import uk.co.unclealex.callerid.shared.visitor.PhoneNumberVisitor;
+import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.model.PhoneNumberVisitor;
 
 import com.google.common.base.Joiner;
 

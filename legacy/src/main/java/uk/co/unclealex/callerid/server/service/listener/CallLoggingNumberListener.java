@@ -2,10 +2,10 @@ package uk.co.unclealex.callerid.server.service.listener;
 
 import java.util.Date;
 
+import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
 import uk.co.unclealex.callerid.server.dao.CallRecordDao;
 import uk.co.unclealex.callerid.server.model.CallRecord;
 import uk.co.unclealex.callerid.server.model.TelephoneNumber;
-import uk.co.unclealex.callerid.shared.model.PhoneNumber;
 
 public class CallLoggingNumberListener implements NumberListener {
 

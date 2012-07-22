@@ -1,8 +1,8 @@
 package uk.co.unclealex.callerid.server.service.listener;
 
+import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
 import uk.co.unclealex.callerid.server.dao.TelephoneNumberDao;
 import uk.co.unclealex.callerid.server.model.TelephoneNumber;
-import uk.co.unclealex.callerid.shared.model.PhoneNumber;
 
 public abstract class AbstractOnRingNumberListener implements NumberListener {
 

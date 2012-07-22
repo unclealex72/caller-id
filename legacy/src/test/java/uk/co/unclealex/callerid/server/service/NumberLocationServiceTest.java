@@ -9,9 +9,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.co.unclealex.callerid.shared.model.CountriesOnlyPhoneNumber;
-import uk.co.unclealex.callerid.shared.model.CountryAndAreaPhoneNumber;
-import uk.co.unclealex.callerid.shared.model.PhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.service.AreaCodeServiceImpl;
 
 public class NumberLocationServiceTest {
 
@@ -19,7 +20,7 @@ public class NumberLocationServiceTest {
 	
 	@Test
 	public void testTrailingNumbers() {
-		Assert.assertEquals("Trailing numbers failed.", "1256", new NumberLocationServiceImpl().trailingNumbers("(0) 1256"));
+		Assert.assertEquals("Trailing numbers failed.", "1256", new AreaCodeServiceImpl().trailingNumbers("(0) 1256"));
 	}
 	
 	@Test
@@ -37,8 +38,8 @@ public class NumberLocationServiceTest {
 		test(
 			"07808721396", "+447808721396",
 			new CountriesOnlyPhoneNumber(
-				Arrays.asList(new String[] {"United Kingdom", "Guernsey", "Jersey", "Isle of Man"}),
-				"44", "7808721396"));
+				"44",
+				"7808721396", Arrays.asList(new String[] {"United Kingdom", "Guernsey", "Jersey", "Isle of Man"})));
 	}
 
 	@Test
@@ -56,18 +57,18 @@ public class NumberLocationServiceTest {
 		test(
 			"001800555666", "+1800555666",
 			new CountriesOnlyPhoneNumber(
-					Arrays.asList(new String[] {
+					"1",
+					"800555666", Arrays.asList(new String[] {
 							"United States", "Canada", "Dominican Republic", "Puerto Rico", "American Samoa", "Anguilla",
 							"Antigua and Barbuda", "Bahamas", "Barbados", "Bermuda", "Cayman Islands", "Dominica", "Grenada", 
 							"Guam", "Jamaica", "Montserrat", "Northern Mariana Islands", "Saint Kitts and Nevis", 
 							"Saint Lucia", "Saint Vincent and the Grenadines", "Trinidad and Tobago", 
-							"Turks and Caicos Islands", "Virgin Islands- British", "Virgin Islands- U.S."}),
-					"1", "800555666"));
+							"Turks and Caicos Islands", "Virgin Islands- British", "Virgin Islands- U.S."})));
 
 	}
 
 	protected void test(String number, String expectedNormalisedNumber, PhoneNumber expectedPhoneNumber) {
-		NumberLocationServiceImpl numberLocationService = new NumberLocationServiceImpl();
+		AreaCodeServiceImpl numberLocationService = new AreaCodeServiceImpl();
 		try {
 			numberLocationService.initialise();
 		}

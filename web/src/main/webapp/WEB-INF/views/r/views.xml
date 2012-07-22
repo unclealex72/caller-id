@@ -4,21 +4,26 @@
   <definition extends="default" name="r/home">
     <put-attribute name="subheader" value="/WEB-INF/views/r/subheader.jspx" />
     <put-attribute name="content" value="/WEB-INF/views/r/home.jspx" />
+    <put-attribute name="menuId" value="home" cascade="true"/>
   </definition>
 
   <definition extends="default" name="r/portfolio">
     <put-attribute name="content" value="/WEB-INF/views/r/portfolio.jspx" />
+    <put-attribute name="menuId" value="portfolio" cascade="true"/>
   </definition>
 
   <definition extends="default" name="r/page">
     <put-attribute name="content" value="/WEB-INF/views/r/page.jspx" />
+        <put-attribute name="menuId" value="page" cascade="true"/>   
   </definition>
 
   <definition extends="default" name="r/blog">
     <put-attribute name="content" value="/WEB-INF/views/r/blog.jspx" />
+        <put-attribute name="menuId" value="blog" cascade="true"/>
   </definition>
 
   <definition extends="default" name="r/contact">
     <put-attribute name="content" value="/WEB-INF/views/r/contact.jspx" />
+    <put-attribute name="menuId" value="contact" cascade="true"/>
   </definition>
 </tiles-definitions>

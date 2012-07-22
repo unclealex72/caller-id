@@ -2,7 +2,10 @@
 <!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
 <tiles-definitions>
     <definition extends="default" name="calls">
-        <put-attribute name="content"
+        <put-attribute name="subheader"
             value="/WEB-INF/views/calls/calls.jspx" />
+        <put-attribute name="scripts"
+            value="/WEB-INF/views/calls/calls-scripts.jspx" />
+        <put-attribute name="menuId" value="calls" cascade="true"/>
     </definition>                
 </tiles-definitions>

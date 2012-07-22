@@ -8,4 +8,5 @@
 
   <context:annotation-config/>
 
+  <bean id="phoneNumberFactory" class="uk.co.unclealex.callerid.phonenumber.service.PhoneNumberFactoryImpl"/>
 </beans>

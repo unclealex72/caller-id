@@ -7,9 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.service.PhoneNumberFactory;
 import uk.co.unclealex.callerid.server.model.TelephoneNumber;
 import uk.co.unclealex.callerid.server.service.listener.NumberListener;
-import uk.co.unclealex.callerid.shared.model.PhoneNumber;
 
 import com.google.common.collect.Lists;
 
@@ -20,7 +21,7 @@ public class NumberServiceImpl implements NumberService {
 	
 	private List<NumberListener> i_numberListeners = Lists.newArrayList();
 	private TelephoneNumberFactory i_telephoneNumberFactory;
-	private NumberLocationService i_numberLocationService;
+	private PhoneNumberFactory i_numberLocationService;
 	
 	@Override
 	public void onNumber(final String number) throws Exception {
@@ -87,11 +88,11 @@ public class NumberServiceImpl implements NumberService {
 		i_telephoneNumberFactory = telephoneNumberFactory;
 	}
 
-	public NumberLocationService getNumberLocationService() {
+	public PhoneNumberFactory getNumberLocationService() {
 		return i_numberLocationService;
 	}
 
-	public void setNumberLocationService(NumberLocationService numberLocationService) {
+	public void setNumberLocationService(PhoneNumberFactory numberLocationService) {
 		i_numberLocationService = numberLocationService;
 	}
 }

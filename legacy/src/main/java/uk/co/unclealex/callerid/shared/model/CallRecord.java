@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.SortedSet;
 
+import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
+
 public class CallRecord implements Serializable, Comparable<CallRecord> {
 
 	private Date i_callTime;

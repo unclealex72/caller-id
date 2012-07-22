@@ -4,6 +4,7 @@ import java.util.TreeSet;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.unclealex.callerid.phonenumber.service.PhoneNumberFactory;
 import uk.co.unclealex.callerid.server.dao.TelephoneNumberDao;
 import uk.co.unclealex.callerid.server.model.Contact;
 import uk.co.unclealex.callerid.server.model.TelephoneNumber;
@@ -11,7 +12,7 @@ import uk.co.unclealex.callerid.server.model.TelephoneNumber;
 @Transactional
 public class TelephoneNumberFactoryImpl implements TelephoneNumberFactory {
 
-	private NumberLocationService i_numberLocationService;
+	private PhoneNumberFactory i_numberLocationService;
 	private TelephoneNumberDao i_telephoneNumberDao;
 	
 	@Override
@@ -27,11 +28,11 @@ public class TelephoneNumberFactoryImpl implements TelephoneNumberFactory {
 		return telephoneNumber;
 	}
 
-	public NumberLocationService getNumberLocationService() {
+	public PhoneNumberFactory getNumberLocationService() {
 		return i_numberLocationService;
 	}
 
-	public void setNumberLocationService(NumberLocationService numberLocationService) {
+	public void setNumberLocationService(PhoneNumberFactory numberLocationService) {
 		i_numberLocationService = numberLocationService;
 	}
 

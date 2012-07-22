@@ -1,6 +1,6 @@
 package uk.co.unclealex.callerid.shared.service;
 
-import uk.co.unclealex.callerid.shared.model.PhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
 
 public interface PhoneNumberFormatter {
 

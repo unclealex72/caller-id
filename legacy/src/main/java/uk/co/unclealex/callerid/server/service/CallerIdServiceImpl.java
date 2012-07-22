@@ -7,6 +7,8 @@ import java.util.SortedSet;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.service.PhoneNumberFactory;
 import uk.co.unclealex.callerid.server.dao.CallRecordDao;
 import uk.co.unclealex.callerid.server.dao.ContactDao;
 import uk.co.unclealex.callerid.server.dao.OauthTokenDao;
@@ -19,7 +21,6 @@ import uk.co.unclealex.callerid.shared.exceptions.GoogleAuthenticationFailedExce
 import uk.co.unclealex.callerid.shared.model.CallRecord;
 import uk.co.unclealex.callerid.shared.model.CallRecordContact;
 import uk.co.unclealex.callerid.shared.model.CallRecords;
-import uk.co.unclealex.callerid.shared.model.PhoneNumber;
 import uk.co.unclealex.callerid.shared.remote.CallerIdService;
 
 import com.google.common.base.Function;
@@ -35,7 +36,7 @@ public class CallerIdServiceImpl implements CallerIdService {
 	private GoogleContactsService i_googleContactsService;
 	private TelephoneNumberFactory i_telephoneNumberFactory;
 	private TelephoneNumberDao i_telephoneNumberDao;
-	private NumberLocationService i_numberLocationService;
+	private PhoneNumberFactory i_numberLocationService;
 	private CallRecordDao i_callRecordDao;
 	private ContactService i_contactService;
 	private ContactDao i_contactDao;
@@ -75,7 +76,7 @@ public class CallerIdServiceImpl implements CallerIdService {
 
 	@Override
 	public CallRecords getAllCallRecords(int page, int callsPerPage) {
-		final NumberLocationService numberLocationService = getNumberLocationService();
+		final PhoneNumberFactory numberLocationService = getNumberLocationService();
 		final Function<Contact, CallRecordContact> contactFunction = new Function<Contact, CallRecordContact>() {
 			@Override
 			public CallRecordContact apply(Contact contact) {
@@ -158,11 +159,11 @@ public class CallerIdServiceImpl implements CallerIdService {
 		i_telephoneNumberDao = telephoneNumberDao;
 	}
 
-	public NumberLocationService getNumberLocationService() {
+	public PhoneNumberFactory getNumberLocationService() {
 		return i_numberLocationService;
 	}
 
-	public void setNumberLocationService(NumberLocationService numberLocationService) {
+	public void setNumberLocationService(PhoneNumberFactory numberLocationService) {
 		i_numberLocationService = numberLocationService;
 	}
 

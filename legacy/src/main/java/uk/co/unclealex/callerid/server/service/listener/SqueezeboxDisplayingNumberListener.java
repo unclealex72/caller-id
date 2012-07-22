@@ -7,12 +7,12 @@ import java.util.SortedSet;
 
 import org.springframework.web.util.UriUtils;
 
+import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
 import uk.co.unclealex.callerid.server.dao.ContactDao;
 import uk.co.unclealex.callerid.server.model.Contact;
 import uk.co.unclealex.callerid.server.model.TelephoneNumber;
 import uk.co.unclealex.callerid.server.service.squeezebox.SqueezeboxConnection;
 import uk.co.unclealex.callerid.server.service.squeezebox.SqueezeboxConnectionFactory;
-import uk.co.unclealex.callerid.shared.model.PhoneNumber;
 import uk.co.unclealex.callerid.shared.service.PhoneNumberFormatter;
 
 import com.google.common.base.Function;

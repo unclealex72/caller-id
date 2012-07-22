@@ -14,7 +14,7 @@
 
 <head>
 <meta charset="utf-8" />
-<title>It Fits</title>
+<title>Caller ID</title>
 <meta name="HandheldFriendly" content="True" />
 <meta name="MobileOptimized" content="320" />
 <meta
@@ -34,8 +34,22 @@
 <link rel="stylesheet" href="${url}" />
 <c:url value="/assets/js/libs/modernizr-2.5.2.min.js" var="url" />
 <script src="${url}">
-<!-- xyz -->
+<!-- Make sure the script tag is not minimised -->
 </script>
+    <script type="text/javascript"
+      src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBPMGnJoq56NXDaFb21WdN_kkb585Q-qt4&amp;sensor=true">
+    <!-- Make sure the script tag is not minimised -->
+    </script>
+    
+	<c:url value="/assets/js/libs/jquery-1.7.1.min.js" var="url" />
+	<script src="${url}">
+	<!-- Make sure the script tag is not minimised -->
+	</script>
+	<c:url value="/assets/js/script.js" var="url" />
+	<script src="${url}">
+	<!-- Make sure the script tag is not minimised -->
+	</script>
+
 </head>
 <!--[if lt IE 7]> <body class="ie6 oldies"> <![endif]-->
 <!--[if IE 7]>    <body class="ie7 oldies"> <![endif]-->
@@ -57,15 +71,8 @@
 	<footer role="contentinfo">
 		<tiles:insertAttribute name="footer" />
 	</footer>
-	<script
-		src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js">
-	<!-- xyz -->
-	</script>
-	<c:url value="/assets/js/libs/jquery-1.7.1.min.js" var="url" />
-	<c:url value="/assets/js/script.js" var="url" />
-	<script src="${url}"></script>
-
-
+	
+	<tiles:insertAttribute name="scripts" />
 	<!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
 </body>
 </html>

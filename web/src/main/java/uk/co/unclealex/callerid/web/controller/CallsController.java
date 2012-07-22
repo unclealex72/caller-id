@@ -39,7 +39,7 @@ import uk.co.unclealex.callerid.calls.dao.CallDao;
  * @author alex
  *
  */
-@RequestMapping("/calls")
+@RequestMapping("/c")
 @Controller
 public class CallsController {
 
