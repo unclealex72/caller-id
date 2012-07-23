@@ -132,8 +132,7 @@
         <version>3.1.0-m3</version>
         <configuration>
           <api>jdo</api>
-          <verbose>true</verbose>
-          <fork>false</fork>
+          <verbose>false</verbose>
           <persistenceUnitName>callerid</persistenceUnitName>
         </configuration>
         <executions>
