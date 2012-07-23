@@ -37,8 +37,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.DateTime;
 
-import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
-
 /**
  * A class that models received telephone calls.
  * 
@@ -65,7 +63,7 @@ public class Call {
   /**
    * The telephone number who called or null if the number was withheld.
    */
-  private TelephoneNumber telephoneNumber;
+  private String telephoneNumber;
   
   /**
    * The name of the contact associated with this number. This may be derived from the known list of contacts or user entered.
@@ -82,7 +80,7 @@ public class Call {
    * @param contactName
    *          the contact name
    */
-  public Call(DateTime callTime, TelephoneNumber telephoneNumber, String contactName) {
+  public Call(DateTime callTime, String telephoneNumber, String contactName) {
     super();
     this.callTime = callTime;
     this.telephoneNumber = telephoneNumber;
@@ -123,16 +121,6 @@ public class Call {
   }
 
   /**
-   * Sets the call's primary id.
-   * 
-   * @param id
-   *          the new call's primary id
-   */
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  /**
    * Gets the time at which this call was received.
    * 
    * @return the time at which this call was received
@@ -142,42 +130,12 @@ public class Call {
   }
 
   /**
-   * Sets the time at which this call was received.
-   * 
-   * @param callTime
-   *          the new time at which this call was received
-   */
-  public void setCallTime(DateTime callTime) {
-    this.callTime = callTime;
-  }
-
-  /**
    * Gets the telephone number who called or null if the number was withheld.
    * 
    * @return the telephone number who called or null if the number was withheld
    */
-  public TelephoneNumber getTelephoneNumber() {
+  public String getTelephoneNumber() {
     return telephoneNumber;
-  }
-
-  /**
-   * Sets the telephone number who called or null if the number was withheld.
-   * 
-   * @param telephoneNumber
-   *          the new telephone number who called or null if the number was
-   *          withheld
-   */
-  public void setTelephoneNumber(TelephoneNumber telephoneNumber) {
-    this.telephoneNumber = telephoneNumber;
-  }
-
-  /**
-   * Gets the name of the contact associated with this number.
-   * 
-   * @return the name of the contact associated with this number
-   */
-  public String getContactName() {
-    return contactName;
   }
 
   /**
@@ -189,6 +147,15 @@ public class Call {
   public void setContactName(String contactName) {
     this.contactName = contactName;
   }
+  
+  /**
+   * Gets the name of the contact associated with this number.
+   * 
+   * @return the name of the contact associated with this number
+   */
+  public String getContactName() {
+    return contactName;
+  }
 
-
+  
 }

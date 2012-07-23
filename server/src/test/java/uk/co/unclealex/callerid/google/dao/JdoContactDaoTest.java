@@ -44,7 +44,6 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.unclealex.callerid.google.model.Contact;
-import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
 
 /**
  * @author alex
@@ -74,10 +73,10 @@ public class JdoContactDaoTest {
 
   @Test
   public void testFindByTelephoneNumber() {
-    TelephoneNumber numberOne = telephoneNumber("44", "800", "118118");
-    TelephoneNumber numberTwo = telephoneNumber("1", "214", "555976");
-    TelephoneNumber numberThree = telephoneNumber("1", "714", "888888");
-    TelephoneNumber numberFour = telephoneNumber("33", "999", "000000");
+    String numberOne = "44800118118";
+    String numberTwo = "1214555976";
+    String numberThree = "1714888888";
+    String numberFour = "33999000000";
     createContact("tom", numberOne, numberTwo);
     createContact("dick", numberThree, numberOne);
     createContact("harry", numberFour);
@@ -88,12 +87,8 @@ public class JdoContactDaoTest {
         Matchers.containsInAnyOrder("tom", "dick"));
   }
 
-  protected TelephoneNumber telephoneNumber(String internationalPrefix, String stdCode, String number) {
-    return new TelephoneNumber(internationalPrefix, stdCode, number);
-  }
-
-  protected Contact createContact(String name, TelephoneNumber... telephoneNumbers) {
-    Contact contact = Contact.create(name, telephoneNumbers);
+  protected Contact createContact(String name, String... telephoneNumbers) {
+    Contact contact = new Contact(name, telephoneNumbers);
     PersistenceManager persistenceManager = getPersistenceManagerFactory().getPersistenceManager();
     persistenceManager.makePersistent(contact);
     return contact;

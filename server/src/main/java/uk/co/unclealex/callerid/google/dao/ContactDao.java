@@ -27,7 +27,6 @@ package uk.co.unclealex.callerid.google.dao;
 import java.util.List;
 
 import uk.co.unclealex.callerid.google.model.Contact;
-import uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber;
 import uk.co.unclealex.persistence.dao.BasicDao;
 
 /**
@@ -39,10 +38,10 @@ public interface ContactDao extends BasicDao<Contact> {
 
 	/**
 	 * Find all {@link Contact}s who have the given telephone number.
-	 * @param telephoneNumber The {@link TelephoneNumber} to search for.
+	 * @param telephoneNumber The telephoneNumber to search for.
 	 * @return The list of all {@link Contact}s who have the given telephone number.
 	 */
-	public List<Contact> findByTelephoneNumber(TelephoneNumber telephoneNumber);
+	public List<Contact> findByTelephoneNumber(String telephoneNumber);
 	
 	/**
 	 * Find a {@link Contact} by their unique name.

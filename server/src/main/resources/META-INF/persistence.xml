@@ -8,9 +8,7 @@
     <persistence-unit name="callerid">
     <class>uk.co.unclealex.callerid.calls.model.Call</class>
         <class>uk.co.unclealex.callerid.areacode.model.AreaCode</class>
-        <class>uk.co.unclealex.callerid.phonenumber.model.TelephoneNumber</class>
         <class>uk.co.unclealex.callerid.google.model.Contact</class>
-        <class>uk.co.unclealex.callerid.google.model.ContactTelephoneNumber</class>
         <exclude-unlisted-classes/>
     </persistence-unit>
 </persistence>
