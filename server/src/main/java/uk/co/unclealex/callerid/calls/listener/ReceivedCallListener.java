@@ -22,15 +22,15 @@
  *
  */
 
-package uk.co.unclealex.callerid.received;
+package uk.co.unclealex.callerid.calls.listener;
 
-import java.util.List;
-
-import uk.co.unclealex.callerid.google.model.Contact;
-import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
+import uk.co.unclealex.callerid.calls.model.ReceivedCall;
 
 /**
- * An interface for classes that can respond to a telephone call being received.
+ * An interface for classes that respond to a telephone call being received.
+ * Each listener only gets given the <i>exact</i> recieved number (or null if
+ * the number was withheld). This means that implementations will be responsible
+ * for interpreting this number as they see fit.
  * 
  * @author alex
  * 
@@ -38,20 +38,10 @@ import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
 public interface ReceivedCallListener {
 
   /**
-   * Respond to a telephone call.
+   * Act upon a received call.
    * 
-   * @param number
-   *          The raw telephone number that made the call or null if it was
-   *          withheld.
-   * @param phoneNumber
-   *          The telephone number that made the call or null if it was
-   *          withheld.
-   * @throws Exception
-   *           Thrown if there are any problems processing this call.
+   * @param receivedCall
+   *          The {@link ReceivedCall} that has just been received.
    */
-  public void onCallReceived(
-      String number,
-      PhoneNumber phoneNumber,
-      String previouslyEnteredContactName,
-      List<Contact> contacts) throws Exception;
+  public void onCallReceived(ReceivedCall receivedCall) throws Exception;
 }

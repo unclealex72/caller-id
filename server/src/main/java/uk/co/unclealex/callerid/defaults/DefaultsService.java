@@ -32,7 +32,7 @@ package uk.co.unclealex.callerid.defaults;
 public interface DefaultsService {
 
   /**
-   * Get the country code for the phone number that is receiving calls.
+   * Get the country code for the phone number that is receiving calls. For the UK this is <i>44</i>.
    * @return The country code for the phone number that is receiving calls.
    */
   public String getCountryCode();
@@ -42,4 +42,16 @@ public interface DefaultsService {
    * @return The area code for the phone number that is receiving calls.
    */
   public String getAreaCode();
+
+  /**
+   * Get the prefix used for international numbers. In the UK this is <i>00</i>.
+   * @return The prefix used for international numbers.
+   */
+  public String getInternationalPrefix();
+
+  /**
+   * Get the prefix used for national numbers. In the UK this is <i>0</i>.
+   * @return The prefix used for national numbers.
+   */
+  public String getAreaCodePrefix();
 }

@@ -61,6 +61,8 @@ public class CallsController {
   
   @RequestMapping(value="/{page}/calls.html", method=RequestMethod.GET)
   public ModelAndView listCalls(@PathVariable("page") int page) {
+    ModelAndView mav = new ModelAndView("calls");
+    mav.getModel().put("calls", getCallDao().pageAllByTimeReceived(page, 10));
     return new ModelAndView("calls");
   }
 

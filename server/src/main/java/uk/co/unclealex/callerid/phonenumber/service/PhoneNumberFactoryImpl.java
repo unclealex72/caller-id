@@ -25,6 +25,7 @@
 package uk.co.unclealex.callerid.phonenumber.service;
 
 import java.util.Arrays;
+import java.util.SortedSet;
 
 import javax.inject.Inject;
 
@@ -41,6 +42,8 @@ import com.google.common.base.Functions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 
 /**
  * The default implementation of {@link PhoneNumberFactory}.
@@ -55,6 +58,10 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
    */
   private final AreaCodeDao areaCodeDao;
 
+  /**
+   * The {@link DefaultsService} used to get all defaults for the user's current
+   * location.
+   */
   private final DefaultsService defaultsService;
 
   /**
@@ -73,14 +80,16 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
    */
   @Override
   public PhoneNumber create(String number) {
-    MatchResult<String> matchResult = match(number, "00", "0");
+    String internationalPrefix = getDefaultsService().getInternationalPrefix();
+    String areaCodePrefix = getDefaultsService().getAreaCodePrefix();
+    MatchResult<String> matchResult = match(number, internationalPrefix, areaCodePrefix);
     if (matchResult == null) {
       return localNumber(number);
     }
     else {
       String matchedPrefix = matchResult.getMatch();
       String remainingNumber = matchResult.getRemainingNumber();
-      if ("00".equals(matchedPrefix)) {
+      if (internationalPrefix.equals(matchedPrefix)) {
         return internationalNumber(remainingNumber);
       }
       else {
@@ -89,6 +98,13 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
     }
   }
 
+  /**
+   * Parse an international number.
+   * 
+   * @param number
+   *          The number to parse.
+   * @return A non-local phone number for potentially a list of countries.
+   */
   protected PhoneNumber internationalNumber(String number) {
     AreaCodeDao areaCodeDao = getAreaCodeDao();
     MatchResult<String> countryCodeMatchResult = match(number, areaCodeDao.getAllCountryCodes());
@@ -97,10 +113,27 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
     return nonLocalPhoneNumber(countryCode, nationalNumber);
   }
 
+  /**
+   * Parse a national phone number.
+   * 
+   * @param number
+   *          The number to parse.
+   * @return A non-local phone number for the country of residence.
+   */
   protected PhoneNumber nationalNumber(String number) {
     return nonLocalPhoneNumber(getDefaultsService().getCountryCode(), number);
   }
-  
+
+  /**
+   * Parse a non-local phone number.
+   * 
+   * @param countryCode
+   *          The country code of the number.
+   * @param nationalNumber
+   *          The national part of the phone number minus any national area code
+   *          prefix.
+   * @return A non-local phone number which may or may not be geographic.
+   */
   protected PhoneNumber nonLocalPhoneNumber(String countryCode, String nationalNumber) {
     AreaCodeDao areaCodeDao = getAreaCodeDao();
     Function<AreaCode, String> areaCodeFunction = new Function<AreaCode, String>() {
@@ -113,10 +146,8 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
         match(nationalNumber, areaCodeFunction, areaCodeDao.getAllAreaCodesForCountryCode(countryCode));
     if (areaCodeMatchResult == null) {
       // We have a non-geographic international number.
-      return new CountriesOnlyPhoneNumber(
-          countryCode,
-          nationalNumber,
-          Lists.newArrayList(areaCodeDao.getAllCountriesForCountryCode(countryCode)));
+      return new CountriesOnlyPhoneNumber(countryCode, nationalNumber, Lists.newArrayList(areaCodeDao
+          .getAllCountriesForCountryCode(countryCode)));
     }
     else {
       AreaCode areaCode = areaCodeMatchResult.getMatch();
@@ -130,19 +161,67 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
     }
   }
 
+  /**
+   * Parse a local number.
+   * 
+   * @param number
+   *          The whole dialled phone number.
+   * @return A local phone number.
+   */
   protected PhoneNumber localNumber(String number) {
     return new NumberOnlyPhoneNumber(number);
   }
-  
-  protected MatchResult<String> match(String number, String... matchers) {
-    return match(number, Arrays.asList(matchers));
+
+  /**
+   * Attempt to match a phone number against a list of possible prefixes.
+   * 
+   * @param number
+   *          The number to check.
+   * @param prefixes
+   *          A list of prefixes to check to see if the number starts with one.
+   * @return A {@link MatchResult} containing the prefixed matched and the
+   *         remainder of the string or null if no prefix was matched.
+   */
+  protected MatchResult<String> match(String number, String... prefixes) {
+    return match(number, Arrays.asList(prefixes));
   }
 
-  protected MatchResult<String> match(String number, Iterable<String> matchers) {
+  /**
+   * Attempt to match a phone number against a list of possible prefixes.
+   * 
+   * @param number
+   *          The number to check.
+   * @param prefixes
+   *          A list of prefixes to check to see if the number starts with one.
+   * @return A {@link MatchResult} containing the prefixed matched and the
+   *         remainder of the string or null if no prefix was matched.
+   */
+  protected MatchResult<String> match(String number, Iterable<String> prefixes) {
+    Function<String, Integer> lengthFunction = new Function<String, Integer>() {
+      public Integer apply(String str) {
+        return str.length();
+      }
+    };
+    SortedSet<String> longestFirstPrefixes =
+        Sets.newTreeSet(Ordering.natural().reverse().onResultOf(lengthFunction).compound(Ordering.natural()));
+    Iterables.addAll(longestFirstPrefixes, prefixes);
     Function<String, String> f = Functions.identity();
-    return match(number, f, matchers);
+    return match(number, f, longestFirstPrefixes);
   }
 
+  /**
+   * Attempt to match a phone number against a list of possible objects.
+   * 
+   * @param number
+   *          The number to check.
+   * @param matchFunction
+   *          A {@link Function} that turns an object into a prefix to match
+   *          against.
+   * @param matchers
+   *          The objects that will be transformed into prefixes to check for.
+   * @return A {@link MatchResult} containing the object matched and the
+   *         remainder of the string or null if no prefix was matched.
+   */
   protected <E> MatchResult<E> match(
       final String number,
       final Function<E, String> matchFunction,

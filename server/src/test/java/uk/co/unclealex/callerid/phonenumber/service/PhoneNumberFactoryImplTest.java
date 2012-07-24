@@ -53,11 +53,13 @@ import com.google.common.collect.Sets;
 public class PhoneNumberFactoryImplTest {
 
   PhoneNumberFactoryImpl phoneNumberFactory;
+  DefaultsService defaultsService;
+  AreaCodeDao areaCodeDao;
 
   @Before
   public void test() {
-    DefaultsService defaultsService = mock(DefaultsService.class);
-    AreaCodeDao areaCodeDao = mock(AreaCodeDao.class);
+    defaultsService = mock(DefaultsService.class);
+    areaCodeDao = mock(AreaCodeDao.class);
     when(defaultsService.getCountryCode()).thenReturn("44");
     when(areaCodeDao.getAllCountryCodes()).thenReturn(list("33", "44"));
     when(areaCodeDao.getAllCountriesForCountryCode("33")).thenReturn(list("France"));
@@ -90,32 +92,34 @@ public class PhoneNumberFactoryImplTest {
 
   @Test
   public void testLocalNumber() {
-    runTest("444555", new NumberOnlyPhoneNumber("444555"));
+    runTest("00", "0", "444555", new NumberOnlyPhoneNumber("444555"));
   }
 
   @Test
   public void testNonGeographicNationalNumber() {
-    runTest("0800444555", new CountriesOnlyPhoneNumber("44", "800444555", "United Kingdom", "Jersey"));
+    runTest("00", "1", "1800444555", new CountriesOnlyPhoneNumber("44", "800444555", "United Kingdom", "Jersey"));
   }
 
   @Test
   public void testNonGeographicInternationalNumber() {
-    runTest("0033800444555", new CountriesOnlyPhoneNumber("33", "800444555", "France"));
+    runTest("00", "000", "0033800444555", new CountriesOnlyPhoneNumber("33", "800444555", "France"));
   }
 
   @Test
   public void testNationalGeographicNumber() {
-    runTest("01256999666", new CountryAndAreaPhoneNumber("United Kingdom", "Basingstoke", "44", "1256", "999666"));
-    runTest("01256799666", new CountryAndAreaPhoneNumber("Jersey", "Newport", "44", "12567", "99666"));
+    runTest("00", "0", "01256999666", new CountryAndAreaPhoneNumber("United Kingdom", "Basingstoke", "44", "1256", "999666"));
+    runTest("00", "0", "01256799666", new CountryAndAreaPhoneNumber("Jersey", "Newport", "44", "12567", "99666"));
   }
   
   @Test
   public void testInternationalGeographicNumber() {
-    runTest("00441256999666", new CountryAndAreaPhoneNumber("United Kingdom", "Basingstoke", "44", "1256", "999666"));
-    runTest("00441256799666", new CountryAndAreaPhoneNumber("Jersey", "Newport", "44", "12567", "99666"));
+    runTest("00", "0", "00441256999666", new CountryAndAreaPhoneNumber("United Kingdom", "Basingstoke", "44", "1256", "999666"));
+    runTest("00", "0", "00441256799666", new CountryAndAreaPhoneNumber("Jersey", "Newport", "44", "12567", "99666"));
   }
 
-  public void runTest(String number, PhoneNumber expectedPhoneNumber) {
+  public void runTest(String internationalPrefix, String areaCodePrefix, String number, PhoneNumber expectedPhoneNumber) {
+    when(defaultsService.getInternationalPrefix()).thenReturn(internationalPrefix);
+    when(defaultsService.getAreaCodePrefix()).thenReturn(areaCodePrefix);
     PhoneNumber phoneNumber = phoneNumberFactory.create(number);
     Assert.assertEquals("The wrong phone number was returned for number " + number, expectedPhoneNumber, phoneNumber);
   }
