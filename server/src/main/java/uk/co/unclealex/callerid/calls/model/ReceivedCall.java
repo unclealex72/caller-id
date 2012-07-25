@@ -45,7 +45,7 @@ public class ReceivedCall {
   /**
    * The instant the call was recevied.
    */
-  private final DateTime callReceivedTime;
+  private final DateTime startTime;
 
   /**
    * The {@link PhoneNumber} that made the call.
@@ -66,7 +66,7 @@ public class ReceivedCall {
   /**
    * Instantiates a new received call.
    * 
-   * @param callReceivedTime
+   * @param startTime
    *          the call received time
    * @param phoneNumber
    *          the phone number
@@ -77,7 +77,7 @@ public class ReceivedCall {
    */
   public ReceivedCall(DateTime callReceivedTime, PhoneNumber phoneNumber, String contactName, List<Contact> contacts) {
     super();
-    this.callReceivedTime = callReceivedTime;
+    this.startTime = callReceivedTime;
     this.phoneNumber = phoneNumber;
     this.contactName = contactName;
     this.contacts = contacts;
@@ -112,8 +112,8 @@ public class ReceivedCall {
    * 
    * @return the instant the call was recevied
    */
-  public DateTime getCallReceivedTime() {
-    return callReceivedTime;
+  public DateTime getStartTime() {
+    return startTime;
   }
 
   /**

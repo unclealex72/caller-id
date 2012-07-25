@@ -8,5 +8,13 @@
 
   <context:annotation-config/>
 
-  <bean id="phoneNumberFactory" class="uk.co.unclealex.callerid.phonenumber.service.PhoneNumberFactoryImpl"/>
+  <bean id="phoneNumberFactory" class="uk.co.unclealex.callerid.service.PhoneNumberFactoryImpl"/>
+  
+  <bean id="receivedCallFactory" class="uk.co.unclealex.callerid.service.ReceivedCallFactoryImpl"/>
+  
+  <bean id="phoneNumberNormaliser" class="uk.co.unclealex.callerid.service.PhoneNumberFunction">
+    <constructor-arg>
+      <bean class="uk.co.unclealex.callerid.service.PhoneNumberNormalisingVisitor"/>
+    </constructor-arg>
+  </bean>
 </beans>

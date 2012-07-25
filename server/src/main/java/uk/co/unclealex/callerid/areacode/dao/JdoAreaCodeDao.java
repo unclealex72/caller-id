@@ -32,6 +32,8 @@ import java.util.SortedSet;
 import javax.inject.Inject;
 import javax.jdo.PersistenceManagerFactory;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import uk.co.unclealex.callerid.areacode.model.AreaCode;
 import uk.co.unclealex.callerid.areacode.model.QAreaCode;
 import uk.co.unclealex.persistence.jdo.JdoBasicDao;
@@ -51,6 +53,7 @@ import com.mysema.query.jdo.JDOQLQuery;
  * @author alex
  * 
  */
+@Transactional
 public class JdoAreaCodeDao extends JdoBasicDao<AreaCode, QAreaCode> implements AreaCodeDao {
 
   static Function<String, Integer> STRING_LENGTH_FUNCTION = new Function<String, Integer>() {

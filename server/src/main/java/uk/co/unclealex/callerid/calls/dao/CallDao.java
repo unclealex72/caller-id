@@ -29,24 +29,41 @@ import uk.co.unclealex.persistence.dao.BasicDao;
 import uk.co.unclealex.persistence.paging.Page;
 
 /**
- * The interface fo 
+ * The interface fo
+ * 
  * @author alex
- *
+ * 
  */
 public interface CallDao extends BasicDao<Call> {
 
   /**
    * Page all received calls, starting with the most recent.
-   * @param pageNumber The page number to return.
-   * @param pageSize The size of page to return.
+   * 
+   * @param pageNumber
+   *          The page number to return.
+   * @param pageSize
+   *          The size of page to return.
    * @return A page of all received calls, starting with the most recent.
    */
   public Page<Call> pageAllByTimeReceived(long pageNumber, long pageSize);
-  
+
   /**
    * Update the name of a contact of a call.
-   * @param callId The id of the call to update.
-   * @param newContactName The new contact name for the call.
+   * 
+   * @param callId
+   *          The id of the call to update.
+   * @param newContactName
+   *          The new contact name for the call.
    */
   public void updateContactName(int callId, String newContactName);
+
+  /**
+   * Get the most recent contact name for a particular phone number.
+   * 
+   * @param phoneNumber
+   *          The phone number to search for.
+   * @return The most recent contact name for the phone number (which may be
+   *         null) or null if no such call has ever been received.
+   */
+  public String getMostRecentContactNameForPhoneNumber(String phoneNumber);
 }

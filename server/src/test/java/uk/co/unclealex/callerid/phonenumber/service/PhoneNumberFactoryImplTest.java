@@ -42,6 +42,7 @@ import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
+import uk.co.unclealex.callerid.service.PhoneNumberFactoryImpl;
 
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;

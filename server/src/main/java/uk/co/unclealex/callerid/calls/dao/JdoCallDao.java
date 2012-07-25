@@ -26,6 +26,8 @@ package uk.co.unclealex.callerid.calls.dao;
 
 import javax.jdo.PersistenceManagerFactory;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.mysema.query.jdo.JDOQLQuery;
 
 import uk.co.unclealex.callerid.calls.model.Call;
@@ -38,8 +40,9 @@ import uk.co.unclealex.persistence.paging.PagingService;
  * The JDO implementation of {@link CallDao}.
  * 
  * @author alex
- *
+ * 
  */
+@Transactional
 public class JdoCallDao extends JdoBasicDao<Call, QCall> implements CallDao {
 
   /**
@@ -81,7 +84,28 @@ public class JdoCallDao extends JdoBasicDao<Call, QCall> implements CallDao {
     };
     execute(callback);
   }
-  
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getMostRecentContactNameForPhoneNumber(final String phoneNumber) {
+    QueryCallback<String> callback = new QueryCallback<String>() {
+
+      @Override
+      public String doInQuery(JDOQLQuery query) {
+        QCall c = candidate();
+        return query
+            .from(c)
+            .where(c.telephoneNumber.eq(phoneNumber))
+            .orderBy(c.callTime.desc())
+            .limit(1)
+            .uniqueResult(c.contactName);
+      }
+    };
+    return execute(callback);
+  }
+
   /**
    * {@inheritDoc}
    */

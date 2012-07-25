@@ -22,7 +22,7 @@
  *
  */
 
-package uk.co.unclealex.callerid.phonenumber.service;
+package uk.co.unclealex.callerid.service;
 
 import java.util.Arrays;
 import java.util.SortedSet;

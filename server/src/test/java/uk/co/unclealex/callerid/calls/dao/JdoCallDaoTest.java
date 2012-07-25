@@ -100,9 +100,9 @@ public class JdoCallDaoTest {
     DateTime firstCallTime = new DateTime();
     DateTime secondCallTime = firstCallTime.plusHours(1);
     DateTime thirdCallTime = secondCallTime.plusHours(2);
-    callDao.store(new Call(secondCallTime, "440800400100", "Freddie"));
-    callDao.store(new Call(firstCallTime, "330900505050", "Brian"));
-    callDao.store(new Call(thirdCallTime, "330900505050", "Brian"));
+    callDao.store(new Call(secondCallTime, "44800400100", "Freddie"));
+    callDao.store(new Call(firstCallTime, "33900505050", "Brian"));
+    callDao.store(new Call(thirdCallTime, "33900505050", "Brian"));
     flush();
     List<List<DateTime>> expectedDateTimes = Lists.newArrayList();
     expectedDateTimes.add(Arrays.asList(firstCallTime, secondCallTime));
@@ -117,6 +117,40 @@ public class JdoCallDaoTest {
       Assert.assertEquals("The wrong times were returned.", actualDateTimes, expectedPageDateTimes);
       currentPage++;
     }
+  }
+
+  @Test
+  public void testMostRecentCallForNumberWithNoPreviousCall() {
+    callDao.store(new Call(new DateTime(), "44800400100", "Mike"));
+    flush();
+    Assert.assertNull(
+        "A contact name was returned for a call that has never been made.",
+        callDao.getMostRecentContactNameForPhoneNumber("44800500500"));
+  }
+
+  @Test
+  public void testMostRecentCallForNumberWithPreviousCalls() {
+    callDao.store(new Call(new DateTime(), "44800400100", "Brian"));
+    callDao.store(new Call(new DateTime().minusDays(1), "44800500500", "Mike"));
+    callDao.store(new Call(new DateTime().minusDays(2), "44800500500", null));
+    callDao.store(new Call(new DateTime().minusDays(3), "44800500500", "Ian"));
+    flush();
+    Assert.assertEquals(
+        "The wrong name was recevied for a most recent call.",
+        "Mike",
+        callDao.getMostRecentContactNameForPhoneNumber("44800500500"));
+  }
+
+  @Test
+  public void testMostRecentCallForNumberWithPreviousCallsAndNullOverrides() {
+    callDao.store(new Call(new DateTime(), "44800400100", "Brian"));
+    callDao.store(new Call(new DateTime().minusDays(1), "44800500500", null));
+    callDao.store(new Call(new DateTime().minusDays(2), "44800500500", "Mike"));
+    callDao.store(new Call(new DateTime().minusDays(3), "44800500500", "Ian"));
+    flush();
+    Assert.assertNull(
+        "A name was returned for a call where null was the most recent name.",
+        callDao.getMostRecentContactNameForPhoneNumber("44800500500"));
   }
 
   protected void flush() {
