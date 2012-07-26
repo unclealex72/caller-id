@@ -35,6 +35,7 @@ import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.model.WithheldPhoneNumber;
 
 import com.google.common.base.Function;
 
@@ -78,6 +79,12 @@ public class PhoneNumberPrettyPrinterVisitorTest {
   @Test
   public void testInternational() {
     runTest(new CountryAndAreaPhoneNumber("", "", "33", "1256", "703217"), "+33", "1256", "703217");
+  }
+
+  @Test
+  public void testWithheld() {
+    Assert.assertNull("A withheld number was not pretty printed as null.", new PhoneNumberFunction<>(
+        new PhoneNumberPrettyPrinterVisitor(null)).apply(new WithheldPhoneNumber()));
   }
 
   protected void runTest(PhoneNumber phoneNumber, String... expectedParts) {

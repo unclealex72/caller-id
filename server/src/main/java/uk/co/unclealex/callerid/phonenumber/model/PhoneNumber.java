@@ -75,6 +75,15 @@ public interface PhoneNumber {
     T visit(CountryAndAreaPhoneNumber countryAndAreaPhoneNumber);
 
     /**
+     * Visit a {@link CountryAndAreaPhoneNumber}.
+     * 
+     * @param countryAndAreaPhoneNumber
+     *          The {@link CountryAndAreaPhoneNumber} to visit.
+     * @return To be defined by implentations but defaults to <code>null</code>.
+     */
+    T visit(WithheldPhoneNumber withheldPhoneNumber);
+
+    /**
      * A default implementation of {@link Visitor} that throws an
      * {@link IllegalArgumentException} when visiting a non-specific
      * {@link PhoneNumber} implementation.
@@ -90,6 +99,14 @@ public interface PhoneNumber {
        */
       public T visit(PhoneNumber phoneNumber) {
         throw new IllegalStateException("The type " + phoneNumber.getClass() + " is not a known phone number type.");
+      }
+      
+      /**
+       * {@inheritDoc}
+       */
+      @Override
+      public T visit(WithheldPhoneNumber withheldPhoneNumber) {
+        return null;
       }
     }
   }

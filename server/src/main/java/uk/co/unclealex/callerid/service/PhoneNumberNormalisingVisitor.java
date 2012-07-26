@@ -33,6 +33,7 @@ import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber.Visitor;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber.Visitor.Default;
+import uk.co.unclealex.callerid.phonenumber.model.WithheldPhoneNumber;
 
 /**
  * A link {@link Visitor} that transforms a {@link PhoneNumber} and normalises
@@ -60,6 +61,7 @@ import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber.Visitor.Default;
  * </tr>
  * </table>
  * 
+ * {@link WithheldPhoneNumber}s return <code>null<code>.
  * @author alex
  * 
  */
@@ -71,7 +73,10 @@ public class PhoneNumberNormalisingVisitor extends Default<String> {
   private final DefaultsService defaultsService;
 
   /**
+   * Instantiates a new phone number normalising visitor.
+   * 
    * @param defaultsService
+   *          the defaults service
    */
   @Inject
   public PhoneNumberNormalisingVisitor(DefaultsService defaultsService) {
@@ -107,6 +112,12 @@ public class PhoneNumberNormalisingVisitor extends Default<String> {
         + countryAndAreaPhoneNumber.getNumber();
   }
 
+  /**
+   * Gets the {@link DefaultsService} used to get default configuration values.
+   * 
+   * @return the {@link DefaultsService} used to get default configuration
+   *         values
+   */
   public DefaultsService getDefaultsService() {
     return defaultsService;
   }

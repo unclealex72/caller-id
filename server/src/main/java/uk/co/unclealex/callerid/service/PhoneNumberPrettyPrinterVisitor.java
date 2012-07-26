@@ -33,6 +33,7 @@ import uk.co.unclealex.callerid.defaults.DefaultsService;
 import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.model.WithheldPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber.Visitor.Default;
 
 /**
@@ -69,6 +70,7 @@ import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber.Visitor.Default;
  * </tr>
  * </table>
  * 
+ * {@link WithheldPhoneNumber}s return null.
  * @author alex
  * 
  */

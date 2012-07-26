@@ -34,6 +34,7 @@ import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.model.WithheldPhoneNumber;
 
 /**
  * @author alex
@@ -55,6 +56,13 @@ public class PhoneNumberNormalisingVisitorTest {
   public void testNonLocalNonGeographic() {
     runTest(new CountriesOnlyPhoneNumber("1", "555800122"), "1555800122");
   }
+
+  @Test
+  public void testWithheld() {
+    Assert.assertNull("A withheld number was not normalised to null.", new PhoneNumberFunction<>(
+        new PhoneNumberNormalisingVisitor(null)).apply(new WithheldPhoneNumber()));
+  }
+
 
   public void runTest(PhoneNumber phoneNumber, String expectedNormalisedNumber) {
     DefaultsService defaultsService = Mockito.mock(DefaultsService.class);
