@@ -125,9 +125,9 @@ public class CallsController {
       String googleSearchArea = phoneNumber.accept(new GoogleSearchAreaLocationVisitor());
       return new ReceivedCallModel(
           receivedCall.getStartTime(),
-          prettyPrintedPhoneNumber,
+          prettyPrintedPhoneNumber.toArray(new String[prettyPrintedPhoneNumber.size()]),
           contactName,
-          location,
+          location.toArray(new String[location.size()]),
           googleSearchTerm,
           googleSearchArea);
     }

@@ -5,7 +5,7 @@
 	<jsp:output omit-xml-declaration="yes" />
 
 	<hgroup>
-		<h1>An HTML5/CSS3 powered website that contains very less images</h1>
+		<h1>Look who's calling!</h1>
 		<!-- h2>Even the icons used are texts icons, easier to use/customize and load page faster.</h2 -->
 	</hgroup>
 </div>

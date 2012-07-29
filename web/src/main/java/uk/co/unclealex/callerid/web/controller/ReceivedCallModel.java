@@ -25,7 +25,6 @@
 package uk.co.unclealex.callerid.web.controller;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author alex
@@ -41,7 +40,7 @@ public class ReceivedCallModel {
   /**
    * The pretty printed phone number or null if the number was withheld.
    */
-  private final List<String> prettyPrintedPhoneNumber;
+  private final String[] prettyPrintedPhoneNumber;
   
   /**
    * The name of the contact who made the call or none if this cannot be determined.
@@ -51,7 +50,7 @@ public class ReceivedCallModel {
   /**
    * The location the call came from, in pretty printable parts.
    */
-  private final List<String> location;
+  private final String[] location;
   
   /**
    * The term to use for searching in Google Maps.
@@ -73,9 +72,9 @@ public class ReceivedCallModel {
    */
   public ReceivedCallModel(
       Date callTime,
-      List<String> prettyPrintedPhoneNumber,
+      String[] prettyPrintedPhoneNumber,
       String contact,
-      List<String> location,
+      String[] location,
       String googleSearchTerm,
       String googleSearchArea) {
     super();
@@ -91,7 +90,7 @@ public class ReceivedCallModel {
     return callTime;
   }
 
-  public List<String> getPrettyPrintedPhoneNumber() {
+  public String[] getPrettyPrintedPhoneNumber() {
     return prettyPrintedPhoneNumber;
   }
 
@@ -99,7 +98,7 @@ public class ReceivedCallModel {
     return contact;
   }
 
-  public List<String> getLocation() {
+  public String[] getLocation() {
     return location;
   }
 
