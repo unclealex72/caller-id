@@ -5,6 +5,10 @@
 	
 	var map;
     var geocoder = new google.maps.Geocoder();
+    var marker = new google.maps.Marker();
+    var nearViewport;
+    var markerLocation;
+    
 	$(document).ready(function() {
 		$(map).height($(calls).height());
         var mapOptions = {
@@ -14,15 +18,32 @@
               };
               map = new google.maps.Map(document.getElementById("map"),
                   mapOptions);
-	});
+              google.maps.event.addListener(marker, 'click', zoom);
+    });
 
+    function zoom() {
+    	map.fitBounds(nearViewport);
+    	map.panTo(markerLocation);
+    }
+    
 	function mapto(address, area) {
 	    geocoder.geocode( { 'address': address, 'region' : area }, function(results, status) {
 	        if (status == google.maps.GeocoderStatus.OK) {
-	          map.panTo(results[0].geometry.location);
+	          markerLocation = results[0].geometry.location;
+	          nearViewport = results[0].geometry.viewport;
+	          geocoder.geocode({ 'address' : area }, function(results, status) { 
+	        	  marker.setAnimation(google.maps.Animation.DROP);
+	        	  marker.setPosition(markerLocation);
+	        	  marker.setMap(map);
+	        	  marker.setTitle(address);
+		          map.fitBounds(results[0].geometry.viewport);               
+		          map.panTo(location);		        	  
+	          });
 	        } else {
 	          alert("Geocode was not successful for the following reason: " + status);
 	        }
 	      });
+	    return false;
 	}
+
 </script>
