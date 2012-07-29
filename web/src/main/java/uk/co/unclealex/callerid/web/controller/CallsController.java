@@ -46,6 +46,7 @@ import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber.Visitor;
 import uk.co.unclealex.callerid.service.ReceivedCallFactory;
 import uk.co.unclealex.persistence.paging.Page;
 
@@ -53,6 +54,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+// TODO: Auto-generated Javadoc
 /**
  * A controller for listing all recieved calls.
  * 
@@ -64,7 +66,7 @@ import com.google.common.collect.Lists;
 public class CallsController {
 
   /**
-   * 
+   * The default page size.
    */
   private static final int PAGE_SIZE = 10;
 
@@ -84,9 +86,14 @@ public class CallsController {
   private final Function<PhoneNumber, List<String>> phoneNumberPrettyPrinter;
 
   /**
+   * Instantiates a new calls controller.
+   * 
    * @param callDao
+   *          the call dao
    * @param receivedCallFactory
+   *          the received call factory
    * @param phoneNumberPrettyPrinter
+   *          the phone number pretty printer
    */
   @Inject
   public CallsController(
@@ -99,11 +106,23 @@ public class CallsController {
     this.phoneNumberPrettyPrinter = phoneNumberPrettyPrinter;
   }
 
+  /**
+   * List the first page calls.
+   * 
+   * @return A model and view for listing the first page of received calls.
+   */
   @RequestMapping(value = "/calls.html", method = RequestMethod.GET)
   public ModelAndView listCalls() {
     return listCalls(1);
   }
 
+  /**
+   * List a page of calls.
+   * 
+   * @param page
+   *          The 1-based page to display.
+   * @return A model and view for listing a page of received calls.
+   */
   @RequestMapping(value = "/{page}/calls.html", method = RequestMethod.GET)
   public ModelAndView listCalls(@PathVariable("page") int page) {
     ModelAndView mav = new ModelAndView("calls");
@@ -115,6 +134,16 @@ public class CallsController {
     return mav;
   }
 
+  /**
+   * Create a page model.
+   * 
+   * @param callsByTimeReceived
+   *          The page of calls to model.
+   * @param currentPage
+   *          The number of the page to model.
+   * @return A {@link PageModel} that can be used to display information about
+   *         the current page.
+   */
   protected PageModel createPageModel(Page<Call> callsByTimeReceived, int currentPage) {
     int firstIndex = (int) callsByTimeReceived.getOffset();
     int lastIndex = firstIndex + (int) callsByTimeReceived.getPageSize();
@@ -140,6 +169,13 @@ public class CallsController {
         allPages);
   }
 
+  /**
+   * A {@link Function} that translates a {@link Call} into a.
+   * 
+   * {@link ReceivedCallModel}.
+   * 
+   * @author alex
+   */
   class ReceivedCallFunction implements Function<Call, ReceivedCallModel> {
 
     /**
@@ -164,37 +200,67 @@ public class CallsController {
     }
   }
 
+  /**
+   * A {@link Visitor} that converts a {@link PhoneNumber} into a list of
+   * strings indicating where the phone number originated.
+   * 
+   * @author alex
+   * 
+   */
   class PhoneNumberLocationVisitor extends PhoneNumber.Visitor.Default<List<String>> {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> visit(CountriesOnlyPhoneNumber countriesOnlyPhoneNumber) {
       return Collections.singletonList(countriesOnlyPhoneNumber.getCountries().first().getName());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> visit(CountryAndAreaPhoneNumber countryAndAreaPhoneNumber) {
       AreaCode areaCode = countryAndAreaPhoneNumber.getAreaCode();
       return Arrays.asList(areaCode.getArea(), areaCode.getCountry().getName());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> visit(NumberOnlyPhoneNumber numberOnlyPhoneNumber) {
       return null;
     }
   }
 
+  /**
+   * A {@link Visitor} that gets the search term to use in Google maps for a {@link PhoneNumber}.
+   * @author alex
+   *
+   */
   class GoogleSearchTermLocationVisitor extends PhoneNumber.Visitor.Default<String> {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String visit(CountriesOnlyPhoneNumber countriesOnlyPhoneNumber) {
       return countriesOnlyPhoneNumber.getCountries().first().getName();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String visit(CountryAndAreaPhoneNumber countryAndAreaPhoneNumber) {
       return countryAndAreaPhoneNumber.getAreaCode().getArea();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String visit(NumberOnlyPhoneNumber numberOnlyPhoneNumber) {
       return null;
@@ -202,18 +268,32 @@ public class CallsController {
 
   }
 
+  /**
+   * A {@link Visitor} that gets the search area to use in Google maps for a {@link PhoneNumber}.
+   * @author alex
+   *
+   */
   class GoogleSearchAreaLocationVisitor extends PhoneNumber.Visitor.Default<String> {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String visit(CountriesOnlyPhoneNumber countriesOnlyPhoneNumber) {
       return countriesOnlyPhoneNumber.getCountries().first().getTld();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String visit(CountryAndAreaPhoneNumber countryAndAreaPhoneNumber) {
       return countryAndAreaPhoneNumber.getAreaCode().getCountry().getTld();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String visit(NumberOnlyPhoneNumber numberOnlyPhoneNumber) {
       return null;
@@ -221,14 +301,31 @@ public class CallsController {
 
   }
 
+  /**
+   * Gets the {@link CallDao} used to list received calls.
+   * 
+   * @return the {@link CallDao} used to list received calls
+   */
   public CallDao getCallDao() {
     return callDao;
   }
 
+  /**
+   * Gets the {@link ReceivedCallFactory} used to get all received call
+   * information.
+   * 
+   * @return the {@link ReceivedCallFactory} used to get all received call
+   *         information
+   */
   public ReceivedCallFactory getReceivedCallFactory() {
     return receivedCallFactory;
   }
 
+  /**
+   * Gets the {@link PhoneNumber} pretty printer.
+   * 
+   * @return the {@link PhoneNumber} pretty printer
+   */
   public Function<PhoneNumber, List<String>> getPhoneNumberPrettyPrinter() {
     return phoneNumberPrettyPrinter;
   }

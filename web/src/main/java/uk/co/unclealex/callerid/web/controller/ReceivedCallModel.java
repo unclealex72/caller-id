@@ -27,8 +27,9 @@ package uk.co.unclealex.callerid.web.controller;
 import java.util.Date;
 
 /**
+ * A class that models a viewable received call.
+ * 
  * @author alex
- *
  */
 public class ReceivedCallModel {
 
@@ -63,12 +64,20 @@ public class ReceivedCallModel {
   private final String googleSearchArea;
 
   /**
+   * Instantiates a new received call model.
+   * 
    * @param callTime
+   *          the call time
    * @param prettyPrintedPhoneNumber
+   *          the pretty printed phone number
    * @param contact
+   *          the contact
    * @param location
+   *          the location
    * @param googleSearchTerm
+   *          the google search term
    * @param googleSearchArea
+   *          the google search area
    */
   public ReceivedCallModel(
       Date callTime,
@@ -86,26 +95,58 @@ public class ReceivedCallModel {
     this.googleSearchArea = googleSearchArea;
   }
 
+  /**
+   * Gets the date and time the call was received.
+   * 
+   * @return the date and time the call was received
+   */
   public Date getCallTime() {
     return callTime;
   }
 
+  /**
+   * Gets the pretty printed phone number or null if the number was withheld.
+   * 
+   * @return the pretty printed phone number or null if the number was withheld
+   */
   public String[] getPrettyPrintedPhoneNumber() {
     return prettyPrintedPhoneNumber;
   }
 
+  /**
+   * Gets the name of the contact who made the call or none if this cannot be
+   * determined.
+   * 
+   * @return the name of the contact who made the call or none if this cannot be
+   *         determined
+   */
   public String getContact() {
     return contact;
   }
 
+  /**
+   * Gets the location the call came from, in pretty printable parts.
+   * 
+   * @return the location the call came from, in pretty printable parts
+   */
   public String[] getLocation() {
     return location;
   }
 
+  /**
+   * Gets the term to use for searching in Google Maps.
+   * 
+   * @return the term to use for searching in Google Maps
+   */
   public String getGoogleSearchTerm() {
     return googleSearchTerm;
   }
 
+  /**
+   * Gets the area to search within when using Google Maps.
+   * 
+   * @return the area to search within when using Google Maps
+   */
   public String getGoogleSearchArea() {
     return googleSearchArea;
   }

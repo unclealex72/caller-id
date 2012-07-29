@@ -45,7 +45,10 @@
 						-
 						<fmt:formatDate type="both" dateStyle="short" timeStyle="short"
 							value="${call.callTime}" />
-						<div style="float: right;">edit</div>
+						<div style="float: right;">
+							<a class="icon" title="Search">z</a>
+							<a class="icon" title="Edit">L</a>
+						</div>
 					</div>
 					<div>
 						<c:if test="${call.contact != null}">
