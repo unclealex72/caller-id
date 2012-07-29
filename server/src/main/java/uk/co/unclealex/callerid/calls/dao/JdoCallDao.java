@@ -66,7 +66,7 @@ public class JdoCallDao extends JdoBasicDao<Call, QCall> implements CallDao {
         return query();
       }
     };
-    return page(supplier, pageNumber, pageSize, call.callTime.asc());
+    return page(supplier, pageNumber, pageSize, call.callTime.desc());
   }
 
   /**

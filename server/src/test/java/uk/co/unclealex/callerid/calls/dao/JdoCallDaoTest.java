@@ -101,9 +101,9 @@ public class JdoCallDaoTest {
   public void testPageByDate() {
     Calendar cal = new GregorianCalendar();
     Date firstCallTime = cal.getTime();
-    cal.add(Calendar.HOUR_OF_DAY, 1);
+    cal.add(Calendar.HOUR_OF_DAY, -1);
     Date secondCallTime = cal.getTime();
-    cal.add(Calendar.HOUR_OF_DAY, 1);
+    cal.add(Calendar.HOUR_OF_DAY, -1);
     Date thirdCallTime = cal.getTime();
     callDao.store(new Call(secondCallTime, "44800400100", "Freddie"));
     callDao.store(new Call(firstCallTime, "33900505050", "Brian"));
