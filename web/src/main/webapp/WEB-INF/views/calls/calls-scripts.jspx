@@ -3,7 +3,13 @@
 	<jsp:directive.page contentType="text/html;charset=UTF-8" />
 	<jsp:output omit-xml-declaration="yes" />
 	
-	var map;
+    $(document).ready(function() {
+		$("#pageSelect").change(function() {
+			window.location.href = $("#pageSelect option:selected").val();
+		});  	
+    });
+
+    var map;
     var geocoder = new google.maps.Geocoder();
     var marker = new google.maps.Marker();
     var nearViewport;

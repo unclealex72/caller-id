@@ -22,7 +22,7 @@
 </style>
 	<div class="post" id="calls">
 		<h2>Recent calls</h2>
-		<ol>
+		<ol style="counter-reset: item 5">
 			<c:forEach items="${calls}" var="call">
 				<c:choose>
 					<c:when
@@ -38,10 +38,7 @@
 					<div>
 						<c:choose>
 							<c:when test="${call.prettyPrintedPhoneNumber != null}">
-								<c:forEach items="${call.prettyPrintedPhoneNumber}" var="number">
-									<c:out value="${number}" />
-									<c:out value=" " />
-								</c:forEach>
+								${fn:join(call.prettyPrintedPhoneNumber, ' ')}
 							</c:when>
 							<c:otherwise>Withheld</c:otherwise>
 						</c:choose>
@@ -52,23 +49,38 @@
 					</div>
 					<div>
 						<c:if test="${call.contact != null}">
-							<c:out value="${call.contact}" />
+							${call.contact}
 						</c:if>
 						<c:if test="${call.location != null}">
-							<c:out value="${fn:join(call.location, ', ')}" />
+							${fn:join(call.location, ', ')}
 						</c:if>
 					</div>
 				</li>
 			</c:forEach>
 		</ol>
 		<div id="pagebar">
-			<span>Page 3 of 10</span> <span class="icon">9</span> <select>
-				<c:forTokens items="1,2,3,4,5,6,7,8,9,10" delims="," var="page">
-					<option>
-						<c:out value="${page}" />
-					</option>
-				</c:forTokens>
-			</select> <span class="icon">:</span>
+			<span>Page ${page.currentPage} of ${page.lastPage}</span>
+			<c:if test="${page.previousPage != null}">
+				<c:url var="url" value="/c/${page.previousPage}/calls.html"/>
+				<a class="icon" href="${url}">9</a>
+			</c:if>
+			<select id="pageSelect">
+				<c:forEach items="${page.allPages}" var="thisPage">
+					<c:url var="url" value="/c/${thisPage}/calls.html"/>
+					<c:choose>
+						<c:when test="${thisPage == page.currentPage}">
+							<option selected="selected" value="${url}">${thisPage}</option>
+						</c:when>
+						<c:otherwise>
+							<option value="${url}">${thisPage}</option>
+						</c:otherwise>
+					</c:choose>
+				</c:forEach>
+			</select>
+			<c:if test="${page.nextPage != null}">
+				<c:url var="url" value="/c/${page.nextPage}/calls.html"/>
+				<a class="icon" href="${url}">:</a>
+			</c:if>
 		</div>
 	</div>
 	<div id="map" style="height: 100%;" />

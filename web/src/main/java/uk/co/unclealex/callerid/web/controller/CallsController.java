@@ -64,6 +64,11 @@ import com.google.common.collect.Lists;
 public class CallsController {
 
   /**
+   * 
+   */
+  private static final int PAGE_SIZE = 10;
+
+  /**
    * The {@link CallDao} used to list received calls.
    */
   private final CallDao callDao;
@@ -96,17 +101,43 @@ public class CallsController {
 
   @RequestMapping(value = "/calls.html", method = RequestMethod.GET)
   public ModelAndView listCalls() {
-    return listCalls(1, 10);
+    return listCalls(1);
   }
 
-  @RequestMapping(value = "/{page}/{size}/calls.html", method = RequestMethod.GET)
-  public ModelAndView listCalls(@PathVariable("page") int page, @PathVariable("size") int size) {
+  @RequestMapping(value = "/{page}/calls.html", method = RequestMethod.GET)
+  public ModelAndView listCalls(@PathVariable("page") int page) {
     ModelAndView mav = new ModelAndView("calls");
-    Page<Call> callsByTimeReceived = getCallDao().pageAllByTimeReceived(page, size);
+    Page<Call> callsByTimeReceived = getCallDao().pageAllByTimeReceived(page, PAGE_SIZE);
     Iterable<ReceivedCallModel> receivedCalls =
         Iterables.transform(callsByTimeReceived.getElements(), new ReceivedCallFunction());
     mav.getModel().put("calls", Lists.newArrayList(receivedCalls));
+    mav.getModel().put("page", createPageModel(callsByTimeReceived, page));
     return mav;
+  }
+
+  protected PageModel createPageModel(Page<Call> callsByTimeReceived, int currentPage) {
+    int firstIndex = (int) callsByTimeReceived.getOffset();
+    int lastIndex = firstIndex + (int) callsByTimeReceived.getPageSize();
+    int totalResultCount = (int) callsByTimeReceived.getTotalElementCount();
+    Integer previousPage = currentPage == 1 ? null : currentPage - 1;
+    int lastPage = callsByTimeReceived.getPageOffsetsByPageNumber().lastKey().intValue();
+    Integer nextPage = currentPage == lastPage ? null : currentPage + 1;
+    Function<Long, Integer> f = new Function<Long, Integer>() {
+      public Integer apply(Long pageNumber) {
+        return pageNumber.intValue();
+      }
+    };
+    List<Integer> allPages =
+        Lists.newArrayList(Iterables.transform(callsByTimeReceived.getPageOffsetsByPageNumber().keySet(), f));
+    return new PageModel(
+        firstIndex,
+        lastIndex,
+        totalResultCount,
+        previousPage,
+        nextPage,
+        currentPage,
+        lastPage,
+        allPages);
   }
 
   class ReceivedCallFunction implements Function<Call, ReceivedCallModel> {
