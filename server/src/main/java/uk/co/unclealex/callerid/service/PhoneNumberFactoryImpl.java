@@ -36,12 +36,12 @@ import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.model.WithheldPhoneNumber;
 
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 
@@ -80,6 +80,9 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
    */
   @Override
   public PhoneNumber create(String number) {
+    if (number == null) {
+      return new WithheldPhoneNumber();
+    }
     String internationalPrefix = getDefaultsService().getInternationalPrefix();
     String areaCodePrefix = getDefaultsService().getAreaCodePrefix();
     MatchResult<String> matchResult = match(number, internationalPrefix, areaCodePrefix);
@@ -146,18 +149,15 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
         match(nationalNumber, areaCodeFunction, areaCodeDao.getAllAreaCodesForCountryCode(countryCode));
     if (areaCodeMatchResult == null) {
       // We have a non-geographic international number.
-      return new CountriesOnlyPhoneNumber(countryCode, nationalNumber, Lists.newArrayList(areaCodeDao
-          .getAllCountriesForCountryCode(countryCode)));
+      return new CountriesOnlyPhoneNumber(
+          countryCode,
+          nationalNumber,
+          areaCodeDao.getAllCountriesForCountryCode(countryCode));
     }
     else {
       AreaCode areaCode = areaCodeMatchResult.getMatch();
       String localNumber = areaCodeMatchResult.getRemainingNumber();
-      return new CountryAndAreaPhoneNumber(
-          areaCode.getCountry(),
-          areaCode.getArea(),
-          areaCode.getCountryCode(),
-          areaCode.getAreaCode(),
-          localNumber);
+      return new CountryAndAreaPhoneNumber(areaCode, localNumber);
     }
   }
 

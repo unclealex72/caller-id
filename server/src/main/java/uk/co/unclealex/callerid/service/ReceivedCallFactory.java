@@ -24,7 +24,7 @@
 
 package uk.co.unclealex.callerid.service;
 
-import org.joda.time.DateTime;
+import java.util.Date;
 
 import uk.co.unclealex.callerid.calls.model.Call;
 import uk.co.unclealex.callerid.calls.model.ReceivedCall;
@@ -58,5 +58,5 @@ public interface ReceivedCallFactory {
    * @return A {@link ReceivedCall} containing all known information about the
    *         call.
    */
-  public ReceivedCall create(DateTime receivedCallTime, String callingNumber);
+  public ReceivedCall create(Date receivedCallTime, String callingNumber);
 }

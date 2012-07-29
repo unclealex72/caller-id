@@ -1,6 +1,7 @@
 <article role="main" class="clearfix" id="subheader"
 	xmlns:jsp="http://java.sun.com/JSP/Page"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
 	xmlns:spring="http://www.springframework.org/tags" version="2.0">
 	<jsp:directive.page contentType="text/html;charset=UTF-8" />
 	<jsp:output omit-xml-declaration="yes" />
@@ -21,17 +22,44 @@
 	<div class="post" id="calls">
 		<h2>Recent calls</h2>
 		<ol>
-			<c:forTokens items="Basingstoke,New York,Paris,London,Birmingham,Sydney,Tokyo,Madrid,Turin,Amsterdam" delims="," var="address">
-				<li style="width: 90%;" onclick="mapto('${address}')">
+			<c:forEach items="${calls}" var="call">
+				<c:choose>
+					<c:when
+						test="${call.googleSearchTerm == null || call.googleSearchArea == null}">
+						<c:set var="onclick" value="" />
+					</c:when>
+					<c:otherwise>
+						<c:set var="onclick"
+							value="mapto('${call.googleSearchTerm}', '${call.googleSearchArea}')" />
+					</c:otherwise>
+				</c:choose>
+				<li style="width: 90%;" onclick="${onclick}">
 					<div>
-						01256 460837 - 05/09/1972 09:12
+						<c:choose>
+							<c:when test="${call.prettyPrintedPhoneNumber != null}">
+								<c:forEach items="${call.prettyPrintedPhoneNumber}" var="number">
+									<c:out value="${number}" />
+								</c:forEach>
+							</c:when>
+							<c:otherwise>Withheld</c:otherwise>
+						</c:choose>
+						-
+						<fmt:formatDate type="both" dateStyle="short" timeStyle="short"
+							value="${call.callTime}" />
 						<div style="float: right;">edit</div>
 					</div>
 					<div>
-						<span><c:out value="${address}"/></span>
+						<c:if test="${call.contact != null}">
+							<c:out value="${call.contact}" />
+						</c:if>
+						<c:if test="${call.location != null}">
+							<c:forEach items="${call.location}" var="address">
+								<c:out value="${address}" />
+							</c:forEach>
+						</c:if>
 					</div>
 				</li>
-			</c:forTokens>
+			</c:forEach>
 		</ol>
 		<div id="pagebar">
 			<span>Page 3 of 10</span> <span class="icon">9</span> <select>

@@ -29,45 +29,42 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
- * A class that encapsulates all of the information about telephone area codes
- * and the areas they represent.
- * 
+ * A country of an {@link AreaCode}.
  * @author alex
- * 
+ *
  */
-public class AreaCode {
+public class Country {
 
   /**
-   * The country of origin for this area code.
+   * The name of this country.
    */
-  private final Country country;
+  private final String name;
 
   /**
-   * The town or city this area code represents.
+   * The country code for this country.
    */
-  private final String area;
+  private final CountryCode countryCode;
 
   /**
-   * The area code itself. This field can contain spurious characters at the
-   * beginning so only digits from the end of the string should be used.
+   * The top level domain for this country.
    */
-  private final String areaCode;
-
+  private final String tld;
+  
   /**
-   * Instantiates a new area code.
+   * Instantiates a new country.
    * 
-   * @param country
-   *          the country
-   * @param area
-   *          the area
-   * @param areaCode
-   *          the area code
+   * @param name
+   *          the name
+   * @param countryCode
+   *          the country code
+   * @param tld
+   *          the tld
    */
-  public AreaCode(Country country, String area, String areaCode) {
+  public Country(String name, CountryCode countryCode, String tld) {
     super();
-    this.country = country ;
-    this.area = area;
-    this.areaCode = areaCode;
+    this.name = name;
+    this.countryCode = countryCode;
+    this.tld = tld;
   }
 
   /**
@@ -95,29 +92,31 @@ public class AreaCode {
   }
 
   /**
-   * Gets the country of origin for this area code.
+   * Gets the name of this country.
    * 
-   * @return the country of origin for this area code
+   * @return the name of this country
    */
-  public Country getCountry() {
-    return country;
+  public String getName() {
+    return name;
   }
 
   /**
-   * Gets the town or city this area code represents.
+   * Gets the country code for this country.
    * 
-   * @return the town or city this area code represents
+   * @return the country code for this country
    */
-  public String getArea() {
-    return area;
+  public CountryCode getCountryCode() {
+    return countryCode;
   }
 
   /**
-   * Gets the area code itself.
+   * Gets the top level domain for this country.
    * 
-   * @return the area code itself
+   * @return the top level domain for this country
    */
-  public String getAreaCode() {
-    return areaCode;
+  public String getTld() {
+    return tld;
   }
+
+  
 }

@@ -29,45 +29,27 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
- * A class that encapsulates all of the information about telephone area codes
- * and the areas they represent.
- * 
+ * A country code is the international prefix of a telephone number. A country code can be for more than one
+ * {@link Country} which can then have one or more {@link AreaCode}s.
  * @author alex
- * 
+ *
  */
-public class AreaCode {
+public class CountryCode {
 
   /**
-   * The country of origin for this area code.
+   * The international prefix of telephone calls originating from this country code.
    */
-  private final Country country;
-
+  private final String internationalPrefix;
+  
   /**
-   * The town or city this area code represents.
-   */
-  private final String area;
-
-  /**
-   * The area code itself. This field can contain spurious characters at the
-   * beginning so only digits from the end of the string should be used.
-   */
-  private final String areaCode;
-
-  /**
-   * Instantiates a new area code.
+   * Instantiates a new country code.
    * 
-   * @param country
-   *          the country
-   * @param area
-   *          the area
-   * @param areaCode
-   *          the area code
+   * @param internationalPrefix
+   *          the international prefix
    */
-  public AreaCode(Country country, String area, String areaCode) {
+  public CountryCode(String internationalPrefix) {
     super();
-    this.country = country ;
-    this.area = area;
-    this.areaCode = areaCode;
+    this.internationalPrefix = internationalPrefix;
   }
 
   /**
@@ -95,29 +77,14 @@ public class AreaCode {
   }
 
   /**
-   * Gets the country of origin for this area code.
+   * Gets the international prefix of telephone calls originating from this
+   * country code.
    * 
-   * @return the country of origin for this area code
+   * @return the international prefix of telephone calls originating from this
+   *         country code
    */
-  public Country getCountry() {
-    return country;
+  public String getInternationalPrefix() {
+    return internationalPrefix;
   }
 
-  /**
-   * Gets the town or city this area code represents.
-   * 
-   * @return the town or city this area code represents
-   */
-  public String getArea() {
-    return area;
-  }
-
-  /**
-   * Gets the area code itself.
-   * 
-   * @return the area code itself
-   */
-  public String getAreaCode() {
-    return areaCode;
-  }
 }

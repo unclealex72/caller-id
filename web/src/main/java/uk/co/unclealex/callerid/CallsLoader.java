@@ -35,13 +35,11 @@ import java.util.Date;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.joda.time.DateTime;
 import org.springframework.transaction.annotation.Transactional;
-
-import au.com.bytecode.opencsv.CSVReader;
 
 import uk.co.unclealex.callerid.calls.dao.CallDao;
 import uk.co.unclealex.callerid.calls.model.Call;
+import au.com.bytecode.opencsv.CSVReader;
 
 /**
  * @author alex
@@ -60,7 +58,7 @@ public class CallsLoader implements Serializable {
       for (String[] fields : reader.readAll()) {
         Date date = df.parse(fields[0]);
         String number = fields[1];
-        Call call = new Call(new DateTime(date.getTime()), number, null);
+        Call call = new Call(date, number, null);
         getCallDao().store(call);
       }
     }

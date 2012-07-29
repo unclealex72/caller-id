@@ -27,8 +27,8 @@ package uk.co.unclealex.callerid.service;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Date;
 
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,7 +75,7 @@ public class ReceivedCallFactoryImplTest {
 
   @Test
   public void testCreateCallFromStoredCall() {
-    DateTime callTime = new DateTime();
+    Date callTime = new Date();
     Call call = new Call(callTime, "441256444555", "Brian");
     Assert.assertEquals("The wrong received call was returned.", new ReceivedCall(callTime, new NumberOnlyPhoneNumber(
         "441256444555"), "Brian", new ArrayList<Contact>()), receivedCallFactory.create(call));
@@ -83,7 +83,7 @@ public class ReceivedCallFactoryImplTest {
 
   @Test
   public void testCreateCallFromCurrentCall() {
-    DateTime callTime = new DateTime();
+    Date callTime = new Date();
     Assert.assertEquals("The wrong received call was returned.", new ReceivedCall(callTime, new NumberOnlyPhoneNumber(
         "444555"), "Iain", new ArrayList<Contact>()), receivedCallFactory.create(callTime, "444555"));
   }

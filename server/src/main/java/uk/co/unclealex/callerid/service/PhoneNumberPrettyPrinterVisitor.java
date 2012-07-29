@@ -29,6 +29,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import uk.co.unclealex.callerid.areacode.model.AreaCode;
 import uk.co.unclealex.callerid.defaults.DefaultsService;
 import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
@@ -115,15 +116,17 @@ public class PhoneNumberPrettyPrinterVisitor extends Default<List<String>> {
    */
   @Override
   public List<String> visit(CountryAndAreaPhoneNumber countryAndAreaPhoneNumber) {
-    if (isNational(countryAndAreaPhoneNumber.getCountryCode())) {
+    AreaCode areaCode = countryAndAreaPhoneNumber.getAreaCode();
+    String internationalPrefix = areaCode.getCountry().getCountryCode().getInternationalPrefix();
+    if (isNational(internationalPrefix)) {
       return Lists.newArrayList(
-          getDefaultsService().getAreaCodePrefix() + countryAndAreaPhoneNumber.getAreaCode(),
+          getDefaultsService().getAreaCodePrefix() + areaCode.getAreaCode(),
           countryAndAreaPhoneNumber.getNumber());
     }
     else {
       return internationalNumber(
-          countryAndAreaPhoneNumber.getCountryCode(),
-          countryAndAreaPhoneNumber.getAreaCode(),
+          internationalPrefix,
+          areaCode.getAreaCode(),
           countryAndAreaPhoneNumber.getNumber());
     }
   }

@@ -24,12 +24,12 @@
 
 package uk.co.unclealex.callerid.calls.model;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.joda.time.DateTime;
 
 import uk.co.unclealex.callerid.google.model.Contact;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
@@ -45,10 +45,10 @@ public class ReceivedCall {
   /**
    * The instant the call was recevied.
    */
-  private final DateTime startTime;
+  private final Date startTime;
 
   /**
-   * The {@link PhoneNumber} that made the call.
+   * The {@link PhoneNumber} that made the call or null if the the number was withheld.
    */
   private final PhoneNumber phoneNumber;
 
@@ -66,7 +66,7 @@ public class ReceivedCall {
   /**
    * Instantiates a new received call.
    * 
-   * @param startTime
+   * @param callReceivedTime
    *          the call received time
    * @param phoneNumber
    *          the phone number
@@ -75,7 +75,7 @@ public class ReceivedCall {
    * @param contacts
    *          the contacts
    */
-  public ReceivedCall(DateTime callReceivedTime, PhoneNumber phoneNumber, String contactName, List<Contact> contacts) {
+  public ReceivedCall(Date callReceivedTime, PhoneNumber phoneNumber, String contactName, List<Contact> contacts) {
     super();
     this.startTime = callReceivedTime;
     this.phoneNumber = phoneNumber;
@@ -112,14 +112,16 @@ public class ReceivedCall {
    * 
    * @return the instant the call was recevied
    */
-  public DateTime getStartTime() {
+  public Date getStartTime() {
     return startTime;
   }
 
   /**
-   * Gets the {@link PhoneNumber} that made the call.
+   * Gets the {@link PhoneNumber} that made the call or null if the number was
+   * withheld.
    * 
-   * @return the {@link PhoneNumber} that made the call
+   * @return the {@link PhoneNumber} that made the call or null if the the
+   *         number was withheld
    */
   public PhoneNumber getPhoneNumber() {
     return phoneNumber;

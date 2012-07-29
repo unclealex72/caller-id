@@ -23,8 +23,9 @@
  */
 package uk.co.unclealex.callerid.phonenumber.model;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.SortedSet;
+
+import uk.co.unclealex.callerid.areacode.model.Country;
 
 /**
  * A non-geographic {@link PhoneNumber}. As countries share international prefixes, a list of countries is stored.
@@ -36,7 +37,7 @@ public class CountriesOnlyPhoneNumber extends AbstractPhoneNumber {
   /**
    * The list of countries that this call may have originated from in order of the most likely to the least likely.
    */
-	private List<String> countries;
+	private SortedSet<Country> countries;
 	
 	/**
 	 * The country code for the phone number.
@@ -52,25 +53,13 @@ public class CountriesOnlyPhoneNumber extends AbstractPhoneNumber {
 	 * @param countries
    *          the countries
    */
-	public CountriesOnlyPhoneNumber(String countryCode, String number, List<String> countries) {
+	public CountriesOnlyPhoneNumber(String countryCode, String number, SortedSet<Country> countries) {
 		super(number);
 		this.countries = countries;
 		this.countryCode = countryCode;
 	}
 
   /**
-   * Instantiates a new countries only phone number.
-   * @param countryCode
-   *          the country code
-   * @param number
-   *          the number
-   * @param countries
-   *          the countries
-   */
-  public CountriesOnlyPhoneNumber(String countryCode, String number, String... countries) {
-    this(countryCode, number, Arrays.asList(countries));
-  }
-    /**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -85,7 +74,7 @@ public class CountriesOnlyPhoneNumber extends AbstractPhoneNumber {
    * @return the list of countries that this call may have originated from in
    *         order of the most likely to the least likely
    */
-	public List<String> getCountries() {
+	public SortedSet<Country> getCountries() {
 		return countries;
 	}
 

@@ -34,8 +34,8 @@
 "Afghanistan",93,"Paktia","(0)64"
 "Afghanistan",93,"Paktika","(0)65"
 "Afghanistan",93,,
-"Aland Islands",358,"Åland","(0)18"
-"Aland Islands",358,,
+"Åland Islands",358,"Åland","(0)18"
+"Åland Islands",358,,
 "Albania",355,"Bajzë","(0)211"
 "Albania",355,"Pukë","(0)212"
 "Albania",355,"Bajram Curri","(0)213"
@@ -2646,7 +2646,7 @@
 "China",86,"Yining- XJ","(0)999"
 "China",86,,
 "Christmas Island",61,,
-"Cocos (Keeling) Island",61,,
+"Cocos Islands",61,,
 "Colombia",57,"Bogotá","(0X)1"
 "Colombia",57,"Pasto","(0X)2"
 "Colombia",57,"Medellín","(0X)4"
@@ -2659,20 +2659,20 @@
 "Comoros",269,"Anjouan Island",71
 "Comoros",269,"Moheli Island",72
 "Comoros",269,,
-"Congo",242,"Cuvette",21
-"Congo",242,"Sangha",22
-"Congo",242,"Pool",23
-"Congo",242,"Plateaux",24
-"Congo",242,"Niari",25
-"Congo",242,"Brazzaville",28
-"Congo",242,"Pointe-Noire",29
-"Congo",242,,
-"Congo- Democratic Republic of the",243,"Kinshasa","(0)1"
-"Congo- Democratic Republic of the",243,"Lubumbashi","(0)2"
-"Congo- Democratic Republic of the",243,"Bandundu","(0)3"
-"Congo- Democratic Republic of the",243,"Province Orientale","(0)5"
-"Congo- Democratic Republic of the",243,"Kivu","(0)6"
-"Congo- Democratic Republic of the",243,,
+"Republic of the Congo",242,"Cuvette",21
+"Republic of the Congo",242,"Sangha",22
+"Republic of the Congo",242,"Pool",23
+"Republic of the Congo",242,"Plateaux",24
+"Republic of the Congo",242,"Niari",25
+"Republic of the Congo",242,"Brazzaville",28
+"Republic of the Congo",242,"Pointe-Noire",29
+"Republic of the Congo",242,,
+"Democratic Republic of the Congo",243,"Kinshasa","(0)1"
+"Democratic Republic of the Congo",243,"Lubumbashi","(0)2"
+"Democratic Republic of the Congo",243,"Bandundu","(0)3"
+"Democratic Republic of the Congo",243,"Province Orientale","(0)5"
+"Democratic Republic of the Congo",243,"Kivu","(0)6"
+"Democratic Republic of the Congo",243,,
 "Cook Islands",682,"Rarotonga","(0)2"
 "Cook Islands",682,"Aitutaki","(0)31"
 "Cook Islands",682,"Aitutaki","(0)32"
@@ -2688,19 +2688,19 @@
 "Cook Islands",682,"Nassau","(0)45"
 "Cook Islands",682,,
 "Costa Rica",506,,
-"Côte D'Ivoire",225,"Plateau",20
-"Côte D'Ivoire",225,"Abidjan",21
-"Côte D'Ivoire",225,"Cocody",22
-"Côte D'Ivoire",225,"Banco",23
-"Côte D'Ivoire",225,"Abobo",24
-"Côte D'Ivoire",225,"Yamoussoukro",30
-"Côte D'Ivoire",225,"Bouaké",31
-"Côte D'Ivoire",225,"Daloa",32
-"Côte D'Ivoire",225,"Man",33
-"Côte D'Ivoire",225,"San Pedro",34
-"Côte D'Ivoire",225,"Abengourou",35
-"Côte D'Ivoire",225,"Korhogo",36
-"Côte D'Ivoire",225,,
+"Côte d'Ivoire",225,"Plateau",20
+"Côte d'Ivoire",225,"Abidjan",21
+"Côte d'Ivoire",225,"Cocody",22
+"Côte d'Ivoire",225,"Banco",23
+"Côte d'Ivoire",225,"Abobo",24
+"Côte d'Ivoire",225,"Yamoussoukro",30
+"Côte d'Ivoire",225,"Bouaké",31
+"Côte d'Ivoire",225,"Daloa",32
+"Côte d'Ivoire",225,"Man",33
+"Côte d'Ivoire",225,"San Pedro",34
+"Côte d'Ivoire",225,"Abengourou",35
+"Côte d'Ivoire",225,"Korhogo",36
+"Côte d'Ivoire",225,,
 "Croatia",385,"Zagreb","(0)1"
 "Croatia",385,"Dubrovnik","(0)20"
 "Croatia",385,"Split","(0)21"
@@ -2761,15 +2761,15 @@
 "Cuba",53,"Pinar Rio","(0)86"
 "Cuba",53,"Guantánamo Bay","(0)99"
 "Cuba",53,,
-"Cyprus- Republic of",357,"Nicosia",22
-"Cyprus- Republic of",357,"Famagusta",23
-"Cyprus- Republic of",357,"Larnaca",24
-"Cyprus- Republic of",357,"Limassol",25
-"Cyprus- Republic of",357,"Paphos",26
-"Cyprus- Republic of",357,"Kyrenia",27
-"Cyprus- Republic of",357,,
-"Cyprus- Turkish Republic of Northern",90,"Lefkosia (Nicosia)","(0)392"
-"Cyprus- Turkish Republic of Northern",90,,
+"Cyprus - Republic of",357,"Nicosia",22
+"Cyprus - Republic of",357,"Famagusta",23
+"Cyprus - Republic of",357,"Larnaca",24
+"Cyprus - Republic of",357,"Limassol",25
+"Cyprus - Republic of",357,"Paphos",26
+"Cyprus - Republic of",357,"Kyrenia",27
+"Cyprus - Republic of",357,,
+"Cyprus - Turkish Republic of Northern",90,"Lefkosia (Nicosia)","(0)392"
+"Cyprus - Turkish Republic of Northern",90,,
 "Czech Republic",420,"Praha",2
 "Czech Republic",420,"Stredoceský",31
 "Czech Republic",420,"Stredoceský",32
@@ -4195,7 +4195,7 @@
 "Guyana",592,"Mabaruma",777
 "Guyana",592,,
 "Haiti",509,,
-"Holy See (Vatican City State)",39,,
+"Vatican City",39,,
 "Honduras",504,"Tegucigalpa",2
 "Honduras",504,"Litoral Atlántico",4
 "Honduras",504,"San Pedro Sula",5
@@ -7873,26 +7873,26 @@
 "Kenya",254,,
 "Kiribati",686,"Betio- Tarawa",27
 "Kiribati",686,,
-"Korea- Democratic People's Republic of",850,"Pyongyang","(0)2"
-"Korea- Democratic People's Republic of",850,"Hamchon","(0)9"
-"Korea- Democratic People's Republic of",850,,
-"Korea- Republic of",82,"Seoul","(0)2"
-"Korea- Republic of",82,"Kyonggi-Do (Province)","(0)31"
-"Korea- Republic of",82,"In-Chun","(0)32"
-"Korea- Republic of",82,"Kangwon-Do (Province)","(0)33"
-"Korea- Republic of",82,"Chungchong-Nam Do (Province)","(0)41"
-"Korea- Republic of",82,"Dae-Jun","(0)42"
-"Korea- Republic of",82,"Chungchong-Buk Do (Province)","(0)43"
-"Korea- Republic of",82,"Busan","(0)51"
-"Korea- Republic of",82,"Ulsan","(0)52"
-"Korea- Republic of",82,"Daegu","(0)53"
-"Korea- Republic of",82,"Kyoung-Sang-Buk Do (Province)","(0)54"
-"Korea- Republic of",82,"Kyoung-Sang-Nam Do (Province)","(0)55"
-"Korea- Republic of",82,"Chulla-Nam Do (Province)","(0)61"
-"Korea- Republic of",82,"Kwang-Ju","(0)62"
-"Korea- Republic of",82,"Chulla-Buk Do (Province)","(0)63"
-"Korea- Republic of",82,"Cheju-Do","(0)64"
-"Korea- Republic of",82,,
+"North Korea",850,"Pyongyang","(0)2"
+"North Korea",850,"Hamchon","(0)9"
+"North Korea",850,,
+"South Korea",82,"Seoul","(0)2"
+"South Korea",82,"Kyonggi-Do (Province)","(0)31"
+"South Korea",82,"In-Chun","(0)32"
+"South Korea",82,"Kangwon-Do (Province)","(0)33"
+"South Korea",82,"Chungchong-Nam Do (Province)","(0)41"
+"South Korea",82,"Dae-Jun","(0)42"
+"South Korea",82,"Chungchong-Buk Do (Province)","(0)43"
+"South Korea",82,"Busan","(0)51"
+"South Korea",82,"Ulsan","(0)52"
+"South Korea",82,"Daegu","(0)53"
+"South Korea",82,"Kyoung-Sang-Buk Do (Province)","(0)54"
+"South Korea",82,"Kyoung-Sang-Nam Do (Province)","(0)55"
+"South Korea",82,"Chulla-Nam Do (Province)","(0)61"
+"South Korea",82,"Kwang-Ju","(0)62"
+"South Korea",82,"Chulla-Buk Do (Province)","(0)63"
+"South Korea",82,"Cheju-Do","(0)64"
+"South Korea",82,,
 "Kuwait",965,"Nuzha",224
 "Kuwait",965,"Safat",240
 "Kuwait",965,"Safat",241
@@ -7982,60 +7982,60 @@
 "Kuwait",965,"Ras Salmiyah",574
 "Kuwait",965,"Ras Salmiyah",575
 "Kuwait",965,,
-"Kyrgyz Republic",996,"Bishkek","(0)312"
-"Kyrgyz Republic",996,"Belovodskoe (Moskovsky district)","(0)3131"
-"Kyrgyz Republic",996,"Kant (Issyk-Ata district)","(0)3132"
-"Kyrgyz Republic",996,"Kara-Balta (Jayl district)","(0)3133"
-"Kyrgyz Republic",996,"Sokuluk (Sokuluk district)","(0)3134"
-"Kyrgyz Republic",996,"Kemin (Kemin district)","(0)3135"
-"Kyrgyz Republic",996,"Kaindy (Panfilov district)","(0)3137"
-"Kyrgyz Republic",996,"Chuy-Tokmok (Chuy-Tokmok district)","(0)3138"
-"Kyrgyz Republic",996,"Lebedinovka (Alamudun district)","(0)3147"
-"Kyrgyz Republic",996,"Osh","(0)3222"
-"Kyrgyz Republic",996,"Eski-Nookat (Nookat district)","(0)3230"
-"Kyrgyz Republic",996,"Aravan (Aravan district)","(0)3231"
-"Kyrgyz Republic",996,"Kara-Suu (Kara-Suu district)","(0)3232"
-"Kyrgyz Republic",996,"Uzgen (Uzgen district)","(0)3233"
-"Kyrgyz Republic",996,"Gulcha (Alai district)","(0)3234"
-"Kyrgyz Republic",996,"Daroot-Korgon (Chon-Alai district)","(0)3237"
-"Kyrgyz Republic",996,"Kara-Kulja (Kara-Kulja district)","(0)3239"
-"Kyrgyz Republic",996,"Talas","(0)3422"
-"Kyrgyz Republic",996,"Kyzyl-Adyr (Kyzyl-Adyr district)","(0)3456"
-"Kyrgyz Republic",996,"Bakai-Ata (Bakai-Ata district)","(0)3457"
-"Kyrgyz Republic",996,"Kok-Oi (Talas district)","(0)3458"
-"Kyrgyz Republic",996,"Pokrovka (Manas district)","(0)3459"
-"Kyrgyz Republic",996,"Naryn","(0)3522"
-"Kyrgyz Republic",996,"At-Bashy (At-Bashy district)","(0)3534"
-"Kyrgyz Republic",996,"Kochkorka (Kochkor district)","(0)3535"
-"Kyrgyz Republic",996,"Chaek (Jumgal district)","(0)3536"
-"Kyrgyz Republic",996,"Baetovo (Ak-Tala district)","(0)3537"
-"Kyrgyz Republic",996,"Batken","(0)3622"
-"Kyrgyz Republic",996,"Sulukta (City)","(0)3653"
-"Kyrgyz Republic",996,"Pulgon (Kadamjay district)","(0)3655"
-"Kyrgyz Republic",996,"Isphana (Laylak district)","(0)3656"
-"Kyrgyz Republic",996,"Kyzyl-Kya (City)","(0)3657"
-"Kyrgyz Republic",996,"Jalal-Abad","(0)3722"
-"Kyrgyz Republic",996,"Massy (Nooken district)","(0)3734"
-"Kyrgyz Republic",996,"Bazar-Korgon (Bazar-Korgon district)","(0)3736"
-"Kyrgyz Republic",996,"Kazarman (Toguz-Toro district)","(0)3738"
-"Kyrgyz Republic",996,"Ala-Buka (Ala-Buka district)","(0)3741"
-"Kyrgyz Republic",996,"Kerben (Aksy district)","(0)3742"
-"Kyrgyz Republic",996,"Kok-Gangak (City)","(0)3743"
-"Kyrgyz Republic",996,"Mailuu-Suu (City)","(0)3744"
-"Kyrgyz Republic",996,"Tash-Kumyr (City)","(0)3745"
-"Kyrgyz Republic",996,"Kara-Kul (City)","(0)3746"
-"Kyrgyz Republic",996,"Toktogul (Toktogul district)","(0)3747"
-"Kyrgyz Republic",996,"Suzak (Suzak district)","(0)3748"
-"Kyrgyz Republic",996,"Kanysh-Kya (Chatkal district)","(0)3759"
-"Kyrgyz Republic",996,"Karakol","(0)3922"
-"Kyrgyz Republic",996,"Kadjy-Sai (Ton district)","(0)3941"
-"Kyrgyz Republic",996,"Ananevo","(0)3942"
-"Kyrgyz Republic",996,"Cholpon-Ata (Issyk-Kul district)","(0)3943"
-"Kyrgyz Republic",996,"Balykchy (City)","(0)3944"
-"Kyrgyz Republic",996,"Tup (Tup district)","(0)3945"
-"Kyrgyz Republic",996,"Kyzyl-Suu (Jety-Oguz district)","(0)3946"
-"Kyrgyz Republic",996,"Bokonbaevo (Ton district)","(0)3947"
-"Kyrgyz Republic",996,,
+"Kyrgyzstan",996,"Bishkek","(0)312"
+"Kyrgyzstan",996,"Belovodskoe (Moskovsky district)","(0)3131"
+"Kyrgyzstan",996,"Kant (Issyk-Ata district)","(0)3132"
+"Kyrgyzstan",996,"Kara-Balta (Jayl district)","(0)3133"
+"Kyrgyzstan",996,"Sokuluk (Sokuluk district)","(0)3134"
+"Kyrgyzstan",996,"Kemin (Kemin district)","(0)3135"
+"Kyrgyzstan",996,"Kaindy (Panfilov district)","(0)3137"
+"Kyrgyzstan",996,"Chuy-Tokmok (Chuy-Tokmok district)","(0)3138"
+"Kyrgyzstan",996,"Lebedinovka (Alamudun district)","(0)3147"
+"Kyrgyzstan",996,"Osh","(0)3222"
+"Kyrgyzstan",996,"Eski-Nookat (Nookat district)","(0)3230"
+"Kyrgyzstan",996,"Aravan (Aravan district)","(0)3231"
+"Kyrgyzstan",996,"Kara-Suu (Kara-Suu district)","(0)3232"
+"Kyrgyzstan",996,"Uzgen (Uzgen district)","(0)3233"
+"Kyrgyzstan",996,"Gulcha (Alai district)","(0)3234"
+"Kyrgyzstan",996,"Daroot-Korgon (Chon-Alai district)","(0)3237"
+"Kyrgyzstan",996,"Kara-Kulja (Kara-Kulja district)","(0)3239"
+"Kyrgyzstan",996,"Talas","(0)3422"
+"Kyrgyzstan",996,"Kyzyl-Adyr (Kyzyl-Adyr district)","(0)3456"
+"Kyrgyzstan",996,"Bakai-Ata (Bakai-Ata district)","(0)3457"
+"Kyrgyzstan",996,"Kok-Oi (Talas district)","(0)3458"
+"Kyrgyzstan",996,"Pokrovka (Manas district)","(0)3459"
+"Kyrgyzstan",996,"Naryn","(0)3522"
+"Kyrgyzstan",996,"At-Bashy (At-Bashy district)","(0)3534"
+"Kyrgyzstan",996,"Kochkorka (Kochkor district)","(0)3535"
+"Kyrgyzstan",996,"Chaek (Jumgal district)","(0)3536"
+"Kyrgyzstan",996,"Baetovo (Ak-Tala district)","(0)3537"
+"Kyrgyzstan",996,"Batken","(0)3622"
+"Kyrgyzstan",996,"Sulukta (City)","(0)3653"
+"Kyrgyzstan",996,"Pulgon (Kadamjay district)","(0)3655"
+"Kyrgyzstan",996,"Isphana (Laylak district)","(0)3656"
+"Kyrgyzstan",996,"Kyzyl-Kya (City)","(0)3657"
+"Kyrgyzstan",996,"Jalal-Abad","(0)3722"
+"Kyrgyzstan",996,"Massy (Nooken district)","(0)3734"
+"Kyrgyzstan",996,"Bazar-Korgon (Bazar-Korgon district)","(0)3736"
+"Kyrgyzstan",996,"Kazarman (Toguz-Toro district)","(0)3738"
+"Kyrgyzstan",996,"Ala-Buka (Ala-Buka district)","(0)3741"
+"Kyrgyzstan",996,"Kerben (Aksy district)","(0)3742"
+"Kyrgyzstan",996,"Kok-Gangak (City)","(0)3743"
+"Kyrgyzstan",996,"Mailuu-Suu (City)","(0)3744"
+"Kyrgyzstan",996,"Tash-Kumyr (City)","(0)3745"
+"Kyrgyzstan",996,"Kara-Kul (City)","(0)3746"
+"Kyrgyzstan",996,"Toktogul (Toktogul district)","(0)3747"
+"Kyrgyzstan",996,"Suzak (Suzak district)","(0)3748"
+"Kyrgyzstan",996,"Kanysh-Kya (Chatkal district)","(0)3759"
+"Kyrgyzstan",996,"Karakol","(0)3922"
+"Kyrgyzstan",996,"Kadjy-Sai (Ton district)","(0)3941"
+"Kyrgyzstan",996,"Ananevo","(0)3942"
+"Kyrgyzstan",996,"Cholpon-Ata (Issyk-Kul district)","(0)3943"
+"Kyrgyzstan",996,"Balykchy (City)","(0)3944"
+"Kyrgyzstan",996,"Tup (Tup district)","(0)3945"
+"Kyrgyzstan",996,"Kyzyl-Suu (Jety-Oguz district)","(0)3946"
+"Kyrgyzstan",996,"Bokonbaevo (Ton district)","(0)3947"
+"Kyrgyzstan",996,,
 "Laos",856,"Vientiane","(0)21"
 "Laos",856,"Vientiane province","(0)23"
 "Laos",856,"Pakse","(0)31"
@@ -9748,7 +9748,7 @@
 "Philippines",63,"Damilag","(0)8853"
 "Philippines",63,"San Pablo","(0)93"
 "Philippines",63,,
-"Pitcairn",872,,
+"Pitcairn Islands",872,,
 "Poland",48,"Kraków","(0)12"
 "Poland",48,"Krosno","(0)13"
 "Poland",48,"Tarnów","(0)14"
@@ -10181,8 +10181,8 @@
 "San Marino",378,"San Marino",8
 "San Marino",378,"San Marino",9
 "San Marino",378,,
-"São Tome and Principe",239,"São Tome",2
-"São Tome and Principe",239,,
+"São Tomé and Príncipe",239,"São Tome",2
+"São Tomé and Príncipe",239,,
 "Saudi Arabia",966,"Riyadh","(0)1"
 "Saudi Arabia",966,"Makkah","(0)2"
 "Saudi Arabia",966,"Dammam","(0)3"
@@ -13047,73 +13047,73 @@
 "Venezuela",58,"Nueva Esparta","(0)295"
 "Venezuela",58,"Amazonas","(0)296"
 "Venezuela",58,,
-"Viet Nam",84,"Hoa Binh","(0)18"
-"Viet Nam",84,"Ha Giang","(0)19"
-"Viet Nam",84,"Lao cai","(0)20"
-"Viet Nam",84,"Phu Tho","(0)210"
-"Viet Nam",84,"Vinh Phuc","(0)211"
-"Viet Nam",84,"Son La","(0)22"
-"Viet Nam",84,"Lai Chau","(0)23"
-"Viet Nam",84,"Bac Giang","(0)240"
-"Viet Nam",84,"Bac Ninh","(0)241"
-"Viet Nam",84,"Lang Son","(0)25"
-"Viet Nam",84,"Cao Bang","(0)26"
-"Viet Nam",84,"Tuyen Quang","(0)27"
-"Viet Nam",84,"Thai Nguyen","(0)280"
-"Viet Nam",84,"Bac Kan","(0)281"
-"Viet Nam",84,"Yen Bai","(0)29"
-"Viet Nam",84,"Ninh Binh","(0)30"
-"Viet Nam",84,"Hai Phong","(0)31"
-"Viet Nam",84,"Hai Duong","(0)320"
-"Viet Nam",84,"Hung Yen","(0)321"
-"Viet Nam",84,"Quang Ninh","(0)33"
-"Viet Nam",84,"Ha Tay","(0)34"
-"Viet Nam",84,"Nam Dinh","(0)350"
-"Viet Nam",84,"Ha Nam","(0)351"
-"Viet Nam",84,"Thai Binh","(0)36"
-"Viet Nam",84,"Thanh Hoa","(0)37"
-"Viet Nam",84,"Nghe An","(0)38"
-"Viet Nam",84,"Ha Tinh","(0)39"
-"Viet Nam",84,"Hanoi","(0)4"
-"Viet Nam",84,"Dak Lak","(0)50"
-"Viet Nam",84,"Quang Nam","(0)510"
-"Viet Nam",84,"Da Nang","(0)511"
-"Viet Nam",84,"Quang Binh","(0)52"
-"Viet Nam",84,"Quang Tri","(0)53"
-"Viet Nam",84,"Thua Thien Hue","(0)54"
-"Viet Nam",84,"Quang Ngai","(0)55"
-"Viet Nam",84,"Binh Dinh","(0)56"
-"Viet Nam",84,"Phu Yen","(0)57"
-"Viet Nam",84,"Khanh Hoa","(0)58"
-"Viet Nam",84,"Gia Lai","(0)59"
-"Viet Nam",84,"Kon Tum","(0)60"
-"Viet Nam",84,"Dong Nai","(0)61"
-"Viet Nam",84,"Binh Thuan","(0)62"
-"Viet Nam",84,"Lam Dong","(0)63"
-"Viet Nam",84,"Ba Ria - Vung Tau","(0)64"
-"Viet Nam",84,"Binh Duong","(0)650"
-"Viet Nam",84,"Binh Phuoc","(0)651"
-"Viet Nam",84,"Tay Ninh","(0)66"
-"Viet Nam",84,"Dong Thap","(0)67"
-"Viet Nam",84,"Ninh Thuan","(0)68"
-"Viet Nam",84,"Home Affairs and Defence Ministry","(0)69"
-"Viet Nam",84,"Vinh Long","(0)70"
-"Viet Nam",84,"Can Tho","(0)71"
-"Viet Nam",84,"Long An","(0)72"
-"Viet Nam",84,"Tien Giang","(0)73"
-"Viet Nam",84,"Tra Vinh","(0)74"
-"Viet Nam",84,"Ben Tre","(0)75"
-"Viet Nam",84,"An Giang","(0)76"
-"Viet Nam",84,"Kien giang","(0)77"
-"Viet Nam",84,"Ca Mau","(0)780"
-"Viet Nam",84,"Bac Lieu","(0)781"
-"Viet Nam",84,"Soc Trang","(0)79"
-"Viet Nam",84,"Ho Chi Minh City","(0)8"
-"Viet Nam",84,,
-"Virgin Islands- British",1,"British Virgin Islands","(1+)284"
-"Virgin Islands- British",1,,
-"Virgin Islands- U.S.",1,"U.S. Virgin Islands","(1+)340"
-"Virgin Islands- U.S.",1,,
+"Vietnam",84,"Hoa Binh","(0)18"
+"Vietnam",84,"Ha Giang","(0)19"
+"Vietnam",84,"Lao cai","(0)20"
+"Vietnam",84,"Phu Tho","(0)210"
+"Vietnam",84,"Vinh Phuc","(0)211"
+"Vietnam",84,"Son La","(0)22"
+"Vietnam",84,"Lai Chau","(0)23"
+"Vietnam",84,"Bac Giang","(0)240"
+"Vietnam",84,"Bac Ninh","(0)241"
+"Vietnam",84,"Lang Son","(0)25"
+"Vietnam",84,"Cao Bang","(0)26"
+"Vietnam",84,"Tuyen Quang","(0)27"
+"Vietnam",84,"Thai Nguyen","(0)280"
+"Vietnam",84,"Bac Kan","(0)281"
+"Vietnam",84,"Yen Bai","(0)29"
+"Vietnam",84,"Ninh Binh","(0)30"
+"Vietnam",84,"Hai Phong","(0)31"
+"Vietnam",84,"Hai Duong","(0)320"
+"Vietnam",84,"Hung Yen","(0)321"
+"Vietnam",84,"Quang Ninh","(0)33"
+"Vietnam",84,"Ha Tay","(0)34"
+"Vietnam",84,"Nam Dinh","(0)350"
+"Vietnam",84,"Ha Nam","(0)351"
+"Vietnam",84,"Thai Binh","(0)36"
+"Vietnam",84,"Thanh Hoa","(0)37"
+"Vietnam",84,"Nghe An","(0)38"
+"Vietnam",84,"Ha Tinh","(0)39"
+"Vietnam",84,"Hanoi","(0)4"
+"Vietnam",84,"Dak Lak","(0)50"
+"Vietnam",84,"Quang Nam","(0)510"
+"Vietnam",84,"Da Nang","(0)511"
+"Vietnam",84,"Quang Binh","(0)52"
+"Vietnam",84,"Quang Tri","(0)53"
+"Vietnam",84,"Thua Thien Hue","(0)54"
+"Vietnam",84,"Quang Ngai","(0)55"
+"Vietnam",84,"Binh Dinh","(0)56"
+"Vietnam",84,"Phu Yen","(0)57"
+"Vietnam",84,"Khanh Hoa","(0)58"
+"Vietnam",84,"Gia Lai","(0)59"
+"Vietnam",84,"Kon Tum","(0)60"
+"Vietnam",84,"Dong Nai","(0)61"
+"Vietnam",84,"Binh Thuan","(0)62"
+"Vietnam",84,"Lam Dong","(0)63"
+"Vietnam",84,"Ba Ria - Vung Tau","(0)64"
+"Vietnam",84,"Binh Duong","(0)650"
+"Vietnam",84,"Binh Phuoc","(0)651"
+"Vietnam",84,"Tay Ninh","(0)66"
+"Vietnam",84,"Dong Thap","(0)67"
+"Vietnam",84,"Ninh Thuan","(0)68"
+"Vietnam",84,"Home Affairs and Defence Ministry","(0)69"
+"Vietnam",84,"Vinh Long","(0)70"
+"Vietnam",84,"Can Tho","(0)71"
+"Vietnam",84,"Long An","(0)72"
+"Vietnam",84,"Tien Giang","(0)73"
+"Vietnam",84,"Tra Vinh","(0)74"
+"Vietnam",84,"Ben Tre","(0)75"
+"Vietnam",84,"An Giang","(0)76"
+"Vietnam",84,"Kien giang","(0)77"
+"Vietnam",84,"Ca Mau","(0)780"
+"Vietnam",84,"Bac Lieu","(0)781"
+"Vietnam",84,"Soc Trang","(0)79"
+"Vietnam",84,"Ho Chi Minh City","(0)8"
+"Vietnam",84,,
+"British Virgin Islands",1,"British Virgin Islands","(1+)284"
+"British Virgin Islands",1,,
+"United States Virgin Islands",1,"U.S. Virgin Islands","(1+)340"
+"United States Virgin Islands",1,,
 "Wallis and Futuna Islands",681,"Wallis and Futuna",50
 "Wallis and Futuna Islands",681,"Wallis and Futuna",68
 "Wallis and Futuna Islands",681,"Wallis and Futuna",72

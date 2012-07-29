@@ -26,15 +26,16 @@ package uk.co.unclealex.callerid.calls.dao;
 
 import javax.jdo.PersistenceManagerFactory;
 
+import org.datanucleus.query.typesafe.TypesafeQuery;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.mysema.query.jdo.JDOQLQuery;
 
 import uk.co.unclealex.callerid.calls.model.Call;
 import uk.co.unclealex.callerid.calls.model.QCall;
 import uk.co.unclealex.persistence.jdo.JdoBasicDao;
 import uk.co.unclealex.persistence.paging.Page;
 import uk.co.unclealex.persistence.paging.PagingService;
+
+import com.google.common.base.Supplier;
 
 /**
  * The JDO implementation of {@link CallDao}.
@@ -50,7 +51,7 @@ public class JdoCallDao extends JdoBasicDao<Call, QCall> implements CallDao {
    * @param pagingService
    */
   public JdoCallDao(PersistenceManagerFactory persistenceManagerFactory, PagingService pagingService) {
-    super(persistenceManagerFactory, pagingService);
+    super(Call.class, persistenceManagerFactory, pagingService);
   }
 
   /**
@@ -59,13 +60,13 @@ public class JdoCallDao extends JdoBasicDao<Call, QCall> implements CallDao {
   @Override
   public Page<Call> pageAllByTimeReceived(long pageNumber, long pageSize) {
     final QCall call = candidate();
-    PageQueryCallback pageQueryCallback = new PageQueryCallback() {
+    Supplier<TypesafeQuery<Call>> supplier = new Supplier<TypesafeQuery<Call>>() {
       @Override
-      public JDOQLQuery doInQuery(JDOQLQuery query) {
-        return query.from(call).orderBy(call.callTime.asc());
+      public TypesafeQuery<Call> get() {
+        return query();
       }
     };
-    return page(pageQueryCallback, call, pageNumber, pageSize);
+    return page(supplier, pageNumber, pageSize, call.callTime.asc());
   }
 
   /**
@@ -73,16 +74,8 @@ public class JdoCallDao extends JdoBasicDao<Call, QCall> implements CallDao {
    */
   @Override
   public void updateContactName(final int callId, final String newContactName) {
-    UniqueQueryCallback callback = new UniqueQueryCallback() {
-      @Override
-      public Call doInQuery(JDOQLQuery query) {
-        QCall c = candidate();
-        Call call = query.from(c).where(c.id.eq(callId)).uniqueResult(c);
-        call.setContactName(newContactName);
-        return call;
-      }
-    };
-    execute(callback);
+    Call call = query().filter(candidate().id.eq(callId)).executeUnique();
+    call.setContactName(newContactName);
   }
 
   /**
@@ -90,20 +83,12 @@ public class JdoCallDao extends JdoBasicDao<Call, QCall> implements CallDao {
    */
   @Override
   public String getMostRecentContactNameForPhoneNumber(final String phoneNumber) {
-    QueryCallback<String> callback = new QueryCallback<String>() {
-
-      @Override
-      public String doInQuery(JDOQLQuery query) {
-        QCall c = candidate();
-        return query
-            .from(c)
-            .where(c.telephoneNumber.eq(phoneNumber))
-            .orderBy(c.callTime.desc())
-            .limit(1)
-            .uniqueResult(c.contactName);
-      }
-    };
-    return execute(callback);
+    QCall c = candidate();
+    return query()
+        .filter(c.telephoneNumber.eq(phoneNumber))
+        .orderBy(c.callTime.desc())
+        .range(0, 1)
+        .executeResultUnique(String.class, true, c.contactName);
   }
 
   /**
@@ -111,7 +96,7 @@ public class JdoCallDao extends JdoBasicDao<Call, QCall> implements CallDao {
    */
   @Override
   public QCall candidate() {
-    return QCall.call;
+    return QCall.candidate();
   }
 
 }

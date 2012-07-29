@@ -22,49 +22,22 @@
  *
  */
 
-package uk.co.unclealex.callerid.phonenumber.model;
+package uk.co.unclealex.callerid.areacode.dao;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import java.util.List;
+
+import uk.co.unclealex.callerid.areacode.model.AreaCode;
 
 /**
- * The representation of a {@link PhoneNumber} that is withheld.
+ * An interface for loading information about {@link AreaCode}s.
  * @author alex
  *
  */
-public class WithheldPhoneNumber implements PhoneNumber {
+public interface AreaCodeFactory {
 
   /**
-   * {@inheritDoc}
+   * Create all the known {@link AreaCode}s.
+   * @return A new list of all known {@link AreaCode}s.
    */
-  @Override
-  public String toString() {
-    return ToStringBuilder.reflectionToString(this);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public int hashCode() {
-    return HashCodeBuilder.reflectionHashCode(this);
-  }
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean equals(Object obj) {
-    return EqualsBuilder.reflectionEquals(this, obj);
-  }
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public <T> T accept(Visitor<T> visitor) {
-    return visitor.visit(this);
-  }
-
+  public List<AreaCode> createAreaCodes();
 }

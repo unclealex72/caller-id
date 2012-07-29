@@ -37,11 +37,14 @@ import org.junit.Test;
 
 import uk.co.unclealex.callerid.areacode.dao.AreaCodeDao;
 import uk.co.unclealex.callerid.areacode.model.AreaCode;
+import uk.co.unclealex.callerid.areacode.model.Country;
+import uk.co.unclealex.callerid.areacode.model.CountryCode;
 import uk.co.unclealex.callerid.defaults.DefaultsService;
 import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.model.WithheldPhoneNumber;
 import uk.co.unclealex.callerid.service.PhoneNumberFactoryImpl;
 
 import com.google.common.collect.Ordering;
@@ -56,6 +59,14 @@ public class PhoneNumberFactoryImplTest {
   PhoneNumberFactoryImpl phoneNumberFactory;
   DefaultsService defaultsService;
   AreaCodeDao areaCodeDao;
+  CountryCode fr = new CountryCode("33");
+  CountryCode uk = new CountryCode("44");
+  Country unitedKingdom = new Country("United Kingdom", uk, "uk");
+  Country jersey = new Country("Jersey", uk, "je");
+  Country france = new Country("France", fr, "fr");
+  AreaCode paris = new AreaCode(france, "Paris", "1");
+  AreaCode newport = new AreaCode(jersey, "Newport", "12567");
+  AreaCode basingstoke = new AreaCode(unitedKingdom, "Basingstoke", "1256");
 
   @Before
   public void test() {
@@ -63,25 +74,11 @@ public class PhoneNumberFactoryImplTest {
     areaCodeDao = mock(AreaCodeDao.class);
     when(defaultsService.getCountryCode()).thenReturn("44");
     when(areaCodeDao.getAllCountryCodes()).thenReturn(list("33", "44"));
-    when(areaCodeDao.getAllCountriesForCountryCode("33")).thenReturn(list("France"));
-    when(areaCodeDao.getAllAreaCodesForCountryCode("44")).thenReturn(
-        list(
-            areaCode("33", "1", "France", "Paris")));
-    when(areaCodeDao.getAllCountriesForCountryCode("44")).thenReturn(list("United Kingdom", "Jersey"));
-    when(areaCodeDao.getAllAreaCodesForCountryCode("44")).thenReturn(
-        list(
-            areaCode("44", "12567", "Jersey", "Newport"),
-            areaCode("44", "1256", "United Kingdom", "Basingstoke")));
+    when(areaCodeDao.getAllCountriesForCountryCode("33")).thenReturn(list(france));
+    when(areaCodeDao.getAllAreaCodesForCountryCode("44")).thenReturn(list(paris));
+    when(areaCodeDao.getAllCountriesForCountryCode("44")).thenReturn(list(unitedKingdom, jersey));
+    when(areaCodeDao.getAllAreaCodesForCountryCode("44")).thenReturn(list(newport, basingstoke));
     phoneNumberFactory = new PhoneNumberFactoryImpl(areaCodeDao, defaultsService);
-  }
-
-  protected AreaCode areaCode(String countryCode, String areaCode, String country, String area) {
-    AreaCode ac = new AreaCode();
-    ac.setCountryCode(countryCode);
-    ac.setAreaCode(areaCode);
-    ac.setCountry(country);
-    ac.setArea(area);
-    return ac;
   }
 
   protected <E> SortedSet<E> list(@SuppressWarnings("unchecked") E... elements) {
@@ -98,27 +95,38 @@ public class PhoneNumberFactoryImplTest {
 
   @Test
   public void testNonGeographicNationalNumber() {
-    runTest("00", "1", "1800444555", new CountriesOnlyPhoneNumber("44", "800444555", "United Kingdom", "Jersey"));
+    runTest("00", "1", "1800444555", new CountriesOnlyPhoneNumber("44", "800444555", list(unitedKingdom, jersey)));
   }
 
   @Test
   public void testNonGeographicInternationalNumber() {
-    runTest("00", "000", "0033800444555", new CountriesOnlyPhoneNumber("33", "800444555", "France"));
+    runTest("00", "000", "0033800444555", new CountriesOnlyPhoneNumber("33", "800444555", list(france)));
   }
 
   @Test
   public void testNationalGeographicNumber() {
-    runTest("00", "0", "01256999666", new CountryAndAreaPhoneNumber("United Kingdom", "Basingstoke", "44", "1256", "999666"));
-    runTest("00", "0", "01256799666", new CountryAndAreaPhoneNumber("Jersey", "Newport", "44", "12567", "99666"));
-  }
-  
-  @Test
-  public void testInternationalGeographicNumber() {
-    runTest("00", "0", "00441256999666", new CountryAndAreaPhoneNumber("United Kingdom", "Basingstoke", "44", "1256", "999666"));
-    runTest("00", "0", "00441256799666", new CountryAndAreaPhoneNumber("Jersey", "Newport", "44", "12567", "99666"));
+    runTest("00", "0", "01256999666", new CountryAndAreaPhoneNumber(basingstoke, "999666"));
+    runTest("00", "0", "01256799666", new CountryAndAreaPhoneNumber(newport, "99666"));
   }
 
-  public void runTest(String internationalPrefix, String areaCodePrefix, String number, PhoneNumber expectedPhoneNumber) {
+  @Test
+  public void testInternationalGeographicNumber() {
+    runTest("00", "0", "00441256999666", new CountryAndAreaPhoneNumber(basingstoke, "999666"));
+    runTest("00", "0", "00441256799666", new CountryAndAreaPhoneNumber(newport, "99666"));
+  }
+
+  @Test
+  public void testWithheld() {
+    PhoneNumber phoneNumber = phoneNumberFactory.create(null);
+    Assert.assertEquals(
+        "The wrong phone number was returned for a null number.",
+        new WithheldPhoneNumber(),
+        phoneNumber);
+  }
+
+  public
+      void
+      runTest(String internationalPrefix, String areaCodePrefix, String number, PhoneNumber expectedPhoneNumber) {
     when(defaultsService.getInternationalPrefix()).thenReturn(internationalPrefix);
     when(defaultsService.getAreaCodePrefix()).thenReturn(areaCodePrefix);
     PhoneNumber phoneNumber = phoneNumberFactory.create(number);

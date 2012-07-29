@@ -26,6 +26,7 @@ package uk.co.unclealex.callerid.service;
 
 import javax.inject.Inject;
 
+import uk.co.unclealex.callerid.areacode.model.AreaCode;
 import uk.co.unclealex.callerid.defaults.DefaultsService;
 import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
@@ -107,8 +108,9 @@ public class PhoneNumberNormalisingVisitor extends Default<String> {
    */
   @Override
   public String visit(CountryAndAreaPhoneNumber countryAndAreaPhoneNumber) {
-    return countryAndAreaPhoneNumber.getCountryCode()
-        + countryAndAreaPhoneNumber.getAreaCode()
+    AreaCode areaCode = countryAndAreaPhoneNumber.getAreaCode();
+    return areaCode.getCountry().getCountryCode().getInternationalPrefix()
+        + areaCode.getAreaCode()
         + countryAndAreaPhoneNumber.getNumber();
   }
 

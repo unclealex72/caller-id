@@ -24,16 +24,16 @@
 
 package uk.co.unclealex.callerid.calls.dao;
 
-import static ch.lambdaj.Lambda.on;
-import static ch.lambdaj.Lambda.project;
-
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 
-import org.joda.time.DateTime;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +46,8 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.co.unclealex.callerid.calls.model.Call;
 import uk.co.unclealex.persistence.paging.Page;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 /**
@@ -65,7 +67,7 @@ public class JdoCallDaoTest {
 
   @Test
   public void testCreate() {
-    DateTime now = new DateTime();
+    Date now = new Date();
     Call call = new Call(now, "441256999888", "Brian");
     callDao.store(call);
     flush();
@@ -80,7 +82,7 @@ public class JdoCallDaoTest {
 
   @Test
   public void testUpdate() {
-    DateTime now = new DateTime();
+    Date now = new Date();
     Call call = new Call(now, "441256999888", "Brian");
     callDao.store(call);
     flush();
@@ -97,31 +99,42 @@ public class JdoCallDaoTest {
 
   @Test
   public void testPageByDate() {
-    DateTime firstCallTime = new DateTime();
-    DateTime secondCallTime = firstCallTime.plusHours(1);
-    DateTime thirdCallTime = secondCallTime.plusHours(2);
+    Calendar cal = new GregorianCalendar();
+    Date firstCallTime = cal.getTime();
+    cal.add(Calendar.HOUR_OF_DAY, 1);
+    Date secondCallTime = cal.getTime();
+    cal.add(Calendar.HOUR_OF_DAY, 1);
+    Date thirdCallTime = cal.getTime();
     callDao.store(new Call(secondCallTime, "44800400100", "Freddie"));
     callDao.store(new Call(firstCallTime, "33900505050", "Brian"));
     callDao.store(new Call(thirdCallTime, "33900505050", "Brian"));
     flush();
-    List<List<DateTime>> expectedDateTimes = Lists.newArrayList();
-    expectedDateTimes.add(Arrays.asList(firstCallTime, secondCallTime));
-    expectedDateTimes.add(Arrays.asList(thirdCallTime));
+    List<List<Date>> expectedDates = Lists.newArrayList();
+    expectedDates.add(Arrays.asList(firstCallTime, secondCallTime));
+    expectedDates.add(Arrays.asList(thirdCallTime));
     long currentPage = 1;
-    for (List<DateTime> expectedPageDateTimes : expectedDateTimes) {
+    Function<Call, Date> dateFunction = new Function<Call, Date>() {
+      public Date apply(Call call) {
+        return call.getCallTime();
+      }
+    };
+    for (List<Date> expectedPageDates : expectedDates) {
       Page<Call> page = callDao.pageAllByTimeReceived(currentPage, 2);
-      Assert.assertEquals("The wrong number of pages were returned.", expectedDateTimes.size(), page
+      Assert.assertEquals("The wrong number of pages were returned.", expectedDates.size(), page
           .getPageOffsetsByPageNumber()
           .size());
-      List<DateTime> actualDateTimes = project(page.getElements(), DateTime.class, on(Call.class).getCallTime());
-      Assert.assertEquals("The wrong times were returned.", actualDateTimes, expectedPageDateTimes);
+      Iterable<Date> actualDates = Iterables.transform(page.getElements(), dateFunction);
+      Assert.assertThat(
+          "The wrong times were returned.",
+          actualDates,
+          Matchers.contains(expectedPageDates.toArray(new Date[0])));
       currentPage++;
     }
   }
 
   @Test
   public void testMostRecentCallForNumberWithNoPreviousCall() {
-    callDao.store(new Call(new DateTime(), "44800400100", "Mike"));
+    callDao.store(new Call(new Date(), "44800400100", "Mike"));
     flush();
     Assert.assertNull(
         "A contact name was returned for a call that has never been made.",
@@ -130,10 +143,14 @@ public class JdoCallDaoTest {
 
   @Test
   public void testMostRecentCallForNumberWithPreviousCalls() {
-    callDao.store(new Call(new DateTime(), "44800400100", "Brian"));
-    callDao.store(new Call(new DateTime().minusDays(1), "44800500500", "Mike"));
-    callDao.store(new Call(new DateTime().minusDays(2), "44800500500", null));
-    callDao.store(new Call(new DateTime().minusDays(3), "44800500500", "Ian"));
+    Calendar cal = new GregorianCalendar();
+    callDao.store(new Call(cal.getTime(), "44800400100", "Brian"));
+    cal.add(Calendar.DAY_OF_YEAR, -1);
+    callDao.store(new Call(cal.getTime(), "44800500500", "Mike"));
+    cal.add(Calendar.DAY_OF_YEAR, -1);
+    callDao.store(new Call(cal.getTime(), "44800500500", null));
+    cal.add(Calendar.DAY_OF_YEAR, -1);
+    callDao.store(new Call(cal.getTime(), "44800500500", "Ian"));
     flush();
     Assert.assertEquals(
         "The wrong name was recevied for a most recent call.",
@@ -143,10 +160,14 @@ public class JdoCallDaoTest {
 
   @Test
   public void testMostRecentCallForNumberWithPreviousCallsAndNullOverrides() {
-    callDao.store(new Call(new DateTime(), "44800400100", "Brian"));
-    callDao.store(new Call(new DateTime().minusDays(1), "44800500500", null));
-    callDao.store(new Call(new DateTime().minusDays(2), "44800500500", "Mike"));
-    callDao.store(new Call(new DateTime().minusDays(3), "44800500500", "Ian"));
+    Calendar cal = new GregorianCalendar();
+    callDao.store(new Call(cal.getTime(), "44800400100", "Brian"));
+    cal.add(Calendar.DAY_OF_YEAR, -1);
+    callDao.store(new Call(cal.getTime(), "44800500500", null));
+    cal.add(Calendar.DAY_OF_YEAR, -1);
+    callDao.store(new Call(cal.getTime(), "44800500500", "Mike"));
+    cal.add(Calendar.DAY_OF_YEAR, -1);
+    callDao.store(new Call(cal.getTime(), "44800500500", "Ian"));
     flush();
     Assert.assertNull(
         "A name was returned for a call where null was the most recent name.",

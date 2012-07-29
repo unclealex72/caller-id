@@ -26,38 +26,41 @@ package uk.co.unclealex.callerid.areacode.dao;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.SortedSet;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
 import uk.co.unclealex.callerid.areacode.model.AreaCode;
-import uk.co.unclealex.callerid.areacode.model.Country;
-import uk.co.unclealex.callerid.areacode.model.CountryCode;
+
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 
 /**
  * @author alex
  * 
  */
-public class CsvAreaCodeProviderTest {
+public class CsvAreaCodeProviderTldCompletenessTest {
 
   @Test
-  public void testCsv() throws IOException {
-    AreaCode[] expectedAreaCodes =
-        new AreaCode[] {
-            areaCode("Afghanistan", "af", "93", "Kabul", "20"),
-            areaCode("Afghanistan", "af", "93", "Parwan", "21"),
-            areaCode("Andorra", "an", "376", "Andorra", "7") };
-    List<AreaCode> actualAreaCodes = new CsvAreaCodeFactory("globalareacodes.test.csv", "tlds.test.csv").createAreaCodes();
-    Assert.assertThat(
-        "The wrong area codes were returned.",
-        actualAreaCodes,
-        Matchers.containsInAnyOrder(expectedAreaCodes));
-  }
-
-  protected AreaCode areaCode(String countryName, String tld, String internationalPrefix, String areaName, String areaCode) {
-    CountryCode countryCode = new CountryCode(internationalPrefix);
-    Country country = new Country(countryName, countryCode, tld);
-    return new AreaCode(country, areaName, areaCode);
+  public void testTldCompleteness() throws IOException {
+    List<AreaCode> areaCodes = new CsvAreaCodeFactory("globalareacodes.csv", "tlds.csv").createAreaCodes();
+    Predicate<AreaCode> missingTldCodePredicate = new Predicate<AreaCode>() {
+      @Override
+      public boolean apply(AreaCode areaCode) {
+        return areaCode.getCountry().getTld() == null;
+      }
+    };
+    Function<AreaCode, String> countryFunction = new Function<AreaCode, String>() {
+      public String apply(AreaCode areaCode) {
+        return areaCode.getCountry().getName();
+      }
+    };
+    SortedSet<String> missingTlds =
+        Sets.newTreeSet(Iterables.transform(Iterables.filter(areaCodes, missingTldCodePredicate), countryFunction));
+    Assert.assertEquals("The following countries did not have tlds.", "", Joiner.on(", ").join(missingTlds));
   }
 }

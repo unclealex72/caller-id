@@ -23,6 +23,7 @@
  */
 package uk.co.unclealex.callerid.phonenumber.model;
 
+import uk.co.unclealex.callerid.areacode.model.AreaCode;
 
 /**
  * A {@link PhoneNumber} where both the country and area codes are both known.
@@ -32,44 +33,20 @@ package uk.co.unclealex.callerid.phonenumber.model;
 public class CountryAndAreaPhoneNumber extends AbstractPhoneNumber {
 
   /**
-   * The country from where calls from this number originate.
+   * The {@link AreaCode} for where this phone number originated.
    */
-	private String country;
-	
-  /**
-   * The area within the country from where calls from this number originate.
-   */	
-	private String area;
-	
-  /**
-   * The country code from where calls from this number originate.
-   */	
-	private String countryCode;
-	
-  /**
-   * The area code from where calls from this number originate.
-   */ 	
-	private String areaCode;
-	
+	private final AreaCode areaCode;	
+
 	/**
    * Instantiates a new country and area phone number.
    * 
-   * @param country
-   *          the country
-   * @param area
-   *          the area
-   * @param countryCode
-   *          the country code
    * @param areaCode
    *          the area code
    * @param number
    *          the number
    */
-	public CountryAndAreaPhoneNumber(String country, String area, String countryCode, String areaCode, String number) {
+	public CountryAndAreaPhoneNumber(AreaCode areaCode, String number) {
 		super(number);
-		this.country = country;
-		this.area = area;
-		this.countryCode = countryCode;
 		this.areaCode = areaCode;
 	}
 
@@ -81,41 +58,12 @@ public class CountryAndAreaPhoneNumber extends AbstractPhoneNumber {
 		return visitor.visit(this);
 	}
 
-	/**
-   * Gets the country from where calls from this number originate.
+  /**
+   * Gets the {@link AreaCode} for where this phone number originated.
    * 
-   * @return the country from where calls from this number originate
+   * @return the {@link AreaCode} for where this phone number originated
    */
-	public String getCountry() {
-		return country;
-	}
-
-	/**
-   * Gets the area within the country from where calls from this number
-   * originate.
-   * 
-   * @return the area within the country from where calls from this number
-   *         originate
-   */
-	public String getArea() {
-		return area;
-	}
-
-	/**
-   * Gets the country code from where calls from this number originate.
-   * 
-   * @return the country code from where calls from this number originate
-   */
-	public String getCountryCode() {
-		return countryCode;
-	}
-
-	/**
-   * Gets the area code from where calls from this number originate.
-   * 
-   * @return the area code from where calls from this number originate
-   */
-	public String getAreaCode() {
-		return areaCode;
-	}
+  public AreaCode getAreaCode() {
+    return areaCode;
+  }
 }

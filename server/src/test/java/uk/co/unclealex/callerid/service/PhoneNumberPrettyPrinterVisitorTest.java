@@ -25,11 +25,15 @@
 package uk.co.unclealex.callerid.service;
 
 import java.util.List;
+import java.util.TreeSet;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import uk.co.unclealex.callerid.areacode.model.AreaCode;
+import uk.co.unclealex.callerid.areacode.model.Country;
+import uk.co.unclealex.callerid.areacode.model.CountryCode;
 import uk.co.unclealex.callerid.defaults.DefaultsService;
 import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
@@ -50,7 +54,7 @@ public class PhoneNumberPrettyPrinterVisitorTest {
   public void setup() {
 
   }
-
+  
   @Test
   public void testLocal() {
     runTest(new NumberOnlyPhoneNumber("703217"), "01483", "703217");
@@ -58,27 +62,36 @@ public class PhoneNumberPrettyPrinterVisitorTest {
 
   @Test
   public void testFullyQualifiedLocal() {
-    runTest(new CountryAndAreaPhoneNumber("", "", "44", "1483", "703217"), "01483", "703217");
+    CountryCode countryCode = new CountryCode("44");
+    Country uk = new Country("United Kingdom", countryCode, "uk");
+    AreaCode guildford = new AreaCode(uk, "Guildford", "1483");
+    runTest(new CountryAndAreaPhoneNumber(guildford, "703217"), "01483", "703217");
   }
 
   @Test
   public void testFullyQualifiedNational() {
-    runTest(new CountryAndAreaPhoneNumber("", "", "44", "1256", "703217"), "01256", "703217");
+    CountryCode countryCode = new CountryCode("44");
+    Country uk = new Country("United Kingdom", countryCode, "uk");
+    AreaCode basingstoke = new AreaCode(uk, "Basingstoke", "1256");
+    runTest(new CountryAndAreaPhoneNumber(basingstoke, "703217"), "01256", "703217");
   }
 
   @Test
   public void testNonGeographicNational() {
-    runTest(new CountriesOnlyPhoneNumber("44", "800999666"), "0800999666");
+    runTest(new CountriesOnlyPhoneNumber("44", "800999666", new TreeSet<Country>()), "0800999666");
   }
 
   @Test
   public void testNonGeographicInternational() {
-    runTest(new CountriesOnlyPhoneNumber("33", "800999666"), "+33", "800999666");
+    runTest(new CountriesOnlyPhoneNumber("33", "800999666", new TreeSet<Country>()), "+33", "800999666");
   }
 
   @Test
   public void testInternational() {
-    runTest(new CountryAndAreaPhoneNumber("", "", "33", "1256", "703217"), "+33", "1256", "703217");
+    CountryCode countryCode = new CountryCode("33");
+    Country france = new Country("France", countryCode, "fr");
+    AreaCode basingstoke = new AreaCode(france, "Basingstoke", "1256");
+    runTest(new CountryAndAreaPhoneNumber(basingstoke, "703217"), "+33", "1256", "703217");
   }
 
   @Test

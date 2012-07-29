@@ -24,11 +24,15 @@
 
 package uk.co.unclealex.callerid.service;
 
-import org.junit.Assert;
+import java.util.TreeSet;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import uk.co.unclealex.callerid.areacode.model.AreaCode;
+import uk.co.unclealex.callerid.areacode.model.Country;
+import uk.co.unclealex.callerid.areacode.model.CountryCode;
 import uk.co.unclealex.callerid.defaults.DefaultsService;
 import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
@@ -49,12 +53,15 @@ public class PhoneNumberNormalisingVisitorTest {
  
   @Test
   public void testFullGeographic() {
-    runTest(new CountryAndAreaPhoneNumber("", "", "33", "1", "472902"), "331472902");
+    CountryCode fr = new CountryCode("33");
+    Country france = new Country("France", fr, "fr");
+    AreaCode paris = new AreaCode(france, "Paris", "1");
+    runTest(new CountryAndAreaPhoneNumber(paris, "472902"), "331472902");
   }
  
   @Test
   public void testNonLocalNonGeographic() {
-    runTest(new CountriesOnlyPhoneNumber("1", "555800122"), "1555800122");
+    runTest(new CountriesOnlyPhoneNumber("1", "555800122", new TreeSet<Country>()), "1555800122");
   }
 
   @Test

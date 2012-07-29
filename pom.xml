@@ -5,7 +5,7 @@
   <parent>
     <groupId>uk.co.unclealex</groupId>
     <artifactId>parent</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.2</version>
   </parent>
   <artifactId>callerid</artifactId>
   <version>2.0.0-SNAPSHOT</version>
@@ -13,7 +13,6 @@
 
   <properties>
     <spring-version>3.1.2.RELEASE</spring-version>
-    <querydsl-version>2.7.1</querydsl-version>
     <persistence-version>1.0.0-SNAPSHOT</persistence-version>
   </properties>
   <modules>
@@ -24,62 +23,6 @@
   <build>
     <pluginManagement>
       <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.5.1</version>
-          <configuration>
-            <annotationProcessors>
-              <annotationProcessor>com.mysema.query.apt.jdo.JDOAnnotationProcessor</annotationProcessor>
-            </annotationProcessors>
-            <source>1.7</source>
-            <target>1.7</target>
-          </configuration>
-          <dependencies>
-            <dependency>
-              <groupId>com.mysema.querydsl</groupId>
-              <artifactId>querydsl-apt</artifactId>
-              <version>${querydsl-version}</version>
-            </dependency>
-            <dependency>
-              <groupId>javax.jdo</groupId>
-              <artifactId>jdo-api</artifactId>
-              <version>3.0</version>
-            </dependency>
-            <dependency>
-              <groupId>javax.persistence</groupId>
-              <artifactId>persistence-api</artifactId>
-              <version>1.0.2</version>
-            </dependency>
-          </dependencies>
-        </plugin>
-
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build 
-          itself. -->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.datanucleus</groupId>
-                    <artifactId>maven-datanucleus-plugin</artifactId>
-                    <versionRange>[3.0.0,)</versionRange>
-                    <goals>
-                      <goal>enhance</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <execute />
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>

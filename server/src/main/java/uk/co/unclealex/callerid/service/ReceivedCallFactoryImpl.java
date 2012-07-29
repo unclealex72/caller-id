@@ -24,12 +24,12 @@
 
 package uk.co.unclealex.callerid.service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.joda.time.DateTime;
 
 import uk.co.unclealex.callerid.calls.dao.CallDao;
 import uk.co.unclealex.callerid.calls.model.Call;
@@ -37,6 +37,7 @@ import uk.co.unclealex.callerid.calls.model.ReceivedCall;
 import uk.co.unclealex.callerid.google.dao.ContactDao;
 import uk.co.unclealex.callerid.google.model.Contact;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
+import uk.co.unclealex.callerid.phonenumber.model.WithheldPhoneNumber;
 
 import com.google.common.base.Function;
 
@@ -112,7 +113,7 @@ public class ReceivedCallFactoryImpl implements ReceivedCallFactory {
    * {@inheritDoc}
    */
   @Override
-  public ReceivedCall create(DateTime receivedCallTime, String callingNumber) {
+  public ReceivedCall create(Date receivedCallTime, String callingNumber) {
     Function<String, String> mostRecentFunction = new Function<String, String>() {
       public String apply(String phoneNumber) {
         return getCallDao().getMostRecentContactNameForPhoneNumber(phoneNumber);
@@ -130,14 +131,17 @@ public class ReceivedCallFactoryImpl implements ReceivedCallFactory {
    *          A function that converts the normalised calling number into a
    *          contact name.
    * @param callingNumber
-   *          The number that is calling.
+   *          The number that is calling or null if it was withheld.
    * @return A new {@link ReceivedCall} will the above information as well as
    *         contact information.
    */
   protected ReceivedCall create(
-      DateTime receivedCallTime,
+      Date receivedCallTime,
       Function<String, String> contactNameFunction,
       String callingNumber) {
+    if (callingNumber == null) {
+      return new ReceivedCall(receivedCallTime, new WithheldPhoneNumber(), null, new ArrayList<Contact>());
+    }
     PhoneNumber phoneNumber = getPhoneNumberFactory().create(callingNumber);
     String normalisedPhoneNumber = getPhoneNumberNormaliser().apply(phoneNumber);
     List<Contact> contacts = getContactDao().findByTelephoneNumber(normalisedPhoneNumber);

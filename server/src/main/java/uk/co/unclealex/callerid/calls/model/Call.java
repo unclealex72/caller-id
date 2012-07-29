@@ -24,6 +24,8 @@
 
 package uk.co.unclealex.callerid.calls.model;
 
+import java.util.Date;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -35,14 +37,13 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.joda.time.DateTime;
 
 /**
  * A class that models received telephone calls.
  * 
  * @author alex
  */
-@PersistenceCapable(identityType = IdentityType.DATASTORE)
+@PersistenceCapable(identityType = IdentityType.DATASTORE, detachable="true")
 public class Call {
 
   /**
@@ -57,8 +58,8 @@ public class Call {
    */
   @NotNull
   @Unique
-  @Persistent
-  private DateTime callTime;
+  @Persistent(defaultFetchGroup="true")
+  private Date callTime;
   
   /**
    * The telephone number who called or null if the number was withheld.
@@ -80,7 +81,7 @@ public class Call {
    * @param contactName
    *          the contact name
    */
-  public Call(DateTime callTime, String telephoneNumber, String contactName) {
+  public Call(Date callTime, String telephoneNumber, String contactName) {
     super();
     this.callTime = callTime;
     this.telephoneNumber = telephoneNumber;
@@ -125,7 +126,7 @@ public class Call {
    * 
    * @return the time at which this call was received
    */
-  public DateTime getCallTime() {
+  public Date getCallTime() {
     return callTime;
   }
 

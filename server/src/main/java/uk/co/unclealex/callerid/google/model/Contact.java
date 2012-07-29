@@ -47,7 +47,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * @author alex
  * 
  */
-@PersistenceCapable(identityType = IdentityType.DATASTORE)
+@PersistenceCapable(identityType = IdentityType.DATASTORE, detachable="true")
 public class Contact {
 
    /**

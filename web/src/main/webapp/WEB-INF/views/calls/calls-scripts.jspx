@@ -16,14 +16,10 @@
                   mapOptions);
 	});
 
-	function mapto(address) {
-	    geocoder.geocode( { 'address': address}, function(results, status) {
+	function mapto(address, area) {
+	    geocoder.geocode( { 'address': address, 'region' : area }, function(results, status) {
 	        if (status == google.maps.GeocoderStatus.OK) {
 	          map.panTo(results[0].geometry.location);
-	          var marker = new google.maps.Marker({
-	              map: map,
-	              position: results[0].geometry.location
-	          });
 	        } else {
 	          alert("Geocode was not successful for the following reason: " + status);
 	        }

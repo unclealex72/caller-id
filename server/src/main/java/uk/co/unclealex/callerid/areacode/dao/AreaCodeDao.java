@@ -24,16 +24,17 @@
 
 package uk.co.unclealex.callerid.areacode.dao;
 
+import java.util.List;
 import java.util.SortedSet;
 
 import uk.co.unclealex.callerid.areacode.model.AreaCode;
-import uk.co.unclealex.persistence.dao.BasicDao;
+import uk.co.unclealex.callerid.areacode.model.Country;
 
 /**
  * @author alex
  * 
  */
-public interface AreaCodeDao extends BasicDao<AreaCode> {
+public interface AreaCodeDao {
 
   /**
    * Get all available country codes in order of longest to shortest.
@@ -49,7 +50,7 @@ public interface AreaCodeDao extends BasicDao<AreaCode> {
    * @return all available countries for a country code in order of the country
    *         with the most area codes first an the least last.
    */
-  public SortedSet<String> getAllCountriesForCountryCode(String countryCode);
+  public SortedSet<Country> getAllCountriesForCountryCode(String countryCode);
 
   /**
    * Get all {@link AreaCode}s for a given country code in order of the longest
@@ -61,4 +62,10 @@ public interface AreaCodeDao extends BasicDao<AreaCode> {
    * area code prefix first and the shortest last.
    */
   public SortedSet<AreaCode> getAllAreaCodesForCountryCode(String countryCode);
+
+  /**
+   * Get all known {@link AreaCodes}.
+   * @return All known {@link AreaCodes}.
+   */
+  public List<AreaCode> getAll();
 }

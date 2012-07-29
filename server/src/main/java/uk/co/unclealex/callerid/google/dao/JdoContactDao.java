@@ -35,8 +35,6 @@ import uk.co.unclealex.callerid.google.model.QContact;
 import uk.co.unclealex.persistence.jdo.JdoBasicDao;
 import uk.co.unclealex.persistence.paging.PagingService;
 
-import com.mysema.query.jdo.JDOQLQuery;
-
 /**
  * @author alex
  * 
@@ -49,22 +47,16 @@ public class JdoContactDao extends JdoBasicDao<Contact, QContact> implements Con
    * @param pagingService
    */
   public JdoContactDao(PersistenceManagerFactory persistenceManagerFactory, PagingService pagingService) {
-    super(persistenceManagerFactory, pagingService);
+    super(Contact.class, persistenceManagerFactory, pagingService);
   }
 
   /**
    * {@inheritDoc}
    */
+  @SuppressWarnings("unchecked")
   @Override
   public List<Contact> findByTelephoneNumber(final String telephoneNumber) {
-    ListQueryCallback callback = new ListQueryCallback() {
-      @Override
-      public List<Contact> listInQuery(JDOQLQuery query) {
-        QContact contact = QContact.contact;
-        return query.from(contact).where(contact.telephoneNumbers.contains(telephoneNumber)).list(contact);
-      }
-    };
-    return execute(callback);
+    return query().filter(candidate().telephoneNumbers.contains(telephoneNumber)).executeList();
   }
 
   /**
@@ -72,18 +64,11 @@ public class JdoContactDao extends JdoBasicDao<Contact, QContact> implements Con
    */
   @Override
   public Contact findByName(final String name) {
-    UniqueQueryCallback callback = new UniqueQueryCallback() {
-      @Override
-      public Contact doInQuery(JDOQLQuery query) {
-        QContact contact = QContact.contact;
-        return query.from(contact).where(contact.name.eq(name)).uniqueResult(contact);
-      }
-    };
-    return execute(callback);
+    return query().filter(candidate().name.eq(name)).executeUnique();
   }
 
   @Override
   public QContact candidate() {
-    return QContact.contact;
+    return QContact.candidate();
   }
 }

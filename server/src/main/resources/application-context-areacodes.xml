@@ -8,5 +8,10 @@
 
   <context:annotation-config/>
 
-  <bean id="areaCodeDao" class="uk.co.unclealex.callerid.areacode.dao.AreaCodeDaoFactory"/>
+  <bean id="areaCodeDao" class="uk.co.unclealex.callerid.areacode.dao.InMemoryAreaCodeDao"/>
+  
+  <bean id="areaCodes" class="uk.co.unclealex.callerid.areacode.dao.CsvAreaCodeFactory">
+    <constructor-arg value="globalareacodes.csv"/>
+    <constructor-arg value="tlds.csv"/>
+  </bean>
 </beans>
