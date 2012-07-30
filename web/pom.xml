@@ -110,6 +110,6 @@
 
   </dependencies>
   <build>
-    <finalName>caller-id</finalName>
+    <finalName>whoscalling</finalName>
   </build>
 </project>
