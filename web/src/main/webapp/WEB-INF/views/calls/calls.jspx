@@ -7,10 +7,6 @@
 	<jsp:directive.page contentType="text/html;charset=UTF-8" />
 	<jsp:output omit-xml-declaration="yes" />
 	<style type="text/css">
-.post li:HOVER {
-	background: yellow;
-}
-
 #pagebar {
 	margin-right: 5%;
 }
@@ -19,22 +15,18 @@
 	margin-left: 5px;
 	margin-right: 5px;
 }
-</style>
+
+#feedback { font-size: 1em; }
+#selectable .ui-selecting { background: #FECA40; }
+#selectable .ui-selected { background: #F39814; color: white; }
+#selectable { list-style-type: none; margin: 0; padding: 0; width: 95%; }
+#selectable li { margin: 3px; padding: 0.4em; }
+	</style>
 	<div class="post" id="calls">
 		<h2>Recent calls</h2>
-		<ol style="counter-reset: item 5">
+		<ol id="selectable">
 			<c:forEach items="${calls}" var="call">
-				<c:choose>
-					<c:when
-						test="${call.googleSearchTerm == null || call.googleSearchArea == null}">
-						<c:set var="onclick" value="" />
-					</c:when>
-					<c:otherwise>
-						<c:set var="onclick"
-							value="mapto('${call.googleSearchTerm}', '${call.googleSearchArea}')" />
-					</c:otherwise>
-				</c:choose>
-				<li style="width: 90%;" onclick="${onclick}">
+				<li class="ui-widget-content">
 					<div>
 						<c:choose>
 							<c:when test="${call.prettyPrintedPhoneNumber != null}">
@@ -45,10 +37,10 @@
 						-
 						<fmt:formatDate type="both" dateStyle="short" timeStyle="short"
 							value="${call.callTime}" />
-						<div style="float: right;">
-							<a class="icon" title="Search">z</a>
-							<a class="icon" title="Edit">L</a>
-						</div>
+						<span class="callbuttons" style="float: right;">
+							<button class="search" title="Search">Search</button>
+							<button class="contacts" title="Edit">Edit</button>
+						</span>
 					</div>
 					<div>
 						<c:if test="${call.contact != null}">
@@ -64,12 +56,12 @@
 		<div id="pagebar">
 			<span>Page ${page.currentPage} of ${page.lastPage}</span>
 			<c:if test="${page.previousPage != null}">
-				<c:url var="url" value="/c/${page.previousPage}/calls.html"/>
+				<c:url var="url" value="/c/${page.previousPage}/calls.html" />
 				<a class="icon" href="${url}">9</a>
 			</c:if>
 			<select id="pageSelect">
 				<c:forEach items="${page.allPages}" var="thisPage">
-					<c:url var="url" value="/c/${thisPage}/calls.html"/>
+					<c:url var="url" value="/c/${thisPage}/calls.html" />
 					<c:choose>
 						<c:when test="${thisPage == page.currentPage}">
 							<option selected="selected" value="${url}">${thisPage}</option>
@@ -81,7 +73,7 @@
 				</c:forEach>
 			</select>
 			<c:if test="${page.nextPage != null}">
-				<c:url var="url" value="/c/${page.nextPage}/calls.html"/>
+				<c:url var="url" value="/c/${page.nextPage}/calls.html" />
 				<a class="icon" href="${url}">:</a>
 			</c:if>
 		</div>

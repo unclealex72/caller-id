@@ -1,19 +1,57 @@
 <script type="text/javascript" xmlns:jsp="http://java.sun.com/JSP/Page"
-	xmlns:spring="http://www.springframework.org/tags" version="2.0">
+	xmlns:c="http://java.sun.com/jsp/jstl/core" version="2.0">
 	<jsp:directive.page contentType="text/html;charset=UTF-8" />
 	<jsp:output omit-xml-declaration="yes" />
 	
-    $(document).ready(function() {
+	$(function() {
 		$("#pageSelect").change(function() {
 			window.location.href = $("#pageSelect option:selected").val();
 		});  	
     });
+
+	$(function() {
+		$( ".callbuttons button.search" ).button({
+            icons: {
+                primary: "ui-icon-search"
+            },
+            text: false});
+		$( ".callbuttons button.contacts" ).button({
+            icons: {
+                primary: "ui-icon-note"
+            },
+            text: false});
+	
+		$(".callbuttons").buttonset();
+		$("#selectable").selectable({
+			stop: function() {
+				$( ".ui-selected", this ).each(function() {
+					var index = $( "#selectable li" ).index( this );
+					var address = addresses[index];
+					if (address != null) {
+						mapto(address.searchTerm, address.searchArea);
+					}
+				});
+			}
+		});
+	});
 
     var map;
     var geocoder = new google.maps.Geocoder();
     var marker = new google.maps.Marker();
     var nearViewport;
     var markerLocation;
+    var addresses = [];
+	<c:forEach items="${calls}" var="call">
+	<c:choose>
+	<c:when
+		test="${call.googleSearchTerm == null || call.googleSearchArea == null}">
+		addresses.push(null);
+	</c:when>
+	<c:otherwise>
+		addresses.push({ "searchTerm" : "${call.googleSearchTerm}", "searchArea" : "${call.googleSearchArea}"});
+	</c:otherwise>
+	</c:choose>
+	</c:forEach>
     
 	$(document).ready(function() {
 		$(map).height($(calls).height());

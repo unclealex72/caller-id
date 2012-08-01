@@ -68,7 +68,7 @@ public class CallsController {
   /**
    * The default page size.
    */
-  private static final int PAGE_SIZE = 10;
+  private static final int PAGE_SIZE = 5;
 
   /**
    * The {@link CallDao} used to list received calls.

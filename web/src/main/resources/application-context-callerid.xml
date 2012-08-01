@@ -20,6 +20,7 @@
   <import resource="classpath:application-context-callerid-google.xml" />
   <import resource="classpath:application-context-areacodes.xml" />
   <import resource="classpath:application-context-phonenumbers.xml" />
+  
   <bean id="rawPersistenceManagerFactory" class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean"
     autowire-candidate="false">
     <property name="jdoProperties">

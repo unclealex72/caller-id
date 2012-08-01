@@ -1,5 +1,6 @@
 <html xmlns:jsp="http://java.sun.com/JSP/Page"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:aj="urn:jsptagdir:/WEB-INF/tags"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:tiles="http://tiles.apache.org/tags-tiles"
 	xmlns:spring="http://www.springframework.org/tags" class="no-js"
@@ -26,29 +27,21 @@
 <link href='http://fonts.googleapis.com/css?family=Junge'
 	rel='stylesheet' type='text/css' />
 
-<c:url value="/assets/css/style.css" var="url" />
-<link rel="stylesheet" href="${url}" />
-<c:url value="/assets/fonts/raphaelicons.css" var="url" />
-<link rel="stylesheet" href="${url}" />
-<c:url value="/assets/css/main.css" var="url" />
-<link rel="stylesheet" href="${url}" />
-<c:url value="/assets/js/libs/modernizr-2.5.2.min.js" var="url" />
-<script src="${url}">
+<aj:css href="/assets/css/style.css"/>
+<aj:css href="/assets/fonts/raphaelicons.css"/>
+<aj:css href="/assets/css/main.css"/>
+<aj:css href="/assets/css/ui-lightness/jquery-ui-1.8.22.custom.css"/>
+
+<aj:script src="/assets/js/libs/modernizr-2.5.2.min.js"/>
+
+<script type="text/javascript"
+  src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBPMGnJoq56NXDaFb21WdN_kkb585Q-qt4&amp;sensor=true">
 <!-- Make sure the script tag is not minimised -->
 </script>
-    <script type="text/javascript"
-      src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBPMGnJoq56NXDaFb21WdN_kkb585Q-qt4&amp;sensor=true">
-    <!-- Make sure the script tag is not minimised -->
-    </script>
-    
-	<c:url value="/assets/js/libs/jquery-1.7.1.min.js" var="url" />
-	<script src="${url}">
-	<!-- Make sure the script tag is not minimised -->
-	</script>
-	<c:url value="/assets/js/script.js" var="url" />
-	<script src="${url}">
-	<!-- Make sure the script tag is not minimised -->
-	</script>
+
+<aj:script src="/assets/js/libs/jquery-1.7.2.min.js"/>
+<aj:script src="/assets/js/libs/jquery-ui-1.8.22.custom.min.js"/>
+<aj:script src="/assets/js/script.js"/>
 
 </head>
 <!--[if lt IE 7]> <body class="ie6 oldies"> <![endif]-->
