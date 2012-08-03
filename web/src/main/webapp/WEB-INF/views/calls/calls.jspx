@@ -7,26 +7,24 @@
 	<jsp:directive.page contentType="text/html;charset=UTF-8" />
 	<jsp:output omit-xml-declaration="yes" />
 	<style type="text/css">
-#pagebar {
-	margin-right: 5%;
-}
-
-#pagebar span {
-	margin-left: 5px;
-	margin-right: 5px;
-}
 
 #feedback { font-size: 1em; }
-#selectable .ui-selecting { background: #FECA40; }
-#selectable .ui-selected { background: #F39814; color: white; }
+#selectable .ui-selecting { background: #389AFF; }
+#selectable .ui-selected { 
+border: 1px solid #0073EA;
+background: #0073EA;
+font-weight: bold;
+color: white;
+ }
 #selectable { list-style-type: none; margin: 0; padding: 0; width: 95%; }
 #selectable li { margin: 3px; padding: 0.4em; }
+
 	</style>
 	<div class="post" id="calls">
 		<h2>Recent calls</h2>
 		<ol id="selectable">
 			<c:forEach items="${calls}" var="call">
-				<li class="ui-widget-content">
+				<li class="ui-widget-content ui-corner-left ui-corner-right">
 					<div>
 						<c:choose>
 							<c:when test="${call.prettyPrintedPhoneNumber != null}">
@@ -57,7 +55,7 @@
 			<span>Page ${page.currentPage} of ${page.lastPage}</span>
 			<c:if test="${page.previousPage != null}">
 				<c:url var="url" value="/c/${page.previousPage}/calls.html" />
-				<a class="icon" href="${url}">9</a>
+				<a id="pagingNext" href="${url}">Previous</a>
 			</c:if>
 			<select id="pageSelect">
 				<c:forEach items="${page.allPages}" var="thisPage">
@@ -74,7 +72,7 @@
 			</select>
 			<c:if test="${page.nextPage != null}">
 				<c:url var="url" value="/c/${page.nextPage}/calls.html" />
-				<a class="icon" href="${url}">:</a>
+				<a id="pagingPrevious" href="${url}">Next</a>
 			</c:if>
 		</div>
 	</div>

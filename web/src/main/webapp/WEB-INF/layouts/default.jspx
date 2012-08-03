@@ -30,7 +30,7 @@
 <aj:css href="/assets/css/style.css"/>
 <aj:css href="/assets/fonts/raphaelicons.css"/>
 <aj:css href="/assets/css/main.css"/>
-<aj:css href="/assets/css/ui-lightness/jquery-ui-1.8.22.custom.css"/>
+<aj:css href="/assets/css/flick/jquery-ui-1.8.22.custom.css"/>
 
 <aj:script src="/assets/js/libs/modernizr-2.5.2.min.js"/>
 
@@ -42,7 +42,6 @@
 <aj:script src="/assets/js/libs/jquery-1.7.2.min.js"/>
 <aj:script src="/assets/js/libs/jquery-ui-1.8.22.custom.min.js"/>
 <aj:script src="/assets/js/script.js"/>
-
 </head>
 <!--[if lt IE 7]> <body class="ie6 oldies"> <![endif]-->
 <!--[if IE 7]>    <body class="ie7 oldies"> <![endif]-->

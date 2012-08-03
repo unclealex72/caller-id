@@ -6,7 +6,19 @@
 	$(function() {
 		$("#pageSelect").change(function() {
 			window.location.href = $("#pageSelect option:selected").val();
-		});  	
+		});
+		$("#pagingNext").button({
+			icons: {
+				primary: "ui-icon-circle-triangle-w"
+			},
+			text: false
+		});
+		$("#pagingPrevious").button({
+			icons: {
+				primary: "ui-icon-circle-triangle-e"
+			},
+			text: false
+		});
     });
 
 	$(function() {
@@ -14,25 +26,24 @@
             icons: {
                 primary: "ui-icon-search"
             },
-            text: false});
+            text: false
+        });
 		$( ".callbuttons button.contacts" ).button({
             icons: {
                 primary: "ui-icon-note"
             },
-            text: false});
+            text: false
+        });
 	
 		$(".callbuttons").buttonset();
-		$("#selectable").selectable({
-			stop: function() {
-				$( ".ui-selected", this ).each(function() {
-					var index = $( "#selectable li" ).index( this );
-					var address = addresses[index];
-					if (address != null) {
-						mapto(address.searchTerm, address.searchArea);
-					}
-				});
-			}
-		});
+		$("#selectable li").click(function() {
+			  $(this).addClass("ui-selected").siblings().removeClass("ui-selected");
+				var index = $( "#selectable li" ).index( this );
+				var address = addresses[index];
+				if (address != null) {
+					mapto(address.searchTerm, address.searchArea);
+				}
+			});
 	});
 
     var map;
