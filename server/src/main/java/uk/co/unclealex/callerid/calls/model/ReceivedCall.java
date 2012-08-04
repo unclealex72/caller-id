@@ -48,7 +48,7 @@ public class ReceivedCall {
   private final Date startTime;
 
   /**
-   * The {@link PhoneNumber} that made the call or null if the the number was withheld.
+   * The {@link PhoneNumber} that made the call.
    */
   private final PhoneNumber phoneNumber;
 

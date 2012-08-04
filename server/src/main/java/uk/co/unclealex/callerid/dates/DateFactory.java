@@ -22,26 +22,21 @@
  *
  */
 
-package uk.co.unclealex.callerid.calls.listener;
+package uk.co.unclealex.callerid.dates;
 
-import uk.co.unclealex.callerid.calls.model.ReceivedCall;
+import java.util.Date;
 
 /**
- * An interface for classes that respond to a telephone call being received.
- * Each listener only gets given the <i>exact</i> recieved number (or null if
- * the number was withheld). This means that implementations will be responsible
- * for interpreting this number as they see fit.
- * 
+ * An interface for classes that can retrieve the current date. This is abstracted out
+ * for testing purposes.
  * @author alex
- * 
+ *
  */
-public interface ReceivedCallListener {
+public interface DateFactory {
 
   /**
-   * Act upon a received call.
-   * 
-   * @param receivedCall
-   *          The {@link ReceivedCall} that has just been received.
+   * Get the current time.
+   * @return The current time.
    */
-  public void onCallReceived(ReceivedCall receivedCall) throws Exception;
+  public Date now();
 }

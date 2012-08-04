@@ -24,6 +24,8 @@
 
 package uk.co.unclealex.callerid.modem.listener;
 
+import uk.co.unclealex.callerid.calls.model.ReceivedCall;
+
 /**
  * An interface for classes that can listen to an event on a modem. Two events
  * can be handled: the initial ring and the broadcast of the number that is
@@ -46,12 +48,11 @@ public interface CallListener {
   /**
    * Respond to the telephone announcing its caller id information.
    * 
-   * @param number
-   *          The exact number as received by the telephone or null if the
-   *          number was withheld.
+   * @param receivedCall
+   *          The call that was received.
    * @return True if other {@link CallListener}s should be notified of the call
    *         or false if no other listeners should be made aware of the call.
    * @throws Exception
    */
-  public boolean onNumber(String number) throws Exception;
+  public boolean onNumber(ReceivedCall receivedCall) throws Exception;
 }
