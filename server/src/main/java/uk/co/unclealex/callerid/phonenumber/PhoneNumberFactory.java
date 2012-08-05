@@ -1,4 +1,4 @@
-package uk.co.unclealex.callerid.service;
+package uk.co.unclealex.callerid.phonenumber;
 
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
 

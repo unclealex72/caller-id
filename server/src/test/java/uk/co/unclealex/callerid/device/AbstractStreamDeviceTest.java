@@ -22,7 +22,7 @@
  *
  */
 
-package uk.co.unclealex.callerid.modem;
+package uk.co.unclealex.callerid.device;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -35,6 +35,9 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import uk.co.unclealex.callerid.device.AbstractStreamDevice;
+import uk.co.unclealex.callerid.device.Device;
+
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
@@ -42,15 +45,15 @@ import com.google.common.collect.Lists;
  * @author alex
  *
  */
-public class AbstractStreamModemTest {
+public class AbstractStreamDeviceTest {
 
   @Test(timeout=1000)
   public void testRead() throws IOException {
     String data = "Hello\nGoodbye\nWait\n";
-    Modem modem = createModem(new ByteArrayInputStream(data.getBytes()), new ByteArrayOutputStream());
+    Device device = createDevice(new ByteArrayInputStream(data.getBytes()), new ByteArrayOutputStream());
     List<String> actualData = Lists.newArrayList();
     String line;
-    while ((line = modem.readLine()) != null) {
+    while ((line = device.readLine()) != null) {
       actualData.add(line);
     }
     Assert.assertEquals("The wrong data was read.", "Hello, Goodbye, Wait", Joiner.on(", ").join(actualData));
@@ -59,21 +62,21 @@ public class AbstractStreamModemTest {
   @Test
   public void testWrite() throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    Modem modem = createModem(new ByteArrayInputStream(new byte[0]), out);
-    modem.writeLine("Hello");
-    modem.writeLine("Goodbye");
-    modem.writeLine("Wait");
+    Device device = createDevice(new ByteArrayInputStream(new byte[0]), out);
+    device.writeLine("Hello");
+    device.writeLine("Goodbye");
+    device.writeLine("Wait");
     String actualData = new String(out.toString(Charset.defaultCharset().name()));
     Assert.assertEquals("The wrong data was written.", "Hello\nGoodbye\nWait\n", actualData);
   }
   
-  protected Modem createModem(InputStream in, OutputStream out) throws IOException {
-    return new TestModem(in, out);
+  protected Device createDevice(InputStream in, OutputStream out) throws IOException {
+    return new TestDevice(in, out);
   }
   
-  class TestModem extends AbstractStreamModem {
+  class TestDevice extends AbstractStreamDevice {
     
-    public TestModem(InputStream in, OutputStream out) throws IOException {
+    public TestDevice(InputStream in, OutputStream out) throws IOException {
       initialise(in, out, Charset.defaultCharset());
     }
     

@@ -22,7 +22,7 @@
  *
  */
 
-package uk.co.unclealex.callerid.service;
+package uk.co.unclealex.callerid.calls;
 
 import java.util.Date;
 

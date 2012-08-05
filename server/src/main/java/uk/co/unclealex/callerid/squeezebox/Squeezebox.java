@@ -22,19 +22,28 @@
  *
  */
 
-package uk.co.unclealex.callerid.modem;
+package uk.co.unclealex.callerid.squeezebox;
+
+import java.io.IOException;
 
 import uk.co.unclealex.callerid.device.Device;
 
 /**
- * An interface for communicating with a Hayes modem. Consumers of this class
- * have the ability to read a line from the modem and also to write a line to
- * the modem.
- * 
+ * An interface for raw communication with a Logitech Squeezebox CLI.
  * @author alex
- * 
+ *
  */
-public interface Modem extends Device {
+public interface Squeezebox extends Device {
 
-  // Marker interface
+  /**
+   * Execute a command on the squeezebox server.
+   * 
+   * @param command
+   *          The command to execute.
+   * @return The response from the squeezebox, minus the echoed command
+   *         response.
+   * @throws IOException
+   */
+  public String execute(String command) throws IOException;
+
 }

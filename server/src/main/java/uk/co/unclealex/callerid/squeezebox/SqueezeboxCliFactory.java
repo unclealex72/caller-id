@@ -22,19 +22,21 @@
  *
  */
 
-package uk.co.unclealex.callerid.modem;
+package uk.co.unclealex.callerid.squeezebox;
 
-import uk.co.unclealex.callerid.device.Device;
+import java.io.IOException;
 
 /**
- * An interface for communicating with a Hayes modem. Consumers of this class
- * have the ability to read a line from the modem and also to write a line to
- * the modem.
- * 
+ * An interface that allows the creation of short lived {@link SqueezeboxCli}s.
  * @author alex
- * 
+ *
  */
-public interface Modem extends Device {
+public interface SqueezeboxCliFactory {
 
-  // Marker interface
+  /**
+   * Create a new {@link SqueezeboxCli}.
+   * @return A new {@link SqueezeboxCli}.
+   * @throws IOException 
+   */
+  public SqueezeboxCli create() throws IOException;
 }

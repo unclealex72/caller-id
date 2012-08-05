@@ -1,5 +1,7 @@
 package uk.co.unclealex.callerid.phonenumber.model;
 
+import com.google.common.base.Function;
+
 /**
  * A phone number represents all discoverable information about a phone number.
  * This includes and is limited to:
@@ -100,13 +102,28 @@ public interface PhoneNumber {
       public T visit(PhoneNumber phoneNumber) {
         throw new IllegalStateException("The type " + phoneNumber.getClass() + " is not a known phone number type.");
       }
-      
+
       /**
        * {@inheritDoc}
        */
       @Override
       public T visit(WithheldPhoneNumber withheldPhoneNumber) {
         return null;
+      }
+
+      /**
+       * Convert this visitor into a {@link Function}.
+       * 
+       * @return A {@link Function} that returns the value of this visitor for
+       *         its supplied {@link PhoneNumber}.
+       */
+      public Function<PhoneNumber, T> asFunction() {
+        Function<PhoneNumber, T> f = new Function<PhoneNumber, T>() {
+          public T apply(PhoneNumber phoneNumber) {
+            return phoneNumber.accept(Default.this);
+          }
+        };
+        return f;
       }
     }
   }

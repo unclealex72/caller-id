@@ -22,7 +22,7 @@
  *
  */
 
-package uk.co.unclealex.callerid.service;
+package uk.co.unclealex.callerid.calls;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +36,7 @@ import uk.co.unclealex.callerid.calls.model.Call;
 import uk.co.unclealex.callerid.calls.model.ReceivedCall;
 import uk.co.unclealex.callerid.google.dao.ContactDao;
 import uk.co.unclealex.callerid.google.model.Contact;
+import uk.co.unclealex.callerid.phonenumber.PhoneNumberFactory;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.WithheldPhoneNumber;
 

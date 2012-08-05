@@ -22,7 +22,7 @@
  *
  */
 
-package uk.co.unclealex.callerid.phonenumber.service;
+package uk.co.unclealex.callerid.phonenumber;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,12 +40,12 @@ import uk.co.unclealex.callerid.areacode.model.AreaCode;
 import uk.co.unclealex.callerid.areacode.model.Country;
 import uk.co.unclealex.callerid.areacode.model.CountryCode;
 import uk.co.unclealex.callerid.defaults.DefaultsService;
+import uk.co.unclealex.callerid.phonenumber.PhoneNumberFactoryImpl;
 import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.WithheldPhoneNumber;
-import uk.co.unclealex.callerid.service.PhoneNumberFactoryImpl;
 
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;

@@ -22,7 +22,7 @@
  *
  */
 
-package uk.co.unclealex.callerid.modem;
+package uk.co.unclealex.callerid.device;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,6 +44,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.co.unclealex.callerid.device.Device;
+import uk.co.unclealex.callerid.device.LocalNetworkDevice;
+
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
@@ -52,16 +55,16 @@ import com.google.common.io.Closeables;
  * @author alex
  *
  */
-public class NetworkModemTest {
+public class LocalNetworkDeviceTest {
 
-  ServerSocket modemServerSocket;
-  Modem modem;
+  ServerSocket deviceServerSocket;
+  Device device;
   
   @Before
   public void setup() throws IOException {
-    modemServerSocket = new ServerSocket(0);
-    modem = new NetworkModem(modemServerSocket.getLocalPort(), Charset.defaultCharset());
-    modem.initialise();
+    deviceServerSocket = new ServerSocket(0);
+    device = new LocalNetworkDevice(deviceServerSocket.getLocalPort(), Charset.defaultCharset());
+    device.initialise();
   }
   
   @Test(timeout=1000)
@@ -69,7 +72,7 @@ public class NetworkModemTest {
     Callable<Void> callable = new Callable<Void>() {
       @Override
       public Void call() throws Exception {
-        Socket socket = modemServerSocket.accept();
+        Socket socket = deviceServerSocket.accept();
         PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
         writer.println("Freddie");
         writer.println("Brian");
@@ -82,7 +85,7 @@ public class NetworkModemTest {
     Future<Void> future = executor.submit(callable);
     List<String> actualData = Lists.newArrayList();
     String line;
-    while ((line = modem.readLine()) != null) {
+    while ((line = device.readLine()) != null) {
       actualData.add(line);
     }
     Assert.assertEquals("The wrong data was read.", "Freddie, Brian", Joiner.on(", ").join(actualData));
@@ -91,10 +94,10 @@ public class NetworkModemTest {
 
   @Test(timeout=1000)
   public void testWrite() throws Exception {
-    modem.writeLine("Brian");
-    modem.writeLine("Freddie");
-    Socket socket = modemServerSocket.accept();
-    modem.close();
+    device.writeLine("Brian");
+    device.writeLine("Freddie");
+    Socket socket = deviceServerSocket.accept();
+    device.close();
     BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     List<String> actualData = Lists.newArrayList();
     String line;
@@ -106,7 +109,7 @@ public class NetworkModemTest {
 
   @After
   public void teardown() {
-    Closeables.closeQuietly(modemServerSocket);
+    Closeables.closeQuietly(deviceServerSocket);
   }
 
 }

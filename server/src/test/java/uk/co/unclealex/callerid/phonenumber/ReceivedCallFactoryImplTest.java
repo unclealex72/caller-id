@@ -22,7 +22,7 @@
  *
  */
 
-package uk.co.unclealex.callerid.service;
+package uk.co.unclealex.callerid.phonenumber;
 
 import static org.mockito.Mockito.when;
 
@@ -36,11 +36,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import uk.co.unclealex.callerid.calls.ReceivedCallFactory;
+import uk.co.unclealex.callerid.calls.ReceivedCallFactoryImpl;
 import uk.co.unclealex.callerid.calls.dao.CallDao;
 import uk.co.unclealex.callerid.calls.model.Call;
 import uk.co.unclealex.callerid.calls.model.ReceivedCall;
 import uk.co.unclealex.callerid.google.dao.ContactDao;
 import uk.co.unclealex.callerid.google.model.Contact;
+import uk.co.unclealex.callerid.phonenumber.PhoneNumberFactory;
 import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
 

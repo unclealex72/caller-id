@@ -22,7 +22,7 @@
  *
  */
 
-package uk.co.unclealex.callerid.modem;
+package uk.co.unclealex.callerid.device;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,15 +36,14 @@ import java.nio.charset.Charset;
 import javax.annotation.PostConstruct;
 
 /**
- * The base class for modems that use {@link InputStream}s and.
- * 
+ * The base class for devices that use {@link InputStream}s and
  * {@link OutputStream}s. Subclasses must call
  * {@link #initialise(InputStream, OutputStream, Charset)} inside a method
  * annotated with {@link PostConstruct}.
  * 
  * @author alex
  */
-public abstract class AbstractStreamModem implements Modem {
+public abstract class AbstractStreamDevice implements Device {
 
   /**
    * The {@link BufferedReader} used to wrap the supplied {@link InputStream}.
@@ -57,14 +56,14 @@ public abstract class AbstractStreamModem implements Modem {
   private PrintWriter writer;
 
   /**
-   * Initialise this modem.
+   * Initialise this device.
    * 
    * @param in
-   *          The modem's {@link InputStream}.
+   *          The device's {@link InputStream}.
    * @param out
-   *          The modem's {@link OutputStream}.
+   *          The device's {@link OutputStream}.
    * @param charset
-   *          The {@link Charset} used by the modem.
+   *          The {@link Charset} used by the device.
    * @throws IOException
    *           Thrown if there are any I/O issues.
    */

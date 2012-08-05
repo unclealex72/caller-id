@@ -22,7 +22,7 @@
  *
  */
 
-package uk.co.unclealex.callerid.service;
+package uk.co.unclealex.callerid.phonenumber;
 
 import java.util.TreeSet;
 
@@ -34,6 +34,8 @@ import uk.co.unclealex.callerid.areacode.model.AreaCode;
 import uk.co.unclealex.callerid.areacode.model.Country;
 import uk.co.unclealex.callerid.areacode.model.CountryCode;
 import uk.co.unclealex.callerid.defaults.DefaultsService;
+import uk.co.unclealex.callerid.phonenumber.PhoneNumberFunction;
+import uk.co.unclealex.callerid.phonenumber.PhoneNumberNormalisingVisitor;
 import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;

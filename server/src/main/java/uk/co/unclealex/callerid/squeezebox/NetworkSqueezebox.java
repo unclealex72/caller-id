@@ -22,19 +22,41 @@
  *
  */
 
-package uk.co.unclealex.callerid.modem;
+package uk.co.unclealex.callerid.squeezebox;
 
-import uk.co.unclealex.callerid.device.Device;
+import java.io.IOException;
+
+import uk.co.unclealex.callerid.device.LocalNetworkDevice;
+import uk.co.unclealex.process.packages.PackagesRequired;
+
+import com.google.common.base.Charsets;
 
 /**
- * An interface for communicating with a Hayes modem. Consumers of this class
- * have the ability to read a line from the modem and also to write a line to
- * the modem.
+ * An interface for connecting with a Logitech media server using its network
+ * interface.
  * 
  * @author alex
  * 
  */
-public interface Modem extends Device {
+@PackagesRequired("logitechmediaserver")
+public class NetworkSqueezebox extends LocalNetworkDevice implements Squeezebox {
 
-  // Marker interface
+  /**
+   * @param port
+   */
+  public NetworkSqueezebox(int port) {
+    super(port, Charsets.UTF_8);
+  }
+
+  @Override
+  public String execute(String command) throws IOException {
+    writeLine(command);
+    String result = readLine();
+    if (result != null && command.endsWith("?")) {
+      return result.substring(command.length() - 1);
+    }
+    else {
+      return result;
+    }
+  }
 }
