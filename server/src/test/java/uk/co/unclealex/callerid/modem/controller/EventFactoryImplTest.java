@@ -34,10 +34,10 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 
-import uk.co.unclealex.callerid.calls.ReceivedCallFactory;
 import uk.co.unclealex.callerid.calls.model.ReceivedCall;
 import uk.co.unclealex.callerid.dates.DateFactory;
 import uk.co.unclealex.callerid.modem.listener.CallListener;
+import uk.co.unclealex.callerid.service.ReceivedCallFactory;
 
 /**
  * @author alex

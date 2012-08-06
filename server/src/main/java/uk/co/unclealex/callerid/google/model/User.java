@@ -80,9 +80,11 @@ public class User {
    * Create a new user.
    * @param username The user's Google username.
    */
-  public User(String username) {
+  public User(String username, OAuthTokens oAuthTokens, List<Contact> contacts) {
     super();
     this.username = username;
+    this.oauthTokens = oAuthTokens;
+    this.contacts = contacts;
   }
 	
 	/**

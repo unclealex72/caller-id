@@ -24,7 +24,9 @@
 
 package uk.co.unclealex.callerid.modem;
 
-import uk.co.unclealex.callerid.device.Device;
+import java.io.IOException;
+
+import javax.annotation.PostConstruct;
 
 /**
  * An interface for communicating with a Hayes modem. Consumers of this class
@@ -34,7 +36,33 @@ import uk.co.unclealex.callerid.device.Device;
  * @author alex
  * 
  */
-public interface Modem extends Device {
+public interface Modem extends AutoCloseable {
 
-  // Marker interface
+  /**
+   * Initialise the modem ready for use. Implementations should make sure this
+   * is called before the modem is used, most likely by annotating this method
+   * with {@link PostConstruct}.
+   * @throws IOException 
+   */
+  public void initialise() throws IOException;
+
+  /**
+   * Read a line from the modem. This method blocks until the modem has data to
+   * send.
+   * 
+   * @return The line read from the modem or null if the modem has disconnected.
+   * @throws IOException
+   */
+  public String readLine() throws IOException;
+
+  /**
+   * Write a line to the modem. The command line must not be terminated with a
+   * newline character.
+   * 
+   * @param command
+   *          The command to send.
+   * @throws IOException
+   */
+  public void writeLine(String command) throws IOException;
+
 }

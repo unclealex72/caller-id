@@ -8,19 +8,19 @@
 
   <context:annotation-config/>
 
-  <bean id="phoneNumberFactory" class="uk.co.unclealex.callerid.phonenumber.PhoneNumberFactoryImpl"/>
+  <bean id="phoneNumberFactory" class="uk.co.unclealex.callerid.service.PhoneNumberFactoryImpl"/>
   
-  <bean id="receivedCallFactory" class="uk.co.unclealex.callerid.calls.ReceivedCallFactoryImpl"/>
+  <bean id="receivedCallFactory" class="uk.co.unclealex.callerid.service.ReceivedCallFactoryImpl"/>
   
-  <bean id="phoneNumberNormaliser" class="uk.co.unclealex.callerid.phonenumber.PhoneNumberFunction">
+  <bean id="phoneNumberNormaliser" class="uk.co.unclealex.callerid.service.PhoneNumberFunction">
     <constructor-arg>
-      <bean class="uk.co.unclealex.callerid.phonenumber.PhoneNumberNormalisingVisitor"/>
+      <bean class="uk.co.unclealex.callerid.service.PhoneNumberNormalisingVisitor"/>
     </constructor-arg>
   </bean>
 
-  <bean id="phoneNumberPrettyPrinter" class="uk.co.unclealex.callerid.phonenumber.PhoneNumberFunction">
+  <bean id="phoneNumberPrettyPrinter" class="uk.co.unclealex.callerid.service.PhoneNumberFunction">
     <constructor-arg>
-      <bean class="uk.co.unclealex.callerid.phonenumber.PhoneNumberPrettyPrinterVisitor"/>
+      <bean class="uk.co.unclealex.callerid.service.PhoneNumberPrettyPrinterVisitor"/>
     </constructor-arg>
   </bean>
 </beans>

@@ -8,6 +8,8 @@
   <persistence-unit name="callerid">
     <class>uk.co.unclealex.callerid.calls.model.Call</class>
     <class>uk.co.unclealex.callerid.google.model.Contact</class>
+    <class>uk.co.unclealex.callerid.google.model.User</class>
+    <class>uk.co.unclealex.callerid.google.model.OAuthTokens</class>
     <exclude-unlisted-classes />
   </persistence-unit>
 </persistence>

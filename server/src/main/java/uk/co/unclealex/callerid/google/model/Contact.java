@@ -34,7 +34,6 @@ import javax.jdo.annotations.Join;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import javax.jdo.annotations.Unique;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -60,7 +59,6 @@ public class Contact {
   /**
 	 * The name of the contact.
 	 */
-  @Unique
 	private String name;
 
 	/**

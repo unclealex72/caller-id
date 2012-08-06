@@ -30,6 +30,7 @@
         <entry key="javax.jdo.option.ConnectionDriverName" value="org.hsqldb.jdbc.JDBCDriver" />
         <entry key="javax.jdo.option.ConnectionUserName" value="sa" />
         <entry key="javax.jdo.option.ConnectionPassword" value="" />
+        <entry key="datanucleus.identifier.case" value="LowerCase" />
         <entry key="datanucleus.autoCreateSchema" value="true" />
         <entry key="datanucleus.validateTables" value="false" />
         <entry key="datanucleus.validateConstraints" value="false" />

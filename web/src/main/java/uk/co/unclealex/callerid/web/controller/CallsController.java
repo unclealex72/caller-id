@@ -24,6 +24,8 @@
 
 package uk.co.unclealex.callerid.web.controller;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -35,17 +37,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import uk.co.unclealex.callerid.calls.ReceivedCallFactory;
+import uk.co.unclealex.callerid.areacode.model.AreaCode;
 import uk.co.unclealex.callerid.calls.dao.CallDao;
 import uk.co.unclealex.callerid.calls.model.Call;
 import uk.co.unclealex.callerid.calls.model.ReceivedCall;
 import uk.co.unclealex.callerid.google.model.Contact;
-import uk.co.unclealex.callerid.phonenumber.PhoneNumberLocationVisitor;
 import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber.Visitor;
+import uk.co.unclealex.callerid.service.ReceivedCallFactory;
 import uk.co.unclealex.persistence.paging.Page;
 
 import com.google.common.base.Function;
@@ -195,6 +197,41 @@ public class CallsController {
           location.toArray(new String[location.size()]),
           googleSearchTerm,
           googleSearchArea);
+    }
+  }
+
+  /**
+   * A {@link Visitor} that converts a {@link PhoneNumber} into a list of
+   * strings indicating where the phone number originated.
+   * 
+   * @author alex
+   * 
+   */
+  class PhoneNumberLocationVisitor extends PhoneNumber.Visitor.Default<List<String>> {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> visit(CountriesOnlyPhoneNumber countriesOnlyPhoneNumber) {
+      return Collections.singletonList(countriesOnlyPhoneNumber.getCountries().first().getName());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> visit(CountryAndAreaPhoneNumber countryAndAreaPhoneNumber) {
+      AreaCode areaCode = countryAndAreaPhoneNumber.getAreaCode();
+      return Arrays.asList(areaCode.getArea(), areaCode.getCountry().getName());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> visit(NumberOnlyPhoneNumber numberOnlyPhoneNumber) {
+      return null;
     }
   }
 
