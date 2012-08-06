@@ -7,7 +7,6 @@
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
   default-autowire="constructor">
 
-  <bean class="uk.co.unclealex.callerid.CallsLoader" />
   <bean class="uk.co.unclealex.callerid.HardCodedDefaultsService">
     <property name="areaCode" value="1256" />
     <property name="countryCode" value="44" />
@@ -26,7 +25,7 @@
     <property name="jdoProperties">
       <map>
         <entry key="javax.jdo.PersistenceManagerFactoryClass" value="org.datanucleus.api.jdo.JDOPersistenceManagerFactory" />
-        <entry key="javax.jdo.option.ConnectionURL" value="jdbc:hsqldb:mem:callerid" />
+        <entry key="javax.jdo.option.ConnectionFactoryName" value="java:comp/env/jdbc/callerid" />
         <entry key="javax.jdo.option.ConnectionDriverName" value="org.hsqldb.jdbc.JDBCDriver" />
         <entry key="javax.jdo.option.ConnectionUserName" value="sa" />
         <entry key="javax.jdo.option.ConnectionPassword" value="" />

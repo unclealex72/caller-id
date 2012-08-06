@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.unclealex.callerid.areacode.model.AreaCode;
+import uk.co.unclealex.callerid.calls.ReceivedCallFactory;
 import uk.co.unclealex.callerid.calls.dao.CallDao;
 import uk.co.unclealex.callerid.calls.model.Call;
 import uk.co.unclealex.callerid.calls.model.ReceivedCall;
@@ -47,14 +48,12 @@ import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber.Visitor;
-import uk.co.unclealex.callerid.service.ReceivedCallFactory;
 import uk.co.unclealex.persistence.paging.Page;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-// TODO: Auto-generated Javadoc
 /**
  * A controller for listing all recieved calls.
  * 
@@ -194,7 +193,7 @@ public class CallsController {
           receivedCall.getStartTime(),
           prettyPrintedPhoneNumber.toArray(new String[prettyPrintedPhoneNumber.size()]),
           contactName,
-          location.toArray(new String[location.size()]),
+          location == null ? null : location.toArray(new String[location.size()]),
           googleSearchTerm,
           googleSearchArea);
     }

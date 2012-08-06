@@ -56,7 +56,8 @@ public class JdoContactDao extends JdoBasicDao<Contact, QContact> implements Con
   @SuppressWarnings("unchecked")
   @Override
   public List<Contact> findByTelephoneNumber(final String telephoneNumber) {
-    return query().filter(candidate().telephoneNumbers.contains(telephoneNumber)).executeList();
+    List<Contact> contacts = query().filter(candidate().telephoneNumbers.contains(telephoneNumber)).executeList();
+    return fetch(contacts);
   }
 
   /**

@@ -92,7 +92,7 @@
 	        	  marker.setMap(map);
 	        	  marker.setTitle(address);
 		          map.fitBounds(results[0].geometry.viewport);               
-		          map.panTo(location);		        	  
+		          map.panTo(markerLocation);		        	  
 	          });
 	        } else {
 	          alert("Geocode was not successful for the following reason: " + status);

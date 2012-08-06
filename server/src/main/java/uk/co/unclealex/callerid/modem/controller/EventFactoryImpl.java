@@ -29,10 +29,10 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import uk.co.unclealex.callerid.calls.ReceivedCallFactory;
 import uk.co.unclealex.callerid.calls.model.ReceivedCall;
 import uk.co.unclealex.callerid.dates.DateFactory;
 import uk.co.unclealex.callerid.modem.Modem;
-import uk.co.unclealex.callerid.service.ReceivedCallFactory;
 
 /**
  * The default implementation of {@link EventFactory}.

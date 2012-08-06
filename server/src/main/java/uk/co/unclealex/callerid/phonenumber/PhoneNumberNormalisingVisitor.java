@@ -38,7 +38,7 @@ import uk.co.unclealex.callerid.phonenumber.model.WithheldPhoneNumber;
 
 /**
  * A link {@link Visitor} that transforms a {@link PhoneNumber} and normalises
- * it. A normalised phone number contains the international prefix, the area
+ * it. A normalised phone number contains the international calling prefix, the country code, the area
  * code and then the local number. The following table shows normalisation
  * examples, assuming the telephone receiving calls is in Guildford (01483), UK
  * (+44):
@@ -50,15 +50,15 @@ import uk.co.unclealex.callerid.phonenumber.model.WithheldPhoneNumber;
  * </tr>
  * <tr align="right">
  * <td>703217</td>
- * <td>441483703217</td>
+ * <td>00441483703217</td>
  * </tr>
  * <tr align="right">
  * <td>0800999666</td>
- * <td>44800999666</td>
+ * <td>0044800999666</td>
  * </tr>
  * <tr align="right">
  * <td>0033987654321</td>
- * <td>333987654321</td>
+ * <td>00333987654321</td>
  * </tr>
  * </table>
  * 
@@ -90,8 +90,9 @@ public class PhoneNumberNormalisingVisitor extends Default<String> {
    */
   @Override
   public String visit(NumberOnlyPhoneNumber numberOnlyPhoneNumber) {
-    return getDefaultsService().getCountryCode()
-        + getDefaultsService().getAreaCode()
+    DefaultsService defaultsService = getDefaultsService();
+    return defaultsService.getInternationalPrefix() + defaultsService.getCountryCode()
+        + defaultsService.getAreaCode()
         + numberOnlyPhoneNumber.getNumber();
   }
 
@@ -100,7 +101,7 @@ public class PhoneNumberNormalisingVisitor extends Default<String> {
    */
   @Override
   public String visit(CountriesOnlyPhoneNumber countriesOnlyPhoneNumber) {
-    return countriesOnlyPhoneNumber.getCountryCode() + countriesOnlyPhoneNumber.getNumber();
+    return getDefaultsService().getInternationalPrefix() + countriesOnlyPhoneNumber.getCountryCode() + countriesOnlyPhoneNumber.getNumber();
   }
 
   /**
@@ -109,7 +110,7 @@ public class PhoneNumberNormalisingVisitor extends Default<String> {
   @Override
   public String visit(CountryAndAreaPhoneNumber countryAndAreaPhoneNumber) {
     AreaCode areaCode = countryAndAreaPhoneNumber.getAreaCode();
-    return areaCode.getCountry().getCountryCode().getInternationalPrefix()
+    return defaultsService.getInternationalPrefix() + areaCode.getCountry().getCountryCode().getInternationalPrefix()
         + areaCode.getAreaCode()
         + countryAndAreaPhoneNumber.getNumber();
   }

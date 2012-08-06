@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.annotation.Nullable;
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
@@ -64,7 +63,7 @@ public class Migrater {
 
   private static final Function<TelephoneNumber, String> NUMBER_FUNCTION = new Function<TelephoneNumber, String>() {
     public String apply(TelephoneNumber telephoneNumber) {
-      return telephoneNumber == null ? null : telephoneNumber.getNumber();
+      return telephoneNumber == null ? null : telephoneNumber.getNumber().replace("+", "00");
     }
   };
   

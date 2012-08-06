@@ -50,7 +50,7 @@ public class PhoneNumberNormalisingVisitorTest {
 
   @Test
   public void testLocal() {
-    runTest(new NumberOnlyPhoneNumber("472901"), "441256472901");
+    runTest(new NumberOnlyPhoneNumber("472901"), "00441256472901");
   }
  
   @Test
@@ -58,12 +58,12 @@ public class PhoneNumberNormalisingVisitorTest {
     CountryCode fr = new CountryCode("33");
     Country france = new Country("France", fr, "fr");
     AreaCode paris = new AreaCode(france, "Paris", "1");
-    runTest(new CountryAndAreaPhoneNumber(paris, "472902"), "331472902");
+    runTest(new CountryAndAreaPhoneNumber(paris, "472902"), "00331472902");
   }
  
   @Test
   public void testNonLocalNonGeographic() {
-    runTest(new CountriesOnlyPhoneNumber("1", "555800122", new TreeSet<Country>()), "1555800122");
+    runTest(new CountriesOnlyPhoneNumber("1", "555800122", new TreeSet<Country>()), "001555800122");
   }
 
   @Test
@@ -75,6 +75,7 @@ public class PhoneNumberNormalisingVisitorTest {
 
   public void runTest(PhoneNumber phoneNumber, String expectedNormalisedNumber) {
     DefaultsService defaultsService = Mockito.mock(DefaultsService.class);
+    Mockito.when(defaultsService.getInternationalPrefix()).thenReturn("00");
     Mockito.when(defaultsService.getCountryCode()).thenReturn("44");
     Mockito.when(defaultsService.getAreaCode()).thenReturn("1256");
     PhoneNumberFunction<String> phoneNumberFunction = new PhoneNumberFunction<>(new PhoneNumberNormalisingVisitor(defaultsService));
