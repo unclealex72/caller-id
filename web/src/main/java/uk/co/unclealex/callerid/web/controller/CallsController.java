@@ -53,6 +53,7 @@ import uk.co.unclealex.persistence.paging.Page;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.mycila.inject.internal.guava.base.Joiner;
 
 /**
  * A controller for listing all recieved calls.
@@ -187,16 +188,30 @@ public class CallsController {
       List<Contact> contacts = receivedCall.getContacts();
       String contactName = contacts.isEmpty() ? null : contacts.get(0).getName();
       List<String> location = phoneNumber.accept(new PhoneNumberLocationVisitor());
-      String googleSearchTerm = phoneNumber.accept(new GoogleSearchTermLocationVisitor());
-      String googleSearchArea = phoneNumber.accept(new GoogleSearchAreaLocationVisitor());
+      String googleMapsSearchTerm = phoneNumber.accept(new GoogleMapsSearchTermLocationVisitor());
+      String googleMapsSearchArea = phoneNumber.accept(new GoogleMapsSearchAreaLocationVisitor());
+      String googleSearchTerm =
+          prettyPrintedPhoneNumber == null || contactName != null ? null : Joiner.on("").join(prettyPrintedPhoneNumber);
       return new ReceivedCallModel(
           receivedCall.getStartTime(),
-          prettyPrintedPhoneNumber.toArray(new String[prettyPrintedPhoneNumber.size()]),
+          arrayOf(prettyPrintedPhoneNumber),
           contactName,
-          location == null ? null : location.toArray(new String[location.size()]),
-          googleSearchTerm,
-          googleSearchArea);
+          arrayOf(location),
+          googleMapsSearchTerm,
+          googleMapsSearchArea,
+          googleSearchTerm);
     }
+  }
+
+  /**
+   * Convert a list of strings to an array of strings.
+   * 
+   * @param data
+   *          The strings to return in the array.
+   * @return The data as an array or the null if the data is null.
+   */
+  protected String[] arrayOf(List<String> data) {
+    return data == null ? null : data.toArray(new String[data.size()]);
   }
 
   /**
@@ -235,11 +250,13 @@ public class CallsController {
   }
 
   /**
-   * A {@link Visitor} that gets the search term to use in Google maps for a {@link PhoneNumber}.
+   * A {@link Visitor} that gets the search term to use in Google maps for a
+   * {@link PhoneNumber}.
+   * 
    * @author alex
-   *
+   * 
    */
-  class GoogleSearchTermLocationVisitor extends PhoneNumber.Visitor.Default<String> {
+  class GoogleMapsSearchTermLocationVisitor extends PhoneNumber.Visitor.Default<String> {
 
     /**
      * {@inheritDoc}
@@ -268,11 +285,13 @@ public class CallsController {
   }
 
   /**
-   * A {@link Visitor} that gets the search area to use in Google maps for a {@link PhoneNumber}.
+   * A {@link Visitor} that gets the search area to use in Google maps for a
+   * {@link PhoneNumber}.
+   * 
    * @author alex
-   *
+   * 
    */
-  class GoogleSearchAreaLocationVisitor extends PhoneNumber.Visitor.Default<String> {
+  class GoogleMapsSearchAreaLocationVisitor extends PhoneNumber.Visitor.Default<String> {
 
     /**
      * {@inheritDoc}

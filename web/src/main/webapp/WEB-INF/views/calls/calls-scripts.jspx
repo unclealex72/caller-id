@@ -22,7 +22,7 @@
     });
 
 	$(function() {
-		$( ".callbuttons button.search" ).button({
+		$( ".callbuttons a.search" ).button({
             icons: {
                 primary: "ui-icon-search"
             },
@@ -55,11 +55,11 @@
 	<c:forEach items="${calls}" var="call">
 	<c:choose>
 	<c:when
-		test="${call.googleSearchTerm == null || call.googleSearchArea == null}">
+		test="${call.googleMapsSearchTerm == null || call.googleMapsSearchArea == null}">
 		addresses.push(null);
 	</c:when>
 	<c:otherwise>
-		addresses.push({ "searchTerm" : "${call.googleSearchTerm}", "searchArea" : "${call.googleSearchArea}"});
+		addresses.push({ "searchTerm" : "${call.googleMapsSearchTerm}", "searchArea" : "${call.googleMapsSearchArea}"});
 	</c:otherwise>
 	</c:choose>
 	</c:forEach>

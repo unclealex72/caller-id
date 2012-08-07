@@ -56,13 +56,18 @@ public class ReceivedCallModel {
   /**
    * The term to use for searching in Google Maps.
    */
-  private final String googleSearchTerm;
+  private final String googleMapsSearchTerm;
   
   /**
    * The area to search within when using Google Maps.
    */
-  private final String googleSearchArea;
+  private final String googleMapsSearchArea;
 
+  /**
+   * The term to use for searching on Google.
+   */
+  private final String googleSearchTerm;
+  
   /**
    * Instantiates a new received call model.
    * 
@@ -74,25 +79,28 @@ public class ReceivedCallModel {
    *          the contact
    * @param location
    *          the location
-   * @param googleSearchTerm
+   * @param googleMapsSearchTerm
    *          the google search term
-   * @param googleSearchArea
+   * @param googleMapsSearchArea
    *          the google search area
+   *          @param googleSearchTerm The google search term.
    */
   public ReceivedCallModel(
       Date callTime,
       String[] prettyPrintedPhoneNumber,
       String contact,
       String[] location,
-      String googleSearchTerm,
-      String googleSearchArea) {
+      String googleMapsSearchTerm,
+      String googleMapsSearchArea,
+      String googleSearchTerm) {
     super();
     this.callTime = callTime;
     this.prettyPrintedPhoneNumber = prettyPrintedPhoneNumber;
     this.contact = contact;
     this.location = location;
+    this.googleMapsSearchTerm = googleMapsSearchTerm;
+    this.googleMapsSearchArea = googleMapsSearchArea;
     this.googleSearchTerm = googleSearchTerm;
-    this.googleSearchArea = googleSearchArea;
   }
 
   /**
@@ -138,8 +146,8 @@ public class ReceivedCallModel {
    * 
    * @return the term to use for searching in Google Maps
    */
-  public String getGoogleSearchTerm() {
-    return googleSearchTerm;
+  public String getGoogleMapsSearchTerm() {
+    return googleMapsSearchTerm;
   }
 
   /**
@@ -147,8 +155,12 @@ public class ReceivedCallModel {
    * 
    * @return the area to search within when using Google Maps
    */
-  public String getGoogleSearchArea() {
-    return googleSearchArea;
+  public String getGoogleMapsSearchArea() {
+    return googleMapsSearchArea;
+  }
+
+  public String getGoogleSearchTerm() {
+    return googleSearchTerm;
   }
   
   

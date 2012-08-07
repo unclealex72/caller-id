@@ -16,6 +16,8 @@ background: #0073EA;
 font-weight: bold;
 color: white;
  }
+ 
+#selectable { font-weight: bold; }
 #selectable { list-style-type: none; margin: 0; padding: 0; width: 95%; }
 #selectable li { margin: 3px; padding: 0.4em; }
 
@@ -26,27 +28,34 @@ color: white;
 			<c:forEach items="${calls}" var="call">
 				<li class="ui-widget-content ui-corner-left ui-corner-right">
 					<div>
-						<c:choose>
-							<c:when test="${call.prettyPrintedPhoneNumber != null}">
-								${fn:join(call.prettyPrintedPhoneNumber, ' ')}
-							</c:when>
-							<c:otherwise>Withheld</c:otherwise>
-						</c:choose>
-						-
-						<fmt:formatDate type="both" dateStyle="short" timeStyle="short"
+						<fmt:formatDate pattern="dd MMMM yyyy, hh:mm a"
 							value="${call.callTime}" />
 						<span class="callbuttons" style="float: right;">
-							<button class="search" title="Search">Search</button>
-							<button class="contacts" title="Edit">Edit</button>
+							<c:if test="${call.googleSearchTerm != null }">
+								<a class="search" title="Search" href="http://www.google.co.uk/search?q=${call.googleSearchTerm}" target="search">Search</a>
+							</c:if>
+							<c:if test="${call.contact == null }">
+								<button class="contacts" title="Edit">Edit</button>
+							</c:if>
 						</span>
 					</div>
 					<div>
-						<c:if test="${call.contact != null}">
-							${call.contact}
-						</c:if>
-						<c:if test="${call.location != null}">
-							${fn:join(call.location, ', ')}
-						</c:if>
+						<c:choose>
+							<c:when test="${call.prettyPrintedPhoneNumber == null}">
+								Withheld
+							</c:when>
+							<c:when test="${call.contact != null}">
+								<span class="contact">${call.contact}</span>
+							</c:when>
+							<c:otherwise>
+								<span class="phonenumber">
+									${fn:join(call.prettyPrintedPhoneNumber, ' ')}									
+								</span>
+								<span class="location">
+									${fn:join(call.location, ', ')}
+								</span>
+							</c:otherwise>
+						</c:choose>
 					</div>
 				</li>
 			</c:forEach>
