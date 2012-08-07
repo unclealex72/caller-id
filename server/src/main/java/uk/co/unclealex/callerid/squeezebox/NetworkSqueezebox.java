@@ -25,8 +25,11 @@
 package uk.co.unclealex.callerid.squeezebox;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 
-import uk.co.unclealex.callerid.device.LocalNetworkDevice;
+import javax.inject.Inject;
+
+import uk.co.unclealex.callerid.device.NetworkDevice;
 import uk.co.unclealex.process.packages.PackagesRequired;
 
 import com.google.common.base.Charsets;
@@ -39,13 +42,23 @@ import com.google.common.base.Charsets;
  * 
  */
 @PackagesRequired("logitechmediaserver")
-public class NetworkSqueezebox extends LocalNetworkDevice implements Squeezebox {
+public class NetworkSqueezebox extends NetworkDevice implements Squeezebox {
 
   /**
    * @param port
    */
+  @Inject
   public NetworkSqueezebox(int port) {
     super(port, Charsets.UTF_8);
+  }
+
+  /**
+   * @param port
+   * @throws UnknownHostException 
+   */
+  @Inject
+  public NetworkSqueezebox(int port, String host) throws UnknownHostException {
+    super(port, host, Charsets.UTF_8);
   }
 
   @Override

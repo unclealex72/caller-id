@@ -27,6 +27,7 @@ package uk.co.unclealex.callerid.device;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 
 import javax.annotation.PostConstruct;
@@ -37,20 +38,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A device that is connected via a network port on the local host.
+ * A device that is connected via a network port.
+ * 
  * @author alex
- *
+ * 
  */
-public class LocalNetworkDevice extends AbstractStreamDevice {
+public class NetworkDevice extends AbstractStreamDevice {
 
   /** The Constant log. */
-  private static final Logger log = LoggerFactory.getLogger(LocalNetworkDevice.class);
-  
+  private static final Logger log = LoggerFactory.getLogger(NetworkDevice.class);
+
   /**
    * The port the device is listening on.
    */
   private final int port;
-  
+
+  /**
+   * The host the device is connected to or null if it can be connected to via
+   * the loopback device.
+   */
+  private final InetAddress host;
+
   /**
    * The {@link Charset} the device uses.
    */
@@ -60,19 +68,42 @@ public class LocalNetworkDevice extends AbstractStreamDevice {
    * The {@link Socket} used to listen to the device.
    */
   private Socket socket;
-  
+
   /**
    * Instantiates a new network device.
    * 
    * @param port
    *          the port
+   * @param host
+   *          The host.
    * @param charset
    *          the charset
+   * @throws UnknownHostException
    */
   @Inject
-  public LocalNetworkDevice(int port, Charset charset) {
+  public NetworkDevice(int port, String host, Charset charset) throws UnknownHostException {
     super();
     this.port = port;
+    this.host = InetAddress.getByName(host);
+    this.charset = charset;
+  }
+
+  /**
+   * Instantiates a new network device.
+   * 
+   * @param port
+   *          the port
+   * @param host
+   *          The host.
+   * @param charset
+   *          the charset
+   * @throws UnknownHostException
+   */
+  @Inject
+  public NetworkDevice(int port, Charset charset) {
+    super();
+    this.port = port;
+    this.host = InetAddress.getLoopbackAddress();
     this.charset = charset;
   }
 
@@ -86,8 +117,14 @@ public class LocalNetworkDevice extends AbstractStreamDevice {
   public void initialise() throws IOException {
     Charset charset = getCharset();
     int port = getPort();
-    log.info("Connecting to the network device on port " + port + " using character set " + charset.name());
-    Socket socket = new Socket(InetAddress.getLoopbackAddress(), port);
+    InetAddress host = getHost();
+    log.info("Connecting to the network device on host "
+        + host
+        + " and port "
+        + port
+        + " using character set "
+        + charset.name());
+    Socket socket = new Socket(host, port);
     setSocket(socket);
     initialise(socket.getInputStream(), socket.getOutputStream(), charset);
   }
@@ -105,6 +142,7 @@ public class LocalNetworkDevice extends AbstractStreamDevice {
       getSocket().close();
     }
   }
+
   /**
    * Gets the port the device is listening on.
    * 
@@ -141,6 +179,9 @@ public class LocalNetworkDevice extends AbstractStreamDevice {
   public void setSocket(Socket socket) {
     this.socket = socket;
   }
-  
-  
+
+  public InetAddress getHost() {
+    return host;
+  }
+
 }

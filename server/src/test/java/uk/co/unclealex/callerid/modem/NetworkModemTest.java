@@ -44,6 +44,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
@@ -60,7 +61,7 @@ public class NetworkModemTest {
   @Before
   public void setup() throws IOException {
     modemServerSocket = new ServerSocket(0);
-    modem = new NetworkModem(modemServerSocket.getLocalPort(), Charset.defaultCharset());
+    modem = new NetworkModem(modemServerSocket.getLocalPort());
     modem.initialise();
   }
   
@@ -70,7 +71,7 @@ public class NetworkModemTest {
       @Override
       public Void call() throws Exception {
         Socket socket = modemServerSocket.accept();
-        PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+        PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), Charsets.US_ASCII));
         writer.println("Freddie");
         writer.println("Brian");
         writer.flush();
@@ -95,7 +96,7 @@ public class NetworkModemTest {
     modem.writeLine("Freddie");
     Socket socket = modemServerSocket.accept();
     modem.close();
-    BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), Charsets.US_ASCII));
     List<String> actualData = Lists.newArrayList();
     String line;
     while ((line = reader.readLine()) != null) {

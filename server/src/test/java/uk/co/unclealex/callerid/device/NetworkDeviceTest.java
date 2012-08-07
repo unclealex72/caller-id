@@ -45,7 +45,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.co.unclealex.callerid.device.Device;
-import uk.co.unclealex.callerid.device.LocalNetworkDevice;
+import uk.co.unclealex.callerid.device.NetworkDevice;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -55,7 +55,7 @@ import com.google.common.io.Closeables;
  * @author alex
  *
  */
-public class LocalNetworkDeviceTest {
+public class NetworkDeviceTest {
 
   ServerSocket deviceServerSocket;
   Device device;
@@ -63,7 +63,7 @@ public class LocalNetworkDeviceTest {
   @Before
   public void setup() throws IOException {
     deviceServerSocket = new ServerSocket(0);
-    device = new LocalNetworkDevice(deviceServerSocket.getLocalPort(), Charset.defaultCharset());
+    device = new NetworkDevice(deviceServerSocket.getLocalPort(), Charset.defaultCharset());
     device.initialise();
   }
   
