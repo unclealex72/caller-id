@@ -14,6 +14,8 @@
     <property name="internationalPrefix" value="00"/>
   </bean>
 
+  <bean id="receivedCallModelFunction" class="uk.co.unclealex.callerid.web.controller.ReceivedCallModelFunction"/>
+  
   <import resource="classpath:application-context-jdo.xml" />
   <import resource="classpath:application-context-callerid-calls.xml" />
   <import resource="classpath:application-context-callerid-google.xml" />

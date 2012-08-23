@@ -48,7 +48,7 @@ import com.google.common.base.Function;
  * @author alex
  * 
  */
-public class ReceivedCallFactoryImpl implements ReceivedCallFactory {
+public class ReceivedCallFactoryImpl implements ReceivedCallFactory, Function<Call, ReceivedCall> {
 
   /**
    * The {@link PhoneNumberFactory} used to generate a {@link PhoneNumber}.
@@ -97,10 +97,15 @@ public class ReceivedCallFactoryImpl implements ReceivedCallFactory {
   }
 
   /**
-   * {@inheritDoc}
+   * Create a {@link ReceivedCall} from a previously received {@link Call}.
+   * 
+   * @param call
+   *          The previously received call.
+   * @return A {@link ReceivedCall} containing all known information about the
+   *         call.
    */
   @Override
-  public ReceivedCall create(final Call call) {
+  public ReceivedCall apply(final Call call) {
     Function<String, String> thisCallFunction = new Function<String, String>() {
       @Override
       public String apply(String phoneNumber) {

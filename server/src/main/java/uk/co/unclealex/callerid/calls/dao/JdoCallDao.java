@@ -24,6 +24,8 @@
 
 package uk.co.unclealex.callerid.calls.dao;
 
+import java.util.List;
+
 import javax.jdo.PersistenceManagerFactory;
 
 import org.datanucleus.query.typesafe.TypesafeQuery;
@@ -32,10 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.co.unclealex.callerid.calls.model.Call;
 import uk.co.unclealex.callerid.calls.model.QCall;
 import uk.co.unclealex.persistence.jdo.JdoBasicDao;
-import uk.co.unclealex.persistence.paging.Page;
 import uk.co.unclealex.persistence.paging.PagingService;
-
-import com.google.common.base.Supplier;
 
 /**
  * The JDO implementation of {@link CallDao}.
@@ -58,17 +57,12 @@ public class JdoCallDao extends JdoBasicDao<Call, QCall> implements CallDao {
    * {@inheritDoc}
    */
   @Override
-  public Page<Call> pageAllByTimeReceived(long pageNumber, long pageSize) {
-    final QCall call = candidate();
-    Supplier<TypesafeQuery<Call>> supplier = new Supplier<TypesafeQuery<Call>>() {
-      @Override
-      public TypesafeQuery<Call> get() {
-        return query();
-      }
-    };
-    return page(supplier, pageNumber, pageSize, call.callTime.desc());
+  public List<Call> getAllByTimeReceived() {
+    TypesafeQuery<Call> query = query().orderBy(candidate().callTime.desc());
+    List<Call> results = query.executeList();
+    return fetch(results);
   }
-
+  
   /**
    * {@inheritDoc}
    */

@@ -22,7 +22,7 @@
  *
  */
 
-package uk.co.unclealex.callerid.web.controller;
+package uk.co.unclealex.callerid.model;
 
 import java.util.Date;
 
@@ -69,6 +69,11 @@ public class ReceivedCallModel {
   private final String googleSearchTerm;
   
   /**
+   * True if this call is editable, false otherwise.
+   */
+  private final boolean editable;
+  
+  /**
    * Instantiates a new received call model.
    * 
    * @param callTime
@@ -84,6 +89,7 @@ public class ReceivedCallModel {
    * @param googleMapsSearchArea
    *          the google search area
    *          @param googleSearchTerm The google search term.
+   *          @param editable True if this call is editable, false otherwise.
    */
   public ReceivedCallModel(
       Date callTime,
@@ -92,7 +98,8 @@ public class ReceivedCallModel {
       String[] location,
       String googleMapsSearchTerm,
       String googleMapsSearchArea,
-      String googleSearchTerm) {
+      String googleSearchTerm,
+      boolean editable) {
     super();
     this.callTime = callTime;
     this.prettyPrintedPhoneNumber = prettyPrintedPhoneNumber;
@@ -101,6 +108,7 @@ public class ReceivedCallModel {
     this.googleMapsSearchTerm = googleMapsSearchTerm;
     this.googleMapsSearchArea = googleMapsSearchArea;
     this.googleSearchTerm = googleSearchTerm;
+    this.editable = editable;
   }
 
   /**
@@ -159,8 +167,22 @@ public class ReceivedCallModel {
     return googleMapsSearchArea;
   }
 
+  /**
+   * Gets the term to use for searching on Google.
+   * 
+   * @return the term to use for searching on Google
+   */
   public String getGoogleSearchTerm() {
     return googleSearchTerm;
+  }
+
+  /**
+   * Checks if is true if this call is editable, false otherwise.
+   * 
+   * @return the true if this call is editable, false otherwise
+   */
+  public boolean isEditable() {
+    return editable;
   }
   
   

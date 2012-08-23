@@ -4,24 +4,6 @@
 	<jsp:output omit-xml-declaration="yes" />
 	
 	$(function() {
-		$("#pageSelect").change(function() {
-			window.location.href = $("#pageSelect option:selected").val();
-		});
-		$("#pagingNext").button({
-			icons: {
-				primary: "ui-icon-circle-triangle-w"
-			},
-			text: false
-		});
-		$("#pagingPrevious").button({
-			icons: {
-				primary: "ui-icon-circle-triangle-e"
-			},
-			text: false
-		});
-    });
-
-	$(function() {
 		$( ".callbuttons a.search" ).button({
             icons: {
                 primary: "ui-icon-search"
@@ -36,14 +18,39 @@
         });
 	
 		$(".callbuttons").buttonset();
-		$("#selectable li").click(function() {
+		$(".selectable li").click(function() {
 			  $(this).addClass("ui-selected").siblings().removeClass("ui-selected");
-				var index = $( "#selectable li" ).index( this );
+				var index = $( "#calls .selectable li" ).index( this );
 				var address = addresses[index];
 				if (address != null) {
 					mapto(address.searchTerm, address.searchArea);
 				}
 			});
+		$( "#pages" ).accordion();
+		
+		$( "#pageSlider" ).slider({
+			value:0,
+			min: 0,
+			max: ${callPages.size() - 1},
+			step: 1,
+			slide: function(event, ui) {
+				$( "#pageSlider a" ).text( 1 + ui.value );
+			},
+			create: function(event, ui) {
+			  $( "#pageSlider a" ).text( 1 );
+			},
+		   	change: function(event, ui) {
+				$( "#pages" ).accordion("activate", ui.value);		   	  
+		   	}
+		});
+		
+		
+		//$("#pages").hrzAccordion({
+		//	handlePosition     	: "right",
+		//	openOnLoad     		: 0,
+		//	closeOpenAnimation	: 2
+		//});
+
 	});
 
     var map;
@@ -52,18 +59,19 @@
     var nearViewport;
     var markerLocation;
     var addresses = [];
-	<c:forEach items="${calls}" var="call">
-	<c:choose>
-	<c:when
-		test="${call.googleMapsSearchTerm == null || call.googleMapsSearchArea == null}">
-		addresses.push(null);
-	</c:when>
-	<c:otherwise>
-		addresses.push({ "searchTerm" : "${call.googleMapsSearchTerm}", "searchArea" : "${call.googleMapsSearchArea}"});
-	</c:otherwise>
-	</c:choose>
-	</c:forEach>
-    
+	<c:forEach items="${callPages}" var="callPage">
+		<c:forEach items="${callPage}" var="call">
+			<c:choose>
+				<c:when
+					test="${call.googleMapsSearchTerm == null || call.googleMapsSearchArea == null}">
+					addresses.push(null);
+				</c:when>
+				<c:otherwise>
+					addresses.push({ "searchTerm" : "${call.googleMapsSearchTerm}", "searchArea" : "${call.googleMapsSearchArea}"});
+				</c:otherwise>
+			</c:choose>
+		</c:forEach>
+    </c:forEach>
 	$(document).ready(function() {
 		$(map).height($(calls).height());
         var mapOptions = {

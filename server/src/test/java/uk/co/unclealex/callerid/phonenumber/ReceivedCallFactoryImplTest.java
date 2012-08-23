@@ -36,14 +36,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import uk.co.unclealex.callerid.calls.ReceivedCallFactory;
 import uk.co.unclealex.callerid.calls.ReceivedCallFactoryImpl;
 import uk.co.unclealex.callerid.calls.dao.CallDao;
 import uk.co.unclealex.callerid.calls.model.Call;
 import uk.co.unclealex.callerid.calls.model.ReceivedCall;
 import uk.co.unclealex.callerid.google.dao.ContactDao;
 import uk.co.unclealex.callerid.google.model.Contact;
-import uk.co.unclealex.callerid.phonenumber.PhoneNumberFactory;
 import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
 
@@ -64,7 +62,7 @@ public class ReceivedCallFactoryImplTest {
   CallDao callDao;
   @Mock
   ContactDao contactDao;
-  ReceivedCallFactory receivedCallFactory;
+  ReceivedCallFactoryImpl receivedCallFactory;
 
   @Before
   public void setup() {
@@ -81,7 +79,7 @@ public class ReceivedCallFactoryImplTest {
     Date callTime = new Date();
     Call call = new Call(callTime, "441256444555", "Brian");
     Assert.assertEquals("The wrong received call was returned.", new ReceivedCall(callTime, new NumberOnlyPhoneNumber(
-        "441256444555"), "Brian", new ArrayList<Contact>()), receivedCallFactory.create(call));
+        "441256444555"), "Brian", new ArrayList<Contact>()), receivedCallFactory.apply(call));
   }
 
   @Test

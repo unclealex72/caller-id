@@ -39,16 +39,6 @@ import uk.co.unclealex.callerid.calls.model.ReceivedCall;
 public interface ReceivedCallFactory {
 
   /**
-   * Create a {@link ReceivedCall} from a previously received {@link Call}.
-   * 
-   * @param call
-   *          The previously received call.
-   * @return A {@link ReceivedCall} containing all known information about the
-   *         call.
-   */
-  public ReceivedCall create(Call call);
-
-  /**
    * Create a {@link ReceivedCall} from a current ringing call.
    * 
    * @param receivedCallTime

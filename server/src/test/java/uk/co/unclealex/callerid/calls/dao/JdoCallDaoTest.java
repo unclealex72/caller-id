@@ -24,7 +24,6 @@
 
 package uk.co.unclealex.callerid.calls.dao;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -33,8 +32,8 @@ import java.util.List;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +43,6 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.unclealex.callerid.calls.model.Call;
-import uk.co.unclealex.persistence.paging.Page;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 
 /**
  * @author alex
@@ -65,6 +59,14 @@ public class JdoCallDaoTest {
   @Autowired
   PersistenceManagerFactory persistenceManagerFactory;
 
+  @Before
+  public void setUp() {
+    for (Call call : callDao.getAll()) {
+      callDao.delete(call);
+    }
+    flush();
+  }
+  
   @Test
   public void testCreate() {
     Date now = new Date();
@@ -98,38 +100,26 @@ public class JdoCallDaoTest {
   }
 
   @Test
-  public void testPageByDate() {
+  public void testGetAllByDate() {
     Calendar cal = new GregorianCalendar();
     Date firstCallTime = cal.getTime();
     cal.add(Calendar.HOUR_OF_DAY, -1);
     Date secondCallTime = cal.getTime();
     cal.add(Calendar.HOUR_OF_DAY, -1);
     Date thirdCallTime = cal.getTime();
-    callDao.store(new Call(secondCallTime, "44800400100", "Freddie"));
-    callDao.store(new Call(firstCallTime, "33900505050", "Brian"));
-    callDao.store(new Call(thirdCallTime, "33900505050", "Brian"));
+    Call firstCall = new Call(firstCallTime, "33900404040", "Brian");
+    Call secondCall = new Call(secondCallTime, "44800400100", "Freddie");
+    Call thirdCall = new Call(thirdCallTime, "33900505050", "Brian");
+    callDao.store(secondCall);
+    callDao.store(firstCall);
+    callDao.store(thirdCall);
     flush();
-    List<List<Date>> expectedDates = Lists.newArrayList();
-    expectedDates.add(Arrays.asList(firstCallTime, secondCallTime));
-    expectedDates.add(Arrays.asList(thirdCallTime));
-    long currentPage = 1;
-    Function<Call, Date> dateFunction = new Function<Call, Date>() {
-      public Date apply(Call call) {
-        return call.getCallTime();
-      }
-    };
-    for (List<Date> expectedPageDates : expectedDates) {
-      Page<Call> page = callDao.pageAllByTimeReceived(currentPage, 2);
-      Assert.assertEquals("The wrong number of pages were returned.", expectedDates.size(), page
-          .getPageOffsetsByPageNumber()
-          .size());
-      Iterable<Date> actualDates = Iterables.transform(page.getElements(), dateFunction);
-      Assert.assertThat(
-          "The wrong times were returned.",
-          actualDates,
-          Matchers.contains(expectedPageDates.toArray(new Date[0])));
-      currentPage++;
-    }
+    PersistenceManager pm = persistenceManagerFactory.getPersistenceManager();
+    List<Call> allByTimeReceived = callDao.getAllByTimeReceived();
+    Assert.assertArrayEquals(
+        "The wrong calls were returned.",
+        new Call[] { pm.detachCopy(firstCall), pm.detachCopy(secondCall), pm.detachCopy(thirdCall) },
+        allByTimeReceived.toArray(new Call[0]));
   }
 
   @Test

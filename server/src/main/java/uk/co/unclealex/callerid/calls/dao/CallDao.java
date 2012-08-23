@@ -24,9 +24,10 @@
 
 package uk.co.unclealex.callerid.calls.dao;
 
+import java.util.List;
+
 import uk.co.unclealex.callerid.calls.model.Call;
 import uk.co.unclealex.persistence.dao.BasicDao;
-import uk.co.unclealex.persistence.paging.Page;
 
 /**
  * The interface fo
@@ -37,15 +38,11 @@ import uk.co.unclealex.persistence.paging.Page;
 public interface CallDao extends BasicDao<Call> {
 
   /**
-   * Page all received calls, starting with the most recent.
+   * Get all received calls, starting with the most recent.
    * 
-   * @param pageNumber
-   *          The page number to return.
-   * @param pageSize
-   *          The size of page to return.
-   * @return A page of all received calls, starting with the most recent.
+   * @return All received calls, starting with the most recent.
    */
-  public Page<Call> pageAllByTimeReceived(long pageNumber, long pageSize);
+  public List<Call> getAllByTimeReceived();
 
   /**
    * Update the name of a contact of a call.

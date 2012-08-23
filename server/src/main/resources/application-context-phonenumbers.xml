@@ -11,6 +11,7 @@
   <bean id="phoneNumberFactory" class="uk.co.unclealex.callerid.phonenumber.PhoneNumberFactoryImpl"/>
   
   <bean id="receivedCallFactory" class="uk.co.unclealex.callerid.calls.ReceivedCallFactoryImpl"/>
+  <alias name="receivedCallFactory" alias="receivedCallFunction"/>
   
   <bean id="phoneNumberNormaliser" class="uk.co.unclealex.callerid.phonenumber.PhoneNumberFunction">
     <constructor-arg>

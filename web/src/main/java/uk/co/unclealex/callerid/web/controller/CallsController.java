@@ -24,36 +24,25 @@
 
 package uk.co.unclealex.callerid.web.controller;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import uk.co.unclealex.callerid.areacode.model.AreaCode;
-import uk.co.unclealex.callerid.calls.ReceivedCallFactory;
 import uk.co.unclealex.callerid.calls.dao.CallDao;
 import uk.co.unclealex.callerid.calls.model.Call;
 import uk.co.unclealex.callerid.calls.model.ReceivedCall;
-import uk.co.unclealex.callerid.google.model.Contact;
-import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
-import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
-import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
-import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber;
-import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber.Visitor;
-import uk.co.unclealex.persistence.paging.Page;
+import uk.co.unclealex.callerid.model.ReceivedCallModel;
 
 import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.mycila.inject.internal.guava.base.Joiner;
 
 /**
  * A controller for listing all recieved calls.
@@ -68,7 +57,12 @@ public class CallsController {
   /**
    * The default page size.
    */
-  private static final int PAGE_SIZE = 7;
+  static final int DEFAULT_PAGE_SIZE = 7;
+
+  /**
+   * The number of calls on each page.
+   */
+  private final int pageSize;
 
   /**
    * The {@link CallDao} used to list received calls.
@@ -76,247 +70,52 @@ public class CallsController {
   private final CallDao callDao;
 
   /**
-   * The {@link ReceivedCallFactory} used to get all received call information.
+   * A {@link Function} used to get all received call information.
    */
-  private final ReceivedCallFactory receivedCallFactory;
+  private final Function<Call, ReceivedCall> receivedCallFunction;
 
   /**
-   * The {@link PhoneNumber} pretty printer.
+   * A {@link Function} used to get all received call model information.
    */
-  private final Function<PhoneNumber, List<String>> phoneNumberPrettyPrinter;
+  private final Function<ReceivedCall, ReceivedCallModel> receivedCallModelFunction;
 
-  /**
-   * Instantiates a new calls controller.
-   * 
-   * @param callDao
-   *          the call dao
-   * @param receivedCallFactory
-   *          the received call factory
-   * @param phoneNumberPrettyPrinter
-   *          the phone number pretty printer
-   */
   @Inject
   public CallsController(
       CallDao callDao,
-      ReceivedCallFactory receivedCallFactory,
-      @Named("phoneNumberPrettyPrinter") Function<PhoneNumber, List<String>> phoneNumberPrettyPrinter) {
+      @Named("receivedCallFunction") Function<Call, ReceivedCall> receivedCallFunction,
+      @Named("receivedCallModelFunction") Function<ReceivedCall, ReceivedCallModel> receivedCallModelFunction) {
+    this(DEFAULT_PAGE_SIZE, callDao, receivedCallFunction, receivedCallModelFunction);
+  }
+
+  public CallsController(
+      int pageSize,
+      CallDao callDao,
+      Function<Call, ReceivedCall> receivedCallFunction,
+      Function<ReceivedCall, ReceivedCallModel> receivedCallModelFunction) {
     super();
+    this.pageSize = pageSize;
     this.callDao = callDao;
-    this.receivedCallFactory = receivedCallFactory;
-    this.phoneNumberPrettyPrinter = phoneNumberPrettyPrinter;
+    this.receivedCallFunction = receivedCallFunction;
+    this.receivedCallModelFunction = receivedCallModelFunction;
   }
 
   /**
-   * List the first page calls.
+   * Get all calls and store each page of calls in a map keyed by the one-based
+   * page number.
    * 
-   * @return A model and view for listing the first page of received calls.
+   * @return A model and view for listing each page of received calls.
    */
   @RequestMapping(value = "/calls.html", method = RequestMethod.GET)
   public ModelAndView listCalls() {
-    return listCalls(1);
-  }
-
-  /**
-   * List a page of calls.
-   * 
-   * @param page
-   *          The 1-based page to display.
-   * @return A model and view for listing a page of received calls.
-   */
-  @RequestMapping(value = "/{page}/calls.html", method = RequestMethod.GET)
-  public ModelAndView listCalls(@PathVariable("page") int page) {
+    Function<Call, ReceivedCallModel> receivedCallModelFunction =
+        Functions.compose(getReceivedCallModelFunction(), getReceivedCallFunction());
+    Iterable<List<ReceivedCallModel>> receivedCalls =
+        Iterables.partition(
+            Iterables.transform(getCallDao().getAllByTimeReceived(), receivedCallModelFunction),
+            getPageSize());
     ModelAndView mav = new ModelAndView("calls");
-    Page<Call> callsByTimeReceived = getCallDao().pageAllByTimeReceived(page, PAGE_SIZE);
-    Iterable<ReceivedCallModel> receivedCalls =
-        Iterables.transform(callsByTimeReceived.getElements(), new ReceivedCallFunction());
-    mav.getModel().put("calls", Lists.newArrayList(receivedCalls));
-    mav.getModel().put("page", createPageModel(callsByTimeReceived, page));
+    mav.getModel().put("callPages", Lists.newArrayList(receivedCalls));
     return mav;
-  }
-
-  /**
-   * Create a page model.
-   * 
-   * @param callsByTimeReceived
-   *          The page of calls to model.
-   * @param currentPage
-   *          The number of the page to model.
-   * @return A {@link PageModel} that can be used to display information about
-   *         the current page.
-   */
-  protected PageModel createPageModel(Page<Call> callsByTimeReceived, int currentPage) {
-    int firstIndex = (int) callsByTimeReceived.getOffset();
-    int lastIndex = firstIndex + (int) callsByTimeReceived.getPageSize();
-    int totalResultCount = (int) callsByTimeReceived.getTotalElementCount();
-    Integer previousPage = currentPage == 1 ? null : currentPage - 1;
-    int lastPage = callsByTimeReceived.getPageOffsetsByPageNumber().lastKey().intValue();
-    Integer nextPage = currentPage == lastPage ? null : currentPage + 1;
-    Function<Long, Integer> f = new Function<Long, Integer>() {
-      public Integer apply(Long pageNumber) {
-        return pageNumber.intValue();
-      }
-    };
-    List<Integer> allPages =
-        Lists.newArrayList(Iterables.transform(callsByTimeReceived.getPageOffsetsByPageNumber().keySet(), f));
-    return new PageModel(
-        firstIndex,
-        lastIndex,
-        totalResultCount,
-        previousPage,
-        nextPage,
-        currentPage,
-        lastPage,
-        allPages);
-  }
-
-  /**
-   * A {@link Function} that translates a {@link Call} into a.
-   * 
-   * {@link ReceivedCallModel}.
-   * 
-   * @author alex
-   */
-  class ReceivedCallFunction implements Function<Call, ReceivedCallModel> {
-
-    /**
-     * {@inheritDoc}
-     */
-    public ReceivedCallModel apply(Call call) {
-      ReceivedCall receivedCall = getReceivedCallFactory().create(call);
-      PhoneNumber phoneNumber = receivedCall.getPhoneNumber();
-      List<String> prettyPrintedPhoneNumber = getPhoneNumberPrettyPrinter().apply(phoneNumber);
-      List<Contact> contacts = receivedCall.getContacts();
-      String contactName = contacts.isEmpty() ? null : contacts.get(0).getName();
-      List<String> location = phoneNumber.accept(new PhoneNumberLocationVisitor());
-      String googleMapsSearchTerm = phoneNumber.accept(new GoogleMapsSearchTermLocationVisitor());
-      String googleMapsSearchArea = phoneNumber.accept(new GoogleMapsSearchAreaLocationVisitor());
-      String googleSearchTerm =
-          prettyPrintedPhoneNumber == null || contactName != null ? null : Joiner.on("").join(prettyPrintedPhoneNumber);
-      return new ReceivedCallModel(
-          receivedCall.getStartTime(),
-          arrayOf(prettyPrintedPhoneNumber),
-          contactName,
-          arrayOf(location),
-          googleMapsSearchTerm,
-          googleMapsSearchArea,
-          googleSearchTerm);
-    }
-  }
-
-  /**
-   * Convert a list of strings to an array of strings.
-   * 
-   * @param data
-   *          The strings to return in the array.
-   * @return The data as an array or the null if the data is null.
-   */
-  protected String[] arrayOf(List<String> data) {
-    return data == null ? null : data.toArray(new String[data.size()]);
-  }
-
-  /**
-   * A {@link Visitor} that converts a {@link PhoneNumber} into a list of
-   * strings indicating where the phone number originated.
-   * 
-   * @author alex
-   * 
-   */
-  class PhoneNumberLocationVisitor extends PhoneNumber.Visitor.Default<List<String>> {
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<String> visit(CountriesOnlyPhoneNumber countriesOnlyPhoneNumber) {
-      return Collections.singletonList(countriesOnlyPhoneNumber.getCountries().first().getName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<String> visit(CountryAndAreaPhoneNumber countryAndAreaPhoneNumber) {
-      AreaCode areaCode = countryAndAreaPhoneNumber.getAreaCode();
-      return Arrays.asList(areaCode.getArea(), areaCode.getCountry().getName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<String> visit(NumberOnlyPhoneNumber numberOnlyPhoneNumber) {
-      return null;
-    }
-  }
-
-  /**
-   * A {@link Visitor} that gets the search term to use in Google maps for a
-   * {@link PhoneNumber}.
-   * 
-   * @author alex
-   * 
-   */
-  class GoogleMapsSearchTermLocationVisitor extends PhoneNumber.Visitor.Default<String> {
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String visit(CountriesOnlyPhoneNumber countriesOnlyPhoneNumber) {
-      return countriesOnlyPhoneNumber.getCountries().first().getName();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String visit(CountryAndAreaPhoneNumber countryAndAreaPhoneNumber) {
-      return countryAndAreaPhoneNumber.getAreaCode().getArea();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String visit(NumberOnlyPhoneNumber numberOnlyPhoneNumber) {
-      return null;
-    }
-
-  }
-
-  /**
-   * A {@link Visitor} that gets the search area to use in Google maps for a
-   * {@link PhoneNumber}.
-   * 
-   * @author alex
-   * 
-   */
-  class GoogleMapsSearchAreaLocationVisitor extends PhoneNumber.Visitor.Default<String> {
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String visit(CountriesOnlyPhoneNumber countriesOnlyPhoneNumber) {
-      return countriesOnlyPhoneNumber.getCountries().first().getTld();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String visit(CountryAndAreaPhoneNumber countryAndAreaPhoneNumber) {
-      return countryAndAreaPhoneNumber.getAreaCode().getCountry().getTld();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String visit(NumberOnlyPhoneNumber numberOnlyPhoneNumber) {
-      return null;
-    }
-
   }
 
   /**
@@ -328,23 +127,15 @@ public class CallsController {
     return callDao;
   }
 
-  /**
-   * Gets the {@link ReceivedCallFactory} used to get all received call
-   * information.
-   * 
-   * @return the {@link ReceivedCallFactory} used to get all received call
-   *         information
-   */
-  public ReceivedCallFactory getReceivedCallFactory() {
-    return receivedCallFactory;
+  public int getPageSize() {
+    return pageSize;
   }
 
-  /**
-   * Gets the {@link PhoneNumber} pretty printer.
-   * 
-   * @return the {@link PhoneNumber} pretty printer
-   */
-  public Function<PhoneNumber, List<String>> getPhoneNumberPrettyPrinter() {
-    return phoneNumberPrettyPrinter;
+  public Function<Call, ReceivedCall> getReceivedCallFunction() {
+    return receivedCallFunction;
+  }
+
+  public Function<ReceivedCall, ReceivedCallModel> getReceivedCallModelFunction() {
+    return receivedCallModelFunction;
   }
 }
