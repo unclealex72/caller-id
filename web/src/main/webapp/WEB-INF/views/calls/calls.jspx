@@ -27,7 +27,6 @@
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
-	width: 95%;
 }
 
 .selectable li {
@@ -45,7 +44,8 @@
 </style>
   <div class="post" id="calls">
     <h2>Recent calls</h2>
-    <div id="pages">
+    <div id="pageSlider" style="width: 95%"> <!-- Slider --></div>
+    <div id="pages" style="width: 95%">
       <c:forEach items="${callPages}" var="callPage">
         <h3>
           <a href="#">Page</a>
@@ -82,7 +82,6 @@
         </ol>
       </c:forEach>
     </div>
-    <div id="pageSlider"> <!-- Slider --></div>
   </div>
   <div id="map" style="height: 100%;" />
 </article>
