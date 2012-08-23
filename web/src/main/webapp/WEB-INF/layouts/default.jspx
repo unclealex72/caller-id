@@ -31,7 +31,6 @@
 <aj:css href="/assets/fonts/raphaelicons.css"/>
 <aj:css href="/assets/css/main.css"/>
 <aj:css href="/assets/css/flick/jquery-ui-1.8.22.custom.css"/>
-<aj:css href="/assets/css/jquery.hrzAccordion.defaults.css"/>
 
 <script type="text/javascript"
   src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBPMGnJoq56NXDaFb21WdN_kkb585Q-qt4&amp;sensor=true">
@@ -40,7 +39,6 @@
 
 <aj:script src="/assets/js/libs/jquery-1.7.2.min.js"/>
 <aj:script src="/assets/js/libs/jquery-ui-1.8.22.custom.min.js"/>
-<aj:script src="/assets/js/libs/jquery.hrzAccordion.min.js"/>
 <aj:script src="/assets/js/libs/modernizr-2.5.2.min.js"/>
 <aj:script src="/assets/js/script.js"/>
 </head>

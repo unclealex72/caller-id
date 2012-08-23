@@ -28,6 +28,16 @@
 			});
 		$( "#pages" ).accordion();
 		
+		$( "#pages .selectable" ).each(function() {
+		  var classesToRemove = "";
+		  $.each(this.classList, function(index, className) {
+			if (className != "ui-accordion-content-active" &amp;&amp; className != "selectable") {
+			  classesToRemove += " " + className;
+			}
+		  })
+		  $(this).removeClass(classesToRemove);
+		});
+
 		$( "#pageSlider" ).slider({
 			value:0,
 			min: 0,
@@ -42,15 +52,7 @@
 		   	change: function(event, ui) {
 				$( "#pages" ).accordion("activate", ui.value);		   	  
 		   	}
-		});
-		
-		
-		//$("#pages").hrzAccordion({
-		//	handlePosition     	: "right",
-		//	openOnLoad     		: 0,
-		//	closeOpenAnimation	: 2
-		//});
-
+		});		
 	});
 
     var map;
