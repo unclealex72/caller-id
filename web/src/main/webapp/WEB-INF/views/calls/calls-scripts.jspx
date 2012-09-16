@@ -50,7 +50,8 @@
 			  $( "#pageSlider a" ).text( 1 );
 			},
 		   	change: function(event, ui) {
-				$( "#pages" ).accordion("activate", ui.value);		   	  
+		   	 	$(".selectable li.ui-selected").removeClass("ui-selected");
+				$( "#pages" ).accordion("activate", ui.value);
 		   	}
 		});		
 	});
