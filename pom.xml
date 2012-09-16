@@ -16,8 +16,8 @@
     <persistence-version>1.0.0-SNAPSHOT</persistence-version>
   </properties>
   <modules>
-    <module>server</module>
-    <module>web</module>
+    <module>callerid-server</module>
+    <module>callerid-web</module>
   </modules>
 
   <build>
