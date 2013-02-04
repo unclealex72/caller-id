@@ -20,6 +20,14 @@
     <module>callerid-web</module>
   </modules>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.xtend</groupId>
+      <artifactId>org.eclipse.xtend.lib</artifactId>
+      <version>2.3.0</version>
+    </dependency>
+  </dependencies>
+
   <build>
     <pluginManagement>
       <plugins>
@@ -30,7 +38,77 @@
             <argLine>-XX:-UseSplitVerifier</argLine>
           </configuration>
         </plugin>
-      </plugins>
+      <plugin>
+        <groupId>org.eclipse.xtend</groupId>
+        <artifactId>xtend-maven-plugin</artifactId>
+        <version>2.3.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>src/main/xtend-gen</outputDirectory>
+              <testOutputDirectory>src/test/xtend-gen</testOutputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>src/main/xtend-gen</source>
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-test-source</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>src/test/xtend-gen</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.4.1</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>src/main/xtend-gen</directory>
+              <includes>
+                <include>**</include>
+              </includes>
+            </fileset>
+            <fileset>
+              <directory>src/test/xtend-gen</directory>
+              <includes>
+                <include>**</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+
+    </plugins>
+      
     </pluginManagement>
   </build>
 
@@ -40,6 +118,16 @@
       <name>LamdaJ</name>
       <url>http://lambdaj.googlecode.com/svn/repo/releases/</url>
     </repository>
+    <repository>
+      <id>xtend</id>
+      <url>http://build.eclipse.org/common/xtend/maven/</url>
+    </repository>
   </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>xtend</id>
+      <url>http://build.eclipse.org/common/xtend/maven/</url>
+    </pluginRepository>
+  </pluginRepositories>
 
 </project>
