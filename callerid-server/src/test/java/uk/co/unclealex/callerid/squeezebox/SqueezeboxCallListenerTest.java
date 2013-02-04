@@ -68,13 +68,13 @@ public class SqueezeboxCallListenerTest {
   @Before
   public void setup() {
     squeezeboxCli = mock(SqueezeboxCli.class);
-    SqueezeboxCliFactory squeezeboxCliFactory = new SqueezeboxCliFactory() {
+    final SqueezeboxCliFactory squeezeboxCliFactory = new SqueezeboxCliFactory() {
       @Override
       public SqueezeboxCli create() throws IOException {
         return squeezeboxCli;
       }
     };
-    DefaultsService defaultsService = new DefaultsService() {
+    final DefaultsService defaultsService = new DefaultsService() {
       @Override
       public String getInternationalPrefix() {
         return "00";
@@ -105,36 +105,36 @@ public class SqueezeboxCallListenerTest {
 
   @Test
   public void testOnNumberWithheld() {
-    ReceivedCall receivedCall = new ReceivedCall(new Date(), new WithheldPhoneNumber(), null, null);
+    final ReceivedCall receivedCall = new ReceivedCall(new Date(), new WithheldPhoneNumber(), null, null);
     testOnNumber(receivedCall, "Withheld");
   }
 
   @Test
   public void testOnNumberContactNamed() {
-    ReceivedCall receivedCall =
-        new ReceivedCall(new Date(), new CountriesOnlyPhoneNumber("44", "800111222", null), "Brian", null);
+    final ReceivedCall receivedCall =
+        new ReceivedCall(new Date(), new CountriesOnlyPhoneNumber("800111222", null, "44"), "Brian", null);
     testOnNumber(receivedCall, "Brian");
   }
 
   @Test
   public void testOnNumberContactNotNamed() {
-    List<Contact> contacts = Lists.newArrayList(new Contact("Brian May"), new Contact("Freddie Mercury"));
-    ReceivedCall receivedCall =
-        new ReceivedCall(new Date(), new CountriesOnlyPhoneNumber("44", "800111222", null), null, contacts);
+    final List<Contact> contacts = Lists.newArrayList(new Contact("Brian May"), new Contact("Freddie Mercury"));
+    final ReceivedCall receivedCall =
+        new ReceivedCall(new Date(), new CountriesOnlyPhoneNumber("800111222", null, "44"), null, contacts);
     testOnNumber(receivedCall, "Brian May");
   }
 
   @Test
   public void testOnNumberForeignNonGeographic() {
-    List<Country> countryList =
+    final List<Country> countryList =
         Lists.newArrayList(new Country("France", new CountryCode("33"), "fr"), new Country("Sweden", new CountryCode(
             "33"), "se"));
-    SortedSet<Country> countries = Sets.newTreeSet(Ordering.explicit(countryList));
+    final SortedSet<Country> countries = Sets.newTreeSet(Ordering.explicit(countryList));
     countries.addAll(countryList);
-    ReceivedCall receivedCall =
+    final ReceivedCall receivedCall =
         new ReceivedCall(
             new Date(),
-            new CountriesOnlyPhoneNumber("33", "800111222", countries),
+            new CountriesOnlyPhoneNumber("800111222", countries, "33"),
             null,
             new ArrayList<Contact>());
     testOnNumber(receivedCall, "+33 800111222 (France)");
@@ -142,13 +142,13 @@ public class SqueezeboxCallListenerTest {
 
   @Test
   public void testOnNumberNonGeographic() {
-    List<Country> countryList = Lists.newArrayList(new Country("UK", new CountryCode("44"), "uk"));
-    SortedSet<Country> countries = Sets.newTreeSet(Ordering.explicit(countryList));
+    final List<Country> countryList = Lists.newArrayList(new Country("UK", new CountryCode("44"), "uk"));
+    final SortedSet<Country> countries = Sets.newTreeSet(Ordering.explicit(countryList));
     countries.addAll(countryList);
-    ReceivedCall receivedCall =
+    final ReceivedCall receivedCall =
         new ReceivedCall(
             new Date(),
-            new CountriesOnlyPhoneNumber("44", "800111222", countries),
+            new CountriesOnlyPhoneNumber("800111222", countries, "44"),
             null,
             new ArrayList<Contact>());
     testOnNumber(receivedCall, "0800111222 (UK)");
@@ -156,14 +156,14 @@ public class SqueezeboxCallListenerTest {
 
   @Test
   public void testOnNumberGeographic() {
-    List<Country> countryList = Lists.newArrayList(new Country("UK", new CountryCode("44"), "uk"));
-    SortedSet<Country> countries = Sets.newTreeSet(Ordering.explicit(countryList));
+    final List<Country> countryList = Lists.newArrayList(new Country("UK", new CountryCode("44"), "uk"));
+    final SortedSet<Country> countries = Sets.newTreeSet(Ordering.explicit(countryList));
     countries.addAll(countryList);
-    ReceivedCall receivedCall =
-        new ReceivedCall(new Date(), new CountryAndAreaPhoneNumber(new AreaCode(new Country(
+    final ReceivedCall receivedCall =
+        new ReceivedCall(new Date(), new CountryAndAreaPhoneNumber("555666", new AreaCode(new Country(
             "UK",
             new CountryCode("44"),
-            "uk"), "Basingstoke", "1256"), "555666"), null, new ArrayList<Contact>());
+            "uk"), "Basingstoke", "1256")), null, new ArrayList<Contact>());
     testOnNumber(receivedCall, "01256 555666 (Basingstoke, UK)");
   }
 
@@ -171,7 +171,7 @@ public class SqueezeboxCallListenerTest {
   public void testOnRing() throws IOException {
     squeezeboxCallListener.setMessageToDisplay("Message");
     when(squeezeboxCli.countPlayers()).thenReturn(2);
-    boolean result = squeezeboxCallListener.onRing();
+    final boolean result = squeezeboxCallListener.onRing();
     Assert.assertEquals("The wrong value was returned from the onRing() method.", true, result);
     verify(squeezeboxCli).countPlayers();
     verify(squeezeboxCli).display(0, "Incoming call", "Message", 30);
@@ -179,9 +179,9 @@ public class SqueezeboxCallListenerTest {
     verify(squeezeboxCli).close();
     verifyNoMoreInteractions(squeezeboxCli);
   }
-  
-  public void testOnNumber(ReceivedCall receivedCall, String expectedMessage) {
-    boolean result = squeezeboxCallListener.onNumber(receivedCall);
+
+  public void testOnNumber(final ReceivedCall receivedCall, final String expectedMessage) {
+    final boolean result = squeezeboxCallListener.onNumber(receivedCall);
     Assert.assertEquals("The wrong value was returned from the onNumber() method.", true, result);
     Assert.assertEquals(
         "The wrong message was generated.",

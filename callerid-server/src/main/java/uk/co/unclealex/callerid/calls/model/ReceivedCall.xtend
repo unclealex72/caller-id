@@ -21,31 +21,43 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.phonenumber.model;
+
+package uk.co.unclealex.callerid.calls.model
+
+import java.util.Date
+import java.util.List
+import org.eclipse.xtend.lib.Data
+import uk.co.unclealex.callerid.google.model.Contact
+import uk.co.unclealex.callerid.phonenumber.model.PhoneNumber
 
 /**
- * A local {@link PhoneNumber} that is in the same town or city as the receiving telephone.
+ * A model bean that contains all the known information about a received call. This can be either from a call
+ * received from a modem or from a previously received call in the database.
  * @author alex
- *
+ * 
  */
-public class NumberOnlyPhoneNumber extends AbstractPhoneNumber {
+@Data
+public class ReceivedCall {
 
-	/**
-   * Instantiates a new number only phone number.
-   * 
-   * @param number
-   *          the number
+  /**
+   * The instant the call was recevied.
    */
-	public NumberOnlyPhoneNumber(String number) {
-		super(number);
-	}
+  Date startTime;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <T> T accept(PhoneNumber.Visitor<T> visitor) {
-		return visitor.visit(this);
-	}
+  /**
+   * The {@link PhoneNumber} that made the call.
+   */
+  PhoneNumber phoneNumber;
+
+  /**
+   * The most recently manually attributed contact name to this number or null
+   * if no name has been manually attributed.
+   */
+  String contactName;
+
+  /**
+   * A list of {@link Contact}s to who may be calling.
+   */
+  List<Contact> contacts;
 
 }

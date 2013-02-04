@@ -27,7 +27,6 @@ package uk.co.unclealex.callerid.web.controller;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -76,7 +75,7 @@ public class ReceivedCallModelFunctionTest {
     /**
      * @param phoneNumber
      */
-    public TestCase(PhoneNumber phoneNumber) {
+    public TestCase(final PhoneNumber phoneNumber) {
       super();
       this.phoneNumber = phoneNumber;
     }
@@ -89,61 +88,64 @@ public class ReceivedCallModelFunctionTest {
       test(false);
     }
 
-    public TestCase withExplicitContact(String explicitContact) {
+    public TestCase withExplicitContact(final String explicitContact) {
       this.explicitContact = explicitContact;
       return this;
     }
 
-    public TestCase withContacts(String... contactNames) {
-      Function<String, Contact> f = new Function<String, Contact>() {
-        public Contact apply(String contactName) {
-          return new Contact(contactName, new ArrayList<String>());
+    public TestCase withContacts(final String... contactNames) {
+      final Function<String, Contact> f = new Function<String, Contact>() {
+        @Override
+        public Contact apply(final String contactName) {
+          return new Contact(contactName);
         }
       };
       this.contacts = Lists.newArrayList(Iterables.transform(Arrays.asList(contactNames), f));
       return this;
     }
 
-    public TestCase prettyPrintedTo(String... prettyPrintedNumber) {
+    public TestCase prettyPrintedTo(final String... prettyPrintedNumber) {
       this.prettyPrintedPhoneNumber = prettyPrintedNumber;
       return this;
     }
 
-    public TestCase expectingContact(String expectedContact) {
+    public TestCase expectingContact(final String expectedContact) {
       this.expectedContact = expectedContact;
       return this;
     }
 
-    public TestCase expectingLocation(String... expectedLocation) {
+    public TestCase expectingLocation(final String... expectedLocation) {
       this.expectedLocation = expectedLocation;
       return this;
     }
 
-    public TestCase expectingMapsSearchTerm(String expectedMapsSearchTerm) {
+    public TestCase expectingMapsSearchTerm(final String expectedMapsSearchTerm) {
       this.expectedMapsSearchTerm = expectedMapsSearchTerm;
       return this;
     }
 
-    public TestCase expectingMapsSearchArea(String expectedMapsSearchArea) {
+    public TestCase expectingMapsSearchArea(final String expectedMapsSearchArea) {
       this.expectedMapsSearchArea = expectedMapsSearchArea;
       return this;
     }
 
-    public TestCase expectingSearchTerm(String expectedSearchTerm) {
+    public TestCase expectingSearchTerm(final String expectedSearchTerm) {
       this.expectedSearchTerm = expectedSearchTerm;
       return this;
     }
 
-    public void test(boolean expectedEditable) {
-      Function<PhoneNumber, List<String>> phoneNumberPrettyPrinter = new Function<PhoneNumber, List<String>>() {
-        public List<String> apply(PhoneNumber phoneNumber) {
+    public void test(final boolean expectedEditable) {
+      final Function<PhoneNumber, List<String>> phoneNumberPrettyPrinter = new Function<PhoneNumber, List<String>>() {
+        @Override
+        public List<String> apply(final PhoneNumber phoneNumber) {
           return prettyPrintedPhoneNumber == null ? null : Arrays.asList(prettyPrintedPhoneNumber);
         }
       };
-      ReceivedCallModelFunction receivedCallModelFunction = new ReceivedCallModelFunction(phoneNumberPrettyPrinter);
-      Date now = new Date();
-      ReceivedCall receivedCall = new ReceivedCall(now, phoneNumber, explicitContact, contacts);
-      ReceivedCallModel receivedCallModel = receivedCallModelFunction.apply(receivedCall);
+      final ReceivedCallModelFunction receivedCallModelFunction =
+          new ReceivedCallModelFunction(phoneNumberPrettyPrinter);
+      final Date now = new Date();
+      final ReceivedCall receivedCall = new ReceivedCall(now, phoneNumber, explicitContact, contacts);
+      final ReceivedCallModel receivedCallModel = receivedCallModelFunction.apply(receivedCall);
       assertEquals("The model had the wrong call time.", now, receivedCallModel.getCallTime());
       assertEquals("The model had the wrong contact name.", expectedContact, receivedCallModel.getContact());
       assertEquals(
@@ -202,39 +204,40 @@ public class ReceivedCallModelFunctionTest {
   TestCase testCountriesOnlyPhoneNumber(
       final String tld,
       final String countryCode,
-      String number,
-      String... countryNames) {
-    Function<String, Country> f = new Function<String, Country>() {
-      public Country apply(String countryName) {
+      final String number,
+      final String... countryNames) {
+    final Function<String, Country> f = new Function<String, Country>() {
+      @Override
+      public Country apply(final String countryName) {
         return new Country(countryName, new CountryCode(countryCode), tld);
       }
     };
-    Iterable<Country> countries = Iterables.transform(Arrays.asList(countryNames), f);
+    final Iterable<Country> countries = Iterables.transform(Arrays.asList(countryNames), f);
 
-    return new TestCase(new CountriesOnlyPhoneNumber(countryCode, number, sorted(countries)));
+    return new TestCase(new CountriesOnlyPhoneNumber(number, sorted(countries), countryCode));
   }
 
   TestCase testCountryAndAreaPhoneNumber(
-      String tld,
-      String countryName,
-      String area,
-      String countryCode,
-      String areaCode,
-      String number) {
-    Country country = new Country(countryName, new CountryCode(countryCode), tld);
-    CountryAndAreaPhoneNumber countryAndAreaPhoneNumber =
-        new CountryAndAreaPhoneNumber(new AreaCode(country, area, areaCode), number);
+      final String tld,
+      final String countryName,
+      final String area,
+      final String countryCode,
+      final String areaCode,
+      final String number) {
+    final Country country = new Country(countryName, new CountryCode(countryCode), tld);
+    final CountryAndAreaPhoneNumber countryAndAreaPhoneNumber =
+        new CountryAndAreaPhoneNumber(number, new AreaCode(country, area, areaCode));
     return new TestCase(countryAndAreaPhoneNumber);
   }
 
-  TestCase testNumberOnlyPhoneNumber(String number) {
-    NumberOnlyPhoneNumber numberOnlyPhoneNumber = new NumberOnlyPhoneNumber(number);
+  TestCase testNumberOnlyPhoneNumber(final String number) {
+    final NumberOnlyPhoneNumber numberOnlyPhoneNumber = new NumberOnlyPhoneNumber(number);
     return new TestCase(numberOnlyPhoneNumber);
   }
 
-  protected <E> SortedSet<E> sorted(Iterable<E> elements) {
-    Ordering<E> explicitOrdering = Ordering.explicit(Lists.newArrayList(elements));
-    SortedSet<E> sortedElements = Sets.newTreeSet(explicitOrdering);
+  protected <E> SortedSet<E> sorted(final Iterable<E> elements) {
+    final Ordering<E> explicitOrdering = Ordering.explicit(Lists.newArrayList(elements));
+    final SortedSet<E> sortedElements = Sets.newTreeSet(explicitOrdering);
     Iterables.addAll(sortedElements, elements);
     return sortedElements;
   }

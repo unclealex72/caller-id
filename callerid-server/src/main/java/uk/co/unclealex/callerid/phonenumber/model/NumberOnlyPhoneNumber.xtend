@@ -23,47 +23,19 @@
  */
 package uk.co.unclealex.callerid.phonenumber.model;
 
-import uk.co.unclealex.callerid.areacode.model.AreaCode;
-
 /**
- * A {@link PhoneNumber} where both the country and area codes are both known.
+ * A local {@link PhoneNumber} that is in the same town or city as the receiving telephone.
  * @author alex
  *
  */
-public class CountryAndAreaPhoneNumber extends AbstractPhoneNumber {
-
-  /**
-   * The {@link AreaCode} for where this phone number originated.
-   */
-	private final AreaCode areaCode;	
-
-	/**
-   * Instantiates a new country and area phone number.
-   * 
-   * @param areaCode
-   *          the area code
-   * @param number
-   *          the number
-   */
-	public CountryAndAreaPhoneNumber(AreaCode areaCode, String number) {
-		super(number);
-		this.areaCode = areaCode;
-	}
+@Data
+public class NumberOnlyPhoneNumber extends AbstractPhoneNumber {
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public <T> T accept(PhoneNumber.Visitor<T> visitor) {
+	override <T> T accept(PhoneNumber$Visitor<T> visitor) {
 		return visitor.visit(this);
 	}
 
-  /**
-   * Gets the {@link AreaCode} for where this phone number originated.
-   * 
-   * @return the {@link AreaCode} for where this phone number originated
-   */
-  public AreaCode getAreaCode() {
-    return areaCode;
-  }
 }

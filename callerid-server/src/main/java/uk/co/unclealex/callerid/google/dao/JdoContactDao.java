@@ -46,7 +46,7 @@ public class JdoContactDao extends JdoBasicDao<Contact, QContact> implements Con
    * @param persistenceManagerFactory
    * @param pagingService
    */
-  public JdoContactDao(PersistenceManagerFactory persistenceManagerFactory, PagingService pagingService) {
+  public JdoContactDao(final PersistenceManagerFactory persistenceManagerFactory, final PagingService pagingService) {
     super(Contact.class, persistenceManagerFactory, pagingService);
   }
 
@@ -56,7 +56,8 @@ public class JdoContactDao extends JdoBasicDao<Contact, QContact> implements Con
   @SuppressWarnings("unchecked")
   @Override
   public List<Contact> findByTelephoneNumber(final String telephoneNumber) {
-    List<Contact> contacts = query().filter(candidate().telephoneNumbers.contains(telephoneNumber)).executeList();
+    final List<Contact> contacts =
+        query().filter(candidate()._telephoneNumbers.contains(telephoneNumber)).executeList();
     return fetch(contacts);
   }
 
@@ -65,7 +66,7 @@ public class JdoContactDao extends JdoBasicDao<Contact, QContact> implements Con
    */
   @Override
   public Contact findByName(final String name) {
-    return query().filter(candidate().name.eq(name)).executeUnique();
+    return query().filter(candidate()._name.eq(name)).executeUnique();
   }
 
   @Override

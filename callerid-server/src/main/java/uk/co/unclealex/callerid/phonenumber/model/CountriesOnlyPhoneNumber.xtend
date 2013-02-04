@@ -21,69 +21,33 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.phonenumber.model;
+package uk.co.unclealex.callerid.phonenumber.model
 
-import java.util.SortedSet;
-
-import uk.co.unclealex.callerid.areacode.model.Country;
+import org.eclipse.xtend.lib.Data
+import uk.co.unclealex.callerid.areacode.model.Country
+import java.util.SortedSet
 
 /**
  * A non-geographic {@link PhoneNumber}. As countries share international prefixes, a list of countries is stored.
  * @author alex
  *
  */
+@Data
 public class CountriesOnlyPhoneNumber extends AbstractPhoneNumber {
 
   /**
    * The list of countries that this call may have originated from in order of the most likely to the least likely.
    */
-	private SortedSet<Country> countries;
+  SortedSet<Country> countries;
 	
 	/**
 	 * The country code for the phone number.
 	 */
-	private String countryCode;
+	String countryCode;
 	
-	/**
-   * Instantiates a new countries only phone number.
-	 * @param countryCode
-   *          the country code
-	 * @param number
-   *          the number
-	 * @param countries
-   *          the countries
-   */
-	public CountriesOnlyPhoneNumber(String countryCode, String number, SortedSet<Country> countries) {
-		super(number);
-		this.countries = countries;
-		this.countryCode = countryCode;
-	}
-
-  /**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public <T> T accept(PhoneNumber.Visitor<T> visitor) {
+	override <T> T accept(PhoneNumber$Visitor<T> visitor) {
 		return visitor.visit(this);
 	}
 
-	/**
-   * Gets the list of countries that this call may have originated from in order
-   * of the most likely to the least likely.
-   * 
-   * @return the list of countries that this call may have originated from in
-   *         order of the most likely to the least likely
-   */
-	public SortedSet<Country> getCountries() {
-		return countries;
-	}
-
-	/**
-   * Gets the country code for the phone number.
-   * 
-   * @return the country code for the phone number
-   */
-	public String getCountryCode() {
-		return countryCode;
-	}
 }

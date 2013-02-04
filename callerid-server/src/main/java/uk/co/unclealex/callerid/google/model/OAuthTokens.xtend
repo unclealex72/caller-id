@@ -20,12 +20,15 @@
  *
  */
 
-package uk.co.unclealex.callerid.google.model;
+package uk.co.unclealex.callerid.google.model
 
-import java.util.Objects;
-
-import javax.jdo.annotations.EmbeddedOnly;
-import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.EmbeddedOnly
+import javax.jdo.annotations.PersistenceCapable
+import org.eclipse.xtend.lib.Property
+import javax.jdo.annotations.Column
+import org.apache.commons.lang3.builder.ToStringBuilder
+import org.apache.commons.lang3.builder.HashCodeBuilder
+import org.apache.commons.lang3.builder.EqualsBuilder
 
 /**
  * A class that stores the two OAuth tokens required for by Google for a
@@ -41,17 +44,19 @@ public class OAuthTokens {
 	/**
 	 * The user's access token.
 	 */
-	private String accessToken;
+	@Column(name = "accessToken")
+	@Property String accessToken;
 
 	/**
 	 * The user's refresh token.
 	 */
-	private String refreshToken;
+    @Column(name = "refreshToken")
+	@Property String refreshToken;
 
 	/**
 	 * A default constructor for persistence.
 	 */
-	protected OAuthTokens() {
+	protected new() {
 		super();
 	}
 
@@ -63,7 +68,7 @@ public class OAuthTokens {
 	 * @param refreshToken
 	 *          The user's refresh token.
 	 */
-	public OAuthTokens(String accessToken, String refreshToken) {
+	public new(String accessToken, String refreshToken) {
 		super();
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
@@ -72,44 +77,22 @@ public class OAuthTokens {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public String toString() {
-		return "Access: " + getAccessToken() + ", Refresh: " + getRefreshToken();
+	override toString() {
+	    ToStringBuilder::reflectionToString(this)
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public int hashCode() {
-		return Objects.hash(getAccessToken(), getRefreshToken());
+	override hashCode() {
+	    HashCodeBuilder::reflectionHashCode(this)
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public boolean equals(Object obj) {
-		return (obj instanceof OAuthTokens)
-				&& Objects.equals(getAccessToken(), ((OAuthTokens) obj).getAccessToken())
-				&& Objects.equals(getRefreshToken(), ((OAuthTokens) obj).getRefreshToken());
+	override equals(Object obj) {
+	    EqualsBuilder::reflectionEquals(this, obj)
 	}
 
-	/**
-	 * Gets the user's access token.
-	 * 
-	 * @return the user's access token
-	 */
-	public String getAccessToken() {
-		return accessToken;
-	}
-
-	/**
-	 * Gets the user's refresh token.
-	 * 
-	 * @return the user's refresh token
-	 */
-	public String getRefreshToken() {
-		return refreshToken;
-	}
 }

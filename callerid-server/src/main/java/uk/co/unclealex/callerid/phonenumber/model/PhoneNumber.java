@@ -97,15 +97,16 @@ public interface PhoneNumber {
       /**
        * {@inheritDoc}
        */
-      public T visit(PhoneNumber phoneNumber) {
+      @Override
+      public T visit(final PhoneNumber phoneNumber) {
         throw new IllegalStateException("The type " + phoneNumber.getClass() + " is not a known phone number type.");
       }
-      
+
       /**
        * {@inheritDoc}
        */
       @Override
-      public T visit(WithheldPhoneNumber withheldPhoneNumber) {
+      public T visit(final WithheldPhoneNumber withheldPhoneNumber) {
         return null;
       }
     }

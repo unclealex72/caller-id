@@ -34,8 +34,6 @@ import uk.co.unclealex.callerid.areacode.model.AreaCode;
 import uk.co.unclealex.callerid.areacode.model.Country;
 import uk.co.unclealex.callerid.areacode.model.CountryCode;
 import uk.co.unclealex.callerid.defaults.DefaultsService;
-import uk.co.unclealex.callerid.phonenumber.PhoneNumberFunction;
-import uk.co.unclealex.callerid.phonenumber.PhoneNumberNormalisingVisitor;
 import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
@@ -44,7 +42,7 @@ import uk.co.unclealex.callerid.phonenumber.model.WithheldPhoneNumber;
 
 /**
  * @author alex
- *
+ * 
  */
 public class PhoneNumberNormalisingVisitorTest {
 
@@ -52,18 +50,18 @@ public class PhoneNumberNormalisingVisitorTest {
   public void testLocal() {
     runTest(new NumberOnlyPhoneNumber("472901"), "00441256472901");
   }
- 
+
   @Test
   public void testFullGeographic() {
-    CountryCode fr = new CountryCode("33");
-    Country france = new Country("France", fr, "fr");
-    AreaCode paris = new AreaCode(france, "Paris", "1");
-    runTest(new CountryAndAreaPhoneNumber(paris, "472902"), "00331472902");
+    final CountryCode fr = new CountryCode("33");
+    final Country france = new Country("France", fr, "fr");
+    final AreaCode paris = new AreaCode(france, "Paris", "1");
+    runTest(new CountryAndAreaPhoneNumber("472902", paris), "00331472902");
   }
- 
+
   @Test
   public void testNonLocalNonGeographic() {
-    runTest(new CountriesOnlyPhoneNumber("1", "555800122", new TreeSet<Country>()), "001555800122");
+    runTest(new CountriesOnlyPhoneNumber("555800122", new TreeSet<Country>(), "1"), "001555800122");
   }
 
   @Test
@@ -72,14 +70,17 @@ public class PhoneNumberNormalisingVisitorTest {
         new PhoneNumberNormalisingVisitor(null)).apply(new WithheldPhoneNumber()));
   }
 
-
-  public void runTest(PhoneNumber phoneNumber, String expectedNormalisedNumber) {
-    DefaultsService defaultsService = Mockito.mock(DefaultsService.class);
+  public void runTest(final PhoneNumber phoneNumber, final String expectedNormalisedNumber) {
+    final DefaultsService defaultsService = Mockito.mock(DefaultsService.class);
     Mockito.when(defaultsService.getInternationalPrefix()).thenReturn("00");
     Mockito.when(defaultsService.getCountryCode()).thenReturn("44");
     Mockito.when(defaultsService.getAreaCode()).thenReturn("1256");
-    PhoneNumberFunction<String> phoneNumberFunction = new PhoneNumberFunction<>(new PhoneNumberNormalisingVisitor(defaultsService));
-    String actualNormalisedNumber = phoneNumberFunction.apply(phoneNumber);
-    Assert.assertEquals("The wrong normalised number was returned for phone number " + phoneNumber, expectedNormalisedNumber, actualNormalisedNumber);
+    final PhoneNumberFunction<String> phoneNumberFunction =
+        new PhoneNumberFunction<>(new PhoneNumberNormalisingVisitor(defaultsService));
+    final String actualNormalisedNumber = phoneNumberFunction.apply(phoneNumber);
+    Assert.assertEquals(
+        "The wrong normalised number was returned for phone number " + phoneNumber,
+        expectedNormalisedNumber,
+        actualNormalisedNumber);
   }
 }

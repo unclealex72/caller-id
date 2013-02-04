@@ -64,7 +64,7 @@ public class JdoContactDaoTest {
   @SuppressWarnings("unchecked")
   @Before
   public void clear() {
-    PersistenceManager persistenceManager = getPersistenceManagerFactory().getPersistenceManager();
+    final PersistenceManager persistenceManager = getPersistenceManagerFactory().getPersistenceManager();
     persistenceManager.newQuery(Contact.class, "").deletePersistentAll();
     Assert.assertFalse(
         "Not all object references were removed.",
@@ -73,23 +73,24 @@ public class JdoContactDaoTest {
 
   @Test
   public void testFindByTelephoneNumber() {
-    String numberOne = "44800118118";
-    String numberTwo = "1214555976";
-    String numberThree = "1714888888";
-    String numberFour = "33999000000";
+    final String numberOne = "44800118118";
+    final String numberTwo = "1214555976";
+    final String numberThree = "1714888888";
+    final String numberFour = "33999000000";
     createContact("tom", numberOne, numberTwo);
     createContact("dick", numberThree, numberOne);
     createContact("harry", numberFour);
     flush();
-    List<Contact> contacts = getContactDao().findByTelephoneNumber(numberOne);
-    Assert.assertThat("The wrong contacts were returned for a telephone number.", 
+    final List<Contact> contacts = getContactDao().findByTelephoneNumber(numberOne);
+    Assert.assertThat(
+        "The wrong contacts were returned for a telephone number.",
         project(contacts, String.class, on(Contact.class).getName()),
         Matchers.containsInAnyOrder("tom", "dick"));
   }
 
-  protected Contact createContact(String name, String... telephoneNumbers) {
-    Contact contact = new Contact(name, telephoneNumbers);
-    PersistenceManager persistenceManager = getPersistenceManagerFactory().getPersistenceManager();
+  protected Contact createContact(final String name, final String... telephoneNumbers) {
+    final Contact contact = new Contact(name, telephoneNumbers);
+    final PersistenceManager persistenceManager = getPersistenceManagerFactory().getPersistenceManager();
     persistenceManager.makePersistent(contact);
     return contact;
   }
@@ -98,23 +99,23 @@ public class JdoContactDaoTest {
     return contactDao;
   }
 
-  public void setContactDao(ContactDao contactDao) {
+  public void setContactDao(final ContactDao contactDao) {
     this.contactDao = contactDao;
   }
 
   public void flush() {
     persistenceManager().flush();
   }
-  
+
   public PersistenceManager persistenceManager() {
     return getPersistenceManagerFactory().getPersistenceManager();
   }
-  
+
   public PersistenceManagerFactory getPersistenceManagerFactory() {
     return persistenceManagerFactory;
   }
 
-  public void setPersistenceManagerFactory(PersistenceManagerFactory persistenceManagerFactory) {
+  public void setPersistenceManagerFactory(final PersistenceManagerFactory persistenceManagerFactory) {
     this.persistenceManagerFactory = persistenceManagerFactory;
   }
 

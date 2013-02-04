@@ -69,7 +69,7 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
    * @param defaultsService
    */
   @Inject
-  public PhoneNumberFactoryImpl(AreaCodeDao areaCodeDao, DefaultsService defaultsService) {
+  public PhoneNumberFactoryImpl(final AreaCodeDao areaCodeDao, final DefaultsService defaultsService) {
     super();
     this.areaCodeDao = areaCodeDao;
     this.defaultsService = defaultsService;
@@ -79,19 +79,19 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
    * {@inheritDoc}
    */
   @Override
-  public PhoneNumber create(String number) {
+  public PhoneNumber create(final String number) {
     if (number == null) {
       return new WithheldPhoneNumber();
     }
-    String internationalPrefix = getDefaultsService().getInternationalPrefix();
-    String areaCodePrefix = getDefaultsService().getAreaCodePrefix();
-    MatchResult<String> matchResult = match(number, internationalPrefix, areaCodePrefix);
+    final String internationalPrefix = getDefaultsService().getInternationalPrefix();
+    final String areaCodePrefix = getDefaultsService().getAreaCodePrefix();
+    final MatchResult<String> matchResult = match(number, internationalPrefix, areaCodePrefix);
     if (matchResult == null) {
       return localNumber(number);
     }
     else {
-      String matchedPrefix = matchResult.getMatch();
-      String remainingNumber = matchResult.getRemainingNumber();
+      final String matchedPrefix = matchResult.getMatch();
+      final String remainingNumber = matchResult.getRemainingNumber();
       if (internationalPrefix.equals(matchedPrefix)) {
         return internationalNumber(remainingNumber);
       }
@@ -108,11 +108,11 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
    *          The number to parse.
    * @return A non-local phone number for potentially a list of countries.
    */
-  protected PhoneNumber internationalNumber(String number) {
-    AreaCodeDao areaCodeDao = getAreaCodeDao();
-    MatchResult<String> countryCodeMatchResult = match(number, areaCodeDao.getAllCountryCodes());
-    String countryCode = countryCodeMatchResult.getMatch();
-    String nationalNumber = countryCodeMatchResult.getRemainingNumber();
+  protected PhoneNumber internationalNumber(final String number) {
+    final AreaCodeDao areaCodeDao = getAreaCodeDao();
+    final MatchResult<String> countryCodeMatchResult = match(number, areaCodeDao.getAllCountryCodes());
+    final String countryCode = countryCodeMatchResult.getMatch();
+    final String nationalNumber = countryCodeMatchResult.getRemainingNumber();
     return nonLocalPhoneNumber(countryCode, nationalNumber);
   }
 
@@ -123,7 +123,7 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
    *          The number to parse.
    * @return A non-local phone number for the country of residence.
    */
-  protected PhoneNumber nationalNumber(String number) {
+  protected PhoneNumber nationalNumber(final String number) {
     return nonLocalPhoneNumber(getDefaultsService().getCountryCode(), number);
   }
 
@@ -137,27 +137,27 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
    *          prefix.
    * @return A non-local phone number which may or may not be geographic.
    */
-  protected PhoneNumber nonLocalPhoneNumber(String countryCode, String nationalNumber) {
-    AreaCodeDao areaCodeDao = getAreaCodeDao();
-    Function<AreaCode, String> areaCodeFunction = new Function<AreaCode, String>() {
+  protected PhoneNumber nonLocalPhoneNumber(final String countryCode, final String nationalNumber) {
+    final AreaCodeDao areaCodeDao = getAreaCodeDao();
+    final Function<AreaCode, String> areaCodeFunction = new Function<AreaCode, String>() {
       @Override
-      public String apply(AreaCode areaCode) {
+      public String apply(final AreaCode areaCode) {
         return areaCode.getAreaCode();
       }
     };
-    MatchResult<AreaCode> areaCodeMatchResult =
+    final MatchResult<AreaCode> areaCodeMatchResult =
         match(nationalNumber, areaCodeFunction, areaCodeDao.getAllAreaCodesForCountryCode(countryCode));
     if (areaCodeMatchResult == null) {
       // We have a non-geographic international number.
       return new CountriesOnlyPhoneNumber(
-          countryCode,
           nationalNumber,
-          areaCodeDao.getAllCountriesForCountryCode(countryCode));
+          areaCodeDao.getAllCountriesForCountryCode(countryCode),
+          countryCode);
     }
     else {
-      AreaCode areaCode = areaCodeMatchResult.getMatch();
-      String localNumber = areaCodeMatchResult.getRemainingNumber();
-      return new CountryAndAreaPhoneNumber(areaCode, localNumber);
+      final AreaCode areaCode = areaCodeMatchResult.getMatch();
+      final String localNumber = areaCodeMatchResult.getRemainingNumber();
+      return new CountryAndAreaPhoneNumber(localNumber, areaCode);
     }
   }
 
@@ -168,7 +168,7 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
    *          The whole dialled phone number.
    * @return A local phone number.
    */
-  protected PhoneNumber localNumber(String number) {
+  protected PhoneNumber localNumber(final String number) {
     return new NumberOnlyPhoneNumber(number);
   }
 
@@ -182,7 +182,7 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
    * @return A {@link MatchResult} containing the prefixed matched and the
    *         remainder of the string or null if no prefix was matched.
    */
-  protected MatchResult<String> match(String number, String... prefixes) {
+  protected MatchResult<String> match(final String number, final String... prefixes) {
     return match(number, Arrays.asList(prefixes));
   }
 
@@ -196,16 +196,17 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
    * @return A {@link MatchResult} containing the prefixed matched and the
    *         remainder of the string or null if no prefix was matched.
    */
-  protected MatchResult<String> match(String number, Iterable<String> prefixes) {
-    Function<String, Integer> lengthFunction = new Function<String, Integer>() {
-      public Integer apply(String str) {
+  protected MatchResult<String> match(final String number, final Iterable<String> prefixes) {
+    final Function<String, Integer> lengthFunction = new Function<String, Integer>() {
+      @Override
+      public Integer apply(final String str) {
         return str.length();
       }
     };
-    SortedSet<String> longestFirstPrefixes =
+    final SortedSet<String> longestFirstPrefixes =
         Sets.newTreeSet(Ordering.natural().reverse().onResultOf(lengthFunction).compound(Ordering.natural()));
     Iterables.addAll(longestFirstPrefixes, prefixes);
-    Function<String, String> f = Functions.identity();
+    final Function<String, String> f = Functions.identity();
     return match(number, f, longestFirstPrefixes);
   }
 
@@ -225,14 +226,14 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
   protected <E> MatchResult<E> match(
       final String number,
       final Function<E, String> matchFunction,
-      Iterable<? extends E> matchers) {
-    Predicate<E> matcherPredicate = new Predicate<E>() {
+      final Iterable<? extends E> matchers) {
+    final Predicate<E> matcherPredicate = new Predicate<E>() {
       @Override
-      public boolean apply(E match) {
+      public boolean apply(final E match) {
         return number.startsWith(matchFunction.apply(match));
       }
     };
-    E match = Iterables.find(matchers, matcherPredicate, null);
+    final E match = Iterables.find(matchers, matcherPredicate, null);
     return match == null ? null : new MatchResult<E>(match, number.substring(matchFunction.apply(match).length()));
   }
 
@@ -260,7 +261,7 @@ public class PhoneNumberFactoryImpl implements PhoneNumberFactory {
      * @param match
      * @param remainingNumber
      */
-    public MatchResult(E match, String remainingNumber) {
+    public MatchResult(final E match, final String remainingNumber) {
       super();
       this.match = match;
       this.remainingString = remainingNumber;

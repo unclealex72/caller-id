@@ -14,6 +14,9 @@
   <properties>
     <spring-version>3.1.2.RELEASE</spring-version>
     <persistence-version>1.0.0-SNAPSHOT</persistence-version>
+    <xtend-version>2.3.1</xtend-version>
+    <xtend-gen>${project.build.directory}/generated-sources/xtend</xtend-gen>
+    <xtend-gen-test>${project.build.directory}/generated-test-sources/xtend</xtend-gen-test>
   </properties>
   <modules>
     <module>callerid-server</module>
@@ -24,12 +27,11 @@
     <dependency>
       <groupId>org.eclipse.xtend</groupId>
       <artifactId>org.eclipse.xtend.lib</artifactId>
-      <version>2.3.0</version>
+      <version>${xtend-version}</version>
     </dependency>
   </dependencies>
 
   <build>
-    <pluginManagement>
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -41,7 +43,7 @@
       <plugin>
         <groupId>org.eclipse.xtend</groupId>
         <artifactId>xtend-maven-plugin</artifactId>
-        <version>2.3.0</version>
+        <version>${xtend-version}</version>
         <executions>
           <execution>
             <goals>
@@ -49,8 +51,8 @@
               <goal>testCompile</goal>
             </goals>
             <configuration>
-              <outputDirectory>src/main/xtend-gen</outputDirectory>
-              <testOutputDirectory>src/test/xtend-gen</testOutputDirectory>
+              <outputDirectory>${xtend-gen}</outputDirectory>
+              <testOutputDirectory>${xtend-gen-test}</testOutputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -68,7 +70,7 @@
             </goals>
             <configuration>
               <sources>
-                <source>src/main/xtend-gen</source>
+                <source>${xtend-gen}</source>
               </sources>
             </configuration>
           </execution>
@@ -80,25 +82,26 @@
             </goals>
             <configuration>
               <sources>
-                <source>src/test/xtend-gen</source>
+                <source>${xtend-gen-test}</source>
               </sources>
             </configuration>
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
         <version>2.4.1</version>
         <configuration>
           <filesets>
             <fileset>
-              <directory>src/main/xtend-gen</directory>
+              <directory>${project.build.directory}/../src/main/xtend-gen</directory>
               <includes>
                 <include>**</include>
               </includes>
             </fileset>
             <fileset>
-              <directory>src/test/xtend-gen</directory>
+              <directory>${project.build.directory}/../src/test/xtend-gen</directory>
               <includes>
                 <include>**</include>
               </includes>
@@ -109,7 +112,6 @@
 
     </plugins>
       
-    </pluginManagement>
   </build>
 
   <repositories>

@@ -49,7 +49,7 @@ public class JdoCallDao extends JdoBasicDao<Call, QCall> implements CallDao {
    * @param persistenceManagerFactory
    * @param pagingService
    */
-  public JdoCallDao(PersistenceManagerFactory persistenceManagerFactory, PagingService pagingService) {
+  public JdoCallDao(final PersistenceManagerFactory persistenceManagerFactory, final PagingService pagingService) {
     super(Call.class, persistenceManagerFactory, pagingService);
   }
 
@@ -58,17 +58,17 @@ public class JdoCallDao extends JdoBasicDao<Call, QCall> implements CallDao {
    */
   @Override
   public List<Call> getAllByTimeReceived() {
-    TypesafeQuery<Call> query = query().orderBy(candidate().callTime.desc());
-    List<Call> results = query.executeList();
+    final TypesafeQuery<Call> query = query().orderBy(candidate()._callTime.desc());
+    final List<Call> results = query.executeList();
     return fetch(results);
   }
-  
+
   /**
    * {@inheritDoc}
    */
   @Override
   public void updateContactName(final int callId, final String newContactName) {
-    Call call = query().filter(candidate().id.eq(callId)).executeUnique();
+    final Call call = query().filter(candidate()._id.eq(callId)).executeUnique();
     call.setContactName(newContactName);
   }
 
@@ -77,12 +77,12 @@ public class JdoCallDao extends JdoBasicDao<Call, QCall> implements CallDao {
    */
   @Override
   public String getMostRecentContactNameForPhoneNumber(final String phoneNumber) {
-    QCall c = candidate();
+    final QCall c = candidate();
     return query()
-        .filter(c.telephoneNumber.eq(phoneNumber))
-        .orderBy(c.callTime.desc())
+        .filter(c._telephoneNumber.eq(phoneNumber))
+        .orderBy(c._callTime.desc())
         .range(0, 1)
-        .executeResultUnique(String.class, true, c.contactName);
+        .executeResultUnique(String.class, true, c._contactName);
   }
 
   /**

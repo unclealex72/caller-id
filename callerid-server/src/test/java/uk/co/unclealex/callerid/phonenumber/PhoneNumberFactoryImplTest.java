@@ -40,7 +40,6 @@ import uk.co.unclealex.callerid.areacode.model.AreaCode;
 import uk.co.unclealex.callerid.areacode.model.Country;
 import uk.co.unclealex.callerid.areacode.model.CountryCode;
 import uk.co.unclealex.callerid.defaults.DefaultsService;
-import uk.co.unclealex.callerid.phonenumber.PhoneNumberFactoryImpl;
 import uk.co.unclealex.callerid.phonenumber.model.CountriesOnlyPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.CountryAndAreaPhoneNumber;
 import uk.co.unclealex.callerid.phonenumber.model.NumberOnlyPhoneNumber;
@@ -81,9 +80,9 @@ public class PhoneNumberFactoryImplTest {
     phoneNumberFactory = new PhoneNumberFactoryImpl(areaCodeDao, defaultsService);
   }
 
-  protected <E> SortedSet<E> list(@SuppressWarnings("unchecked") E... elements) {
-    List<E> els = Arrays.asList(elements);
-    SortedSet<E> ss = Sets.newTreeSet(Ordering.explicit(els));
+  protected <E> SortedSet<E> list(@SuppressWarnings("unchecked") final E... elements) {
+    final List<E> els = Arrays.asList(elements);
+    final SortedSet<E> ss = Sets.newTreeSet(Ordering.explicit(els));
     ss.addAll(els);
     return ss;
   }
@@ -95,41 +94,43 @@ public class PhoneNumberFactoryImplTest {
 
   @Test
   public void testNonGeographicNationalNumber() {
-    runTest("00", "1", "1800444555", new CountriesOnlyPhoneNumber("44", "800444555", list(unitedKingdom, jersey)));
+    runTest("00", "1", "1800444555", new CountriesOnlyPhoneNumber("800444555", list(unitedKingdom, jersey), "44"));
   }
 
   @Test
   public void testNonGeographicInternationalNumber() {
-    runTest("00", "000", "0033800444555", new CountriesOnlyPhoneNumber("33", "800444555", list(france)));
+    runTest("00", "000", "0033800444555", new CountriesOnlyPhoneNumber("800444555", list(france), "33"));
   }
 
   @Test
   public void testNationalGeographicNumber() {
-    runTest("00", "0", "01256999666", new CountryAndAreaPhoneNumber(basingstoke, "999666"));
-    runTest("00", "0", "01256799666", new CountryAndAreaPhoneNumber(newport, "99666"));
+    runTest("00", "0", "01256999666", new CountryAndAreaPhoneNumber("999666", basingstoke));
+    runTest("00", "0", "01256799666", new CountryAndAreaPhoneNumber("99666", newport));
   }
 
   @Test
   public void testInternationalGeographicNumber() {
-    runTest("00", "0", "00441256999666", new CountryAndAreaPhoneNumber(basingstoke, "999666"));
-    runTest("00", "0", "00441256799666", new CountryAndAreaPhoneNumber(newport, "99666"));
+    runTest("00", "0", "00441256999666", new CountryAndAreaPhoneNumber("999666", basingstoke));
+    runTest("00", "0", "00441256799666", new CountryAndAreaPhoneNumber("99666", newport));
   }
 
   @Test
   public void testWithheld() {
-    PhoneNumber phoneNumber = phoneNumberFactory.create(null);
+    final PhoneNumber phoneNumber = phoneNumberFactory.create(null);
     Assert.assertEquals(
         "The wrong phone number was returned for a null number.",
         new WithheldPhoneNumber(),
         phoneNumber);
   }
 
-  public
-      void
-      runTest(String internationalPrefix, String areaCodePrefix, String number, PhoneNumber expectedPhoneNumber) {
+  public void runTest(
+      final String internationalPrefix,
+      final String areaCodePrefix,
+      final String number,
+      final PhoneNumber expectedPhoneNumber) {
     when(defaultsService.getInternationalPrefix()).thenReturn(internationalPrefix);
     when(defaultsService.getAreaCodePrefix()).thenReturn(areaCodePrefix);
-    PhoneNumber phoneNumber = phoneNumberFactory.create(number);
+    final PhoneNumber phoneNumber = phoneNumberFactory.create(number);
     Assert.assertEquals("The wrong phone number was returned for number " + number, expectedPhoneNumber, phoneNumber);
   }
 }

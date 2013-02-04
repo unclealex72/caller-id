@@ -22,49 +22,30 @@
  *
  */
 
-package uk.co.unclealex.callerid.phonenumber.model;
+package uk.co.unclealex.callerid.areacode.model
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.eclipse.xtend.lib.Data
 
 /**
- * The representation of a {@link PhoneNumber} that is withheld.
+ * A country of an {@link AreaCode}.
  * @author alex
  *
  */
-public class WithheldPhoneNumber implements PhoneNumber {
+@Data
+public class Country {
 
   /**
-   * {@inheritDoc}
+   * The name of this country.
    */
-  @Override
-  public String toString() {
-    return ToStringBuilder.reflectionToString(this);
-  }
+  String name;
 
   /**
-   * {@inheritDoc}
+   * The country code for this country.
    */
-  @Override
-  public int hashCode() {
-    return HashCodeBuilder.reflectionHashCode(this);
-  }
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean equals(Object obj) {
-    return EqualsBuilder.reflectionEquals(this, obj);
-  }
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public <T> T accept(Visitor<T> visitor) {
-    return visitor.visit(this);
-  }
+  CountryCode countryCode;
 
+  /**
+   * The top level domain for this country.
+   */
+  String tld;  
 }
