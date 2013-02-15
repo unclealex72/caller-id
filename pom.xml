@@ -19,8 +19,8 @@
     <xtend-gen-test>${project.build.directory}/generated-test-sources/xtend</xtend-gen-test>
   </properties>
   <modules>
-    <module>callerid-server</module>
-    <module>callerid-web</module>
+    <module>callerid-local</module>
+    <module>callerid-remote</module>
   </modules>
 
   <dependencies>

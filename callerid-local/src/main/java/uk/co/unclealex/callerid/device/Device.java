@@ -27,10 +27,9 @@ package uk.co.unclealex.callerid.device;
 import java.io.Closeable;
 import java.io.IOException;
 
-import javax.annotation.PostConstruct;
-
 /**
- * An interface for communicating with a device that listens for and responds to lines of text.
+ * An interface for communicating with a device that listens for and responds to
+ * lines of text.
  * 
  * @author alex
  * 
@@ -38,18 +37,11 @@ import javax.annotation.PostConstruct;
 public interface Device extends Closeable {
 
   /**
-   * Initialise the device. Implementations should make sure this
-   * is called before the device is used, most likely by annotating this method
-   * with {@link PostConstruct}.
-   * @throws IOException 
-   */
-  public void initialise() throws IOException;
-
-  /**
    * Read a line from the device. This method blocks until the modem has data to
    * send.
    * 
-   * @return The line read from the streamer or null if the streamer has disconnected.
+   * @return The line read from the streamer or null if the streamer has
+   *         disconnected.
    * @throws IOException
    */
   public String readLine() throws IOException;
