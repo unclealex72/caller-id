@@ -29,6 +29,7 @@ import com.google.api.client.util.escape.PercentEscaper
 import javax.inject.Inject
 import org.eclipse.xtend.lib.Property
 import uk.co.unclealex.callerid.device.Device
+import uk.co.unclealex.process.packages.PackagesRequired
 
 /**
  * The default implementation of {@link Squeezbox} that talks to squeezeboxes
@@ -37,6 +38,7 @@ import uk.co.unclealex.callerid.device.Device
  * @author alex
  * 
  */
+@PackagesRequired("logitechmediaserver")
 public class SqueezeboxImpl implements Squeezebox {
   
   @Property val Device squeezeboxDevice;
@@ -61,7 +63,7 @@ public class SqueezeboxImpl implements Squeezebox {
      * @param topLine The top line of text to display.
      * @param bottomLine the bottom line of text to display.
      */
-  def protected void displayText(int player, String topLine, String bottomLine) {
+  def void displayText(int player, String topLine, String bottomLine) {
     var String playerId = execute(String::format("player id %d ?", player));
     execute(String::format(
             "%s display %s %s %d",
@@ -71,12 +73,18 @@ public class SqueezeboxImpl implements Squeezebox {
             30));
   }
   
-  def protected countPlayers() {
+  def countPlayers() {
     Integer::parseInt(execute("player count ?"));
   }
   
-  def protected String execute(String command) {
+  def String execute(String command) {
       squeezeboxDevice.writeLine(command);
-      squeezeboxDevice.readLine;
+      val response = squeezeboxDevice.readLine;
+    if (response != null && command.endsWith("?")) {
+      response.substring(command.length() - 1);
+    }
+    else {
+      response;
+    }
   }
 }

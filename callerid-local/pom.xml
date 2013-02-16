@@ -31,6 +31,12 @@
     </dependency>
 
     <dependency>
+      <groupId>uk.co.unclealex</groupId>
+      <artifactId>process-support</artifactId>
+      <version>2.0.1</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.google.api-client</groupId>
       <artifactId>google-api-client</artifactId>
       <version>1.10.2-beta</version>
@@ -59,17 +65,28 @@
       <artifactId>jersey-apache-client</artifactId>
       <version>1.15</version>
     </dependency>
-    
+
     <dependency>
       <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <artifactId>junit-dep</artifactId>
       <version>4.10</version>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>1.9.5</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-all</artifactId>
+      <artifactId>hamcrest-core</artifactId>
+      <version>1.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
       <version>1.3</version>
       <scope>test</scope>
     </dependency>
