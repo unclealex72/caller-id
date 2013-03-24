@@ -32,7 +32,7 @@ import uk.co.unclealex.callerid.device.Device
 import uk.co.unclealex.process.packages.PackagesRequired
 
 /**
- * The default implementation of {@link Squeezbox} that talks to squeezeboxes
+ * The default implementation of Squeezbox that talks to squeezeboxes
  * via the Network CLI.
  * 
  * @author alex
@@ -54,7 +54,7 @@ public class SqueezeboxImpl implements Squeezebox {
    * {@inheritDoc}
    */
   override displayText(String topLine, String bottomLine) {
-    (0..countPlayers-1).forEach( [ player | displayText(player, topLine, bottomLine) ]);
+    (0..<countPlayers).forEach( [ player | displayText(player, topLine, bottomLine) ]);
   }
 
     /**
@@ -64,24 +64,25 @@ public class SqueezeboxImpl implements Squeezebox {
      * @param bottomLine the bottom line of text to display.
      */
   def void displayText(int player, String topLine, String bottomLine) {
-    var String playerId = execute(String::format("player id %d ?", player));
-    execute(String::format(
+    var String playerId = execute("player id %d ?", player);
+    execute(
             "%s display %s %s %d",
             playerId,
             percentEscaper.escape(topLine),
             percentEscaper.escape(bottomLine),
-            30));
+            30);
   }
   
   def countPlayers() {
     Integer::parseInt(execute("player count ?"));
   }
   
-  def String execute(String command) {
-      squeezeboxDevice.writeLine(command);
+  def String execute(String command, Object... args) {
+      var fullCommand = String::format(command, args);
+      squeezeboxDevice.writeLine(fullCommand);
       val response = squeezeboxDevice.readLine;
-    if (response != null && command.endsWith("?")) {
-      response.substring(command.length() - 1);
+    if (response != null && fullCommand.endsWith("?")) {
+      response.substring(fullCommand.length() - 1);
     }
     else {
       response;

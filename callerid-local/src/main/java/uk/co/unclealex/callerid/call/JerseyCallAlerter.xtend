@@ -27,10 +27,10 @@ class JerseyCallAlerter implements CallAlerter {
     @Inject
     public new(RemoteConfiguration remoteConfiguration) {
       _url = remoteConfiguration.url;
-      val ApacheHttpClientConfig cc = new DefaultApacheHttpClientConfig();
-      cc.properties.put(PROPERTY_PREEMPTIVE_AUTHENTICATION, true);
-      cc.state.setCredentials(null, null, -1, remoteConfiguration.username, remoteConfiguration.password);
-      _client = ApacheHttpClient::create(cc);
+      val ApacheHttpClientConfig it = new DefaultApacheHttpClientConfig();
+      properties.put(PROPERTY_PREEMPTIVE_AUTHENTICATION, true);
+      state.setCredentials(null, null, -1, remoteConfiguration.username, remoteConfiguration.password);
+      _client = ApacheHttpClient::create(it);
     }
     
     override String callMade(String number) {

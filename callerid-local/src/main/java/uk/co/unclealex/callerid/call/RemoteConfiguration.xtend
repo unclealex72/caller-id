@@ -31,26 +31,26 @@ package uk.co.unclealex.callerid.call;
  * @author alex
  * 
  */
-public interface RemoteConfiguration {
+interface RemoteConfiguration {
 
   /**
    * Get the URL of the remote REST server.
    * 
    * @return the URL of the remote REST server.
    */
-  public String getUrl();
+  def String getUrl();
 
   /**
    * Get the username used to authenticate against the remote REST server.
    * 
    * @return the username used to authenticate against the remote REST server.
    */
-  public String getUsername();
+  def String getUsername();
 
   /**
    * Get the password used to authenticate against the remote REST server.
    * 
    * @return the password used to authenticate against the remote REST server.
    */
-  public String getPassword();
+  def String getPassword();
 }

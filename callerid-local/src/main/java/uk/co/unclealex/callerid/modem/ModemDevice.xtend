@@ -22,22 +22,24 @@
  *
  */
 
-package uk.co.unclealex.callerid.call;
+package uk.co.unclealex.callerid.modem;
+
+import com.google.inject.BindingAnnotation
+import java.lang.annotation.Retention
+import java.lang.annotation.Target
+
+import static java.lang.annotation.ElementType.*
+import static java.lang.annotation.RetentionPolicy.*
 
 /**
- * An interface for classes that respond to a telephone call and make sure
- * information is displayed.
+ * An annotation for injecting in a device for a Squeezebox.
  * 
  * @author alex
  * 
  */
-public interface CallController {
+@BindingAnnotation
+@Target(#[FIELD, PARAMETER, METHOD])
+@Retention(RUNTIME)
+annotation ModemDevice {
 
-  /**
-   * Respond to a number being called on the modem.
-   * 
-   * @param number
-   *          The number that the modem received.
-   */
-  public void onCall(String number);
 }

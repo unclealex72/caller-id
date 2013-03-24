@@ -22,27 +22,23 @@
  *
  */
 
-package uk.co.unclealex.callerid.squeezebox;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import com.google.inject.BindingAnnotation;
+package uk.co.unclealex.callerid.call;
 
 /**
- * An annotation for injecting in a device for a Squeezebox.
+ * An interface for classes that can alert the remote server that a call has
+ * been made.
  * 
  * @author alex
  * 
  */
-@BindingAnnotation
-@Target({ FIELD, PARAMETER, METHOD })
-@Retention(RUNTIME)
-public @interface SqueezeboxDevice {
+interface CallAlerter {
 
+  /**
+   * Alert the server that a call has been made.
+   * 
+   * @param number
+   *          The number the modem received.
+   * @return The text that squeezeboxes should display.
+   */
+  def String callMade(String number);
 }

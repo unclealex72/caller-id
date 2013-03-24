@@ -22,24 +22,22 @@
  *
  */
 
-package uk.co.unclealex.callerid.squeezebox;
+package uk.co.unclealex.callerid.call;
 
 /**
- * An interface for classes that can display text on a Logitech Squeezebox
- * device.
+ * An interface for classes that respond to a telephone call and make sure
+ * information is displayed.
  * 
  * @author alex
  * 
  */
-public interface Squeezebox {
+interface CallController {
 
   /**
-   * Display some text on a squeezebox.
+   * Respond to a number being called on the modem.
    * 
-   * @param topLine
-   *          The text to display on the top line.
-   * @param bottomLine
-   *          The text to display on the bottom line.
+   * @param number
+   *          The number that the modem received.
    */
-  public void displayText(String topLine, String bottomLine);
+  def void onCall(String number);
 }

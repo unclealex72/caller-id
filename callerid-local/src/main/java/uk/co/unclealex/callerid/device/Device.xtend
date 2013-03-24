@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Alex Jones
+ * Copyright 2012 Alex Jones
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,27 +18,42 @@
  * specific language governing permissions and limitations
  * under the License.    
  *
- * @author unclealex72
+ * @author alex
  *
  */
 
-package uk.co.unclealex.callerid.call;
+package uk.co.unclealex.callerid.device;
+
+import java.io.Closeable;
+import java.io.IOException;
 
 /**
- * An interface for classes that can alert the remote server that a call has
- * been made.
+ * An interface for communicating with a device that listens for and responds to
+ * lines of text.
  * 
  * @author alex
  * 
  */
-public interface CallAlerter {
+interface Device extends Closeable {
 
   /**
-   * Alert the server that a call has been made.
+   * Read a line from the device. This method blocks until the modem has data to
+   * send.
    * 
-   * @param number
-   *          The number the modem received.
-   * @return The text that squeezeboxes should display.
+   * @return The line read from the streamer or null if the streamer has
+   *         disconnected.
+   * @throws IOException
    */
-  public String callMade(String number);
+  def String readLine() throws IOException;
+
+  /**
+   * Write a line to the device. The command line must not be terminated with a
+   * newline character.
+   * 
+   * @param command
+   *          The command to send.
+   * @throws IOException
+   */
+  def void writeLine(String command) throws IOException;
+
 }

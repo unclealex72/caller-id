@@ -14,7 +14,7 @@
   <properties>
     <spring-version>3.1.2.RELEASE</spring-version>
     <persistence-version>1.0.0-SNAPSHOT</persistence-version>
-    <xtend-version>2.3.1</xtend-version>
+    <xtend-version>2.4.0</xtend-version>
     <xtend-gen>${project.build.directory}/generated-sources/xtend</xtend-gen>
     <xtend-gen-test>${project.build.directory}/generated-test-sources/xtend</xtend-gen-test>
   </properties>
@@ -29,6 +29,7 @@
       <artifactId>org.eclipse.xtend.lib</artifactId>
       <version>${xtend-version}</version>
     </dependency>
+    
   </dependencies>
 
   <build>
@@ -88,30 +89,7 @@
           </execution>
         </executions>
       </plugin>
-
-      <plugin>
-        <artifactId>maven-clean-plugin</artifactId>
-        <version>2.4.1</version>
-        <configuration>
-          <filesets>
-            <fileset>
-              <directory>${project.build.directory}/../src/main/xtend-gen</directory>
-              <includes>
-                <include>**</include>
-              </includes>
-            </fileset>
-            <fileset>
-              <directory>${project.build.directory}/../src/test/xtend-gen</directory>
-              <includes>
-                <include>**</include>
-              </includes>
-            </fileset>
-          </filesets>
-        </configuration>
-      </plugin>
-
-    </plugins>
-      
+    </plugins>      
   </build>
 
   <repositories>

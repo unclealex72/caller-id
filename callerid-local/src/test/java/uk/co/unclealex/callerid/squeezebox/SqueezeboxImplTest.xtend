@@ -37,7 +37,7 @@ import java.util.List
  * @author alex
  *
  */
-public class NetworkSqueezeboxTest {
+class SqueezeboxImplTest {
 
   @Test
   def testQueryCommand() {
@@ -56,11 +56,11 @@ public class NetworkSqueezeboxTest {
 
   @Test
   def testDisplayToTwoSqueezeboxes() {
-    val responses = newHashMap(
+    val responses = #{
         "player count ?" -> "player count 2",
         "player id 0 ?" -> "player id 0 00:11",
-        "player id 1 ?" -> "player id 0 00:22"
-    );
+        "player id 1 ?" -> "player id 1 00:22"
+    };
     val device = new MapDevice(responses);
     val squeezebox = new SqueezeboxImpl(device);
     squeezebox.displayText("Top Line", "Bottom Line!");

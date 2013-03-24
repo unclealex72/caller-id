@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 Alex Jones
+ * Copyright 2013 Alex Jones
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,42 +18,28 @@
  * specific language governing permissions and limitations
  * under the License.    
  *
- * @author alex
+ * @author unclealex72
  *
  */
 
-package uk.co.unclealex.callerid.device;
+package uk.co.unclealex.callerid.squeezebox;
 
-import java.io.Closeable;
-import java.io.IOException;
+import com.google.inject.BindingAnnotation
+import java.lang.annotation.Retention
+import java.lang.annotation.Target
+
+import static java.lang.annotation.ElementType.*
+import static java.lang.annotation.RetentionPolicy.*
 
 /**
- * An interface for communicating with a device that listens for and responds to
- * lines of text.
+ * An annotation for injecting in a device for a Squeezebox.
  * 
  * @author alex
  * 
  */
-public interface Device extends Closeable {
-
-  /**
-   * Read a line from the device. This method blocks until the modem has data to
-   * send.
-   * 
-   * @return The line read from the streamer or null if the streamer has
-   *         disconnected.
-   * @throws IOException
-   */
-  public String readLine() throws IOException;
-
-  /**
-   * Write a line to the device. The command line must not be terminated with a
-   * newline character.
-   * 
-   * @param command
-   *          The command to send.
-   * @throws IOException
-   */
-  public void writeLine(String command) throws IOException;
+@BindingAnnotation
+@Target(value = #[FIELD, PARAMETER, METHOD])
+@Retention(RUNTIME)
+annotation SqueezeboxDevice {
 
 }
