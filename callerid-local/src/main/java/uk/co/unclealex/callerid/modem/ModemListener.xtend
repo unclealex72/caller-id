@@ -30,7 +30,7 @@ class ModemListener implements Runnable {
      * Send any required initilisation command strings to the modem.
      */
     def void initialiseModem() {
-        newArrayList("ATZ", "AT+FCLASS=1.0", "AT+VCID=1").forEach(
+        #["ATZ", "AT+FCLASS=1.0", "AT+VCID=1"].forEach(
             [ command | modemDevice.writeLine(command) ]
         );
     }
