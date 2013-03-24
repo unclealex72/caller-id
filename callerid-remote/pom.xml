@@ -60,12 +60,13 @@
       <scope>provided</scope>
     </dependency>
 
+    <!--
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>callerid-server</artifactId>
       <version>${project.version}</version>
     </dependency>
-
+    -->
     <dependency>
       <groupId>org.apache.tiles</groupId>
       <artifactId>tiles-core</artifactId>

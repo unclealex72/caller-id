@@ -94,11 +94,6 @@
 
   <repositories>
     <repository>
-      <id>lambdaj</id>
-      <name>LamdaJ</name>
-      <url>http://lambdaj.googlecode.com/svn/repo/releases/</url>
-    </repository>
-    <repository>
       <id>xtend</id>
       <url>http://build.eclipse.org/common/xtend/maven/</url>
     </repository>

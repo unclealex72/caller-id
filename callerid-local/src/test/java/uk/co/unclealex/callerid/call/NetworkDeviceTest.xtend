@@ -34,14 +34,15 @@ import uk.co.unclealex.callerid.device.NetworkDevice
 import com.google.common.base.Charsets
 
 import static org.junit.Assert.*
+import java.io.OutputStreamWriter
 
 class NetworkDeviceTest {
   
     @Test(timeout=1000)
     def void testNetworkDevice() {
         val echoServer = new EchoServer;
-        val networkDevice = new NetworkDevice(echoServer.port, Charsets::UTF_8);
         new Thread(echoServer).start;
+        val networkDevice = new NetworkDevice(echoServer.port, Charsets::UTF_8);
         networkDevice.writeLine("Hello");
         val String response = networkDevice.readLine;
         assertEquals("The wrong response was echoed back.", "Hello", response);
@@ -54,12 +55,12 @@ class NetworkDeviceTest {
  */
 @Data class EchoServer implements Runnable {
     
-    val ServerSocket serverSocket = new ServerSocket;
+    val ServerSocket serverSocket = new ServerSocket(0);
     
     override run() {
         val Socket socket = serverSocket.accept;
-        val PrintWriter out = new PrintWriter(socket.outputStream);
-        val BufferedReader in = new BufferedReader(new InputStreamReader(socket.inputStream));
+        val PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.outputStream, Charsets::UTF_8), true);
+        val BufferedReader in = new BufferedReader(new InputStreamReader(socket.inputStream, Charsets::UTF_8));
         var String line;
         while ((line = in.readLine) != null) {
             out.println(line);
