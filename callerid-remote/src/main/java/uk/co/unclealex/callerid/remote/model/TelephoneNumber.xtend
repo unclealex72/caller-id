@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 Alex Jones
+ * Copyright 2013 Alex Jones
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,24 +21,18 @@
  * @author alex
  *
  */
+package uk.co.unclealex.callerid.remote.model;
 
-package uk.co.unclealex.callerid.server.model;
+import uk.co.unclealex.persistence.jpa.xtend.JpaPersistable
 
 /**
- * @author alex
- *
+ * A class that represents either a phone number that has called or a phone number of a contact.
  */
-public class KeyedBean<M> {
+@JpaPersistable
+public class TelephoneNumber {
 
-  private Integer id;
-
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-  
-
+    /**
+     * The fully qualified telephone number.
+     */
+	var String number;
 }

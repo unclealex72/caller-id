@@ -1,10 +1,5 @@
 /**
- * 
- */
-package uk.co.unclealex.callerid.server.model;
-
-/**
- * Copyright 2011 Alex Jones
+ * Copyright 2013 Alex Jones
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -23,9 +18,30 @@ package uk.co.unclealex.callerid.server.model;
  * specific language governing permissions and limitations
  * under the License.    
  *
- * @author unclealex72
+ * @author alex
  *
  */
-public enum OauthTokenType {
-	ACCESS, REFRESH
+package uk.co.unclealex.callerid.remote.model;
+
+import java.util.Date
+import javax.persistence.Column
+import uk.co.unclealex.persistence.jpa.xtend.JpaPersistable
+
+/**
+ * A persisted representation of a call that has been received.
+ */
+@JpaPersistable
+class CallRecord {
+
+    /**
+     * The date and time this call was received.
+     */
+    @Column(nullable=false, unique=true)
+	var Date callDate;
+
+    /**
+     * The telephone number that called.
+     */
+    @Column(nullable=false, unique=true)
+	var TelephoneNumber telephoneNumber;	
 }
