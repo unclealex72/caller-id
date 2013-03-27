@@ -1,0 +1,5 @@
+/* Basic style rule to outline and space block-level elements */
+[class*="span"] {
+    background: #eee;
+    margin-bottom: 10px;
+}

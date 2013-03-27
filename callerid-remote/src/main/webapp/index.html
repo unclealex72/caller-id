@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Who's calling?</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="Alex Jones">
+
+<!-- Le styles -->
+<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="css/custom.css" rel="stylesheet">
+<link href="css/font-awesome.css" rel="stylesheet">
+
+<link href="http://fonts.googleapis.com/css?family=Corben:bold"
+	rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Nobile"
+	rel="stylesheet" type="text/css">
+
+<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+
+<!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+<!-- Fav and touch icons 
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+                                   <link rel="shortcut icon" href="../assets/ico/favicon.png">
+  -->
+</head>
+
+<body>
+
+	<div class="container">
+		<header class="row">
+			<h1 id="banner" class="span10">Who's Calling?</h1>
+			<p class="span2">user</p>
+		</header>
+		<section class="row">
+			<section id="calls" class="span6">
+				<div id="call1" class="clearfix">
+					<span>01256 460837</span>
+					<span class="pull-right">
+                            <button class="btn"><i class="icon-search"></i></button>
+        					<button class="btn"><i class="icon-map-marker"></i></button>
+        		    </span>
+				</div>
+                <div id="call2" class="clearfix">
+                    <span>01256 732827</span>
+                    <span class="pull-right">
+                            <button class="btn"><i class="icon-search"></i></button>
+                            <button class="btn"><i class="icon-map-marker"></i></button>
+                    </span>
+                </div>
+                <div id="call3" class="clearfix">
+                    <span>01256 460837</span>
+                    <span class="pull-right">
+                            <button class="btn"><i class="icon-search"></i></button>
+                            <button class="btn"><i class="icon-map-marker"></i></button>
+                    </span>
+                </div>
+                <div id="call4" class="clearfix">
+                    <span>01256 732827</span>
+                    <span class="pull-right">
+                            <button class="btn"><i class="icon-search"></i></button>
+                            <button class="btn"><i class="icon-map-marker"></i></button>
+                    </span>
+                </div>
+                <div id="call5" class="clearfix">
+                    <span>01256 460837</span>
+                    <span class="pull-right">
+                            <button class="btn"><i class="icon-search"></i></button>
+                            <button class="btn"><i class="icon-map-marker"></i></button>
+                    </span>
+                </div>
+                <div id="call6" class="clearfix">
+                    <span>01256 732827</span>
+                    <span class="pull-right">
+                            <button class="btn"><i class="icon-search"></i></button>
+                            <button class="btn"><i class="icon-map-marker"></i></button>
+                    </span>
+                </div>
+                <div id="call7" class="clearfix">
+                    <span>01256 460837</span>
+                    <span class="pull-right">
+                            <button class="btn"><i class="icon-search"></i></button>
+                            <button class="btn"><i class="icon-map-marker"></i></button>
+                    </span>
+                </div>
+                <div id="call8" class="clearfix">
+                    <span>01256 732827</span>
+                    <span class="pull-right">
+                            <button class="btn"><i class="icon-search"></i></button>
+                            <button class="btn"><i class="icon-map-marker"></i></button>
+                    </span>
+                </div>
+                <div id="call9" class="clearfix">
+                    <span>01256 460837</span>
+                    <span class="pull-right">
+                            <button class="btn"><i class="icon-search"></i></button>
+                            <button class="btn"><i class="icon-map-marker"></i></button>
+                    </span>
+                </div>
+                <div id="call10" class="clearfix">
+                    <span>01256 732827</span>
+                    <span class="pull-right">
+                            <button class="btn"><i class="icon-search"></i></button>
+                            <button class="btn"><i class="icon-map-marker"></i></button>
+                    </span>
+                </div>
+				<div class="pagination pagination-right">
+					<ul>
+						<li class="disabled"><a href="#">&laquo;</a></li>
+						<li class="active"><a href="#">1</a></li>
+						<li><a href="#">2</a></li>
+						<li><a href="#">3</a></li>
+						<li><a href="#">&raquo;</a></li>
+					</ul>
+				</div>
+			</section>
+			<section class="span6">
+				<div id="map_canvas"></div>
+			</section>
+		</section>
+		<footer class="row">
+			<div class="span12">Footer</div>
+		</footer>
+	</div>
+
+
+	<!-- Le javascript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="http://code.jquery.com/jquery.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript"
+        src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBPMGnJoq56NXDaFb21WdN_kkb585Q-qt4&amp;sensor=true"></script>
+
+	<script type="text/javascript">
+		$(document).ready(
+				function() {
+					$("#map_canvas").height($("#calls").height());
+					var mapOptions = {
+						center : new google.maps.LatLng(50, 0),
+						zoom : 5,
+						mapTypeId : google.maps.MapTypeId.ROADMAP
+					};
+					map = new google.maps.Map(document.getElementById("map_canvas"),
+							mapOptions);
+					//google.maps.event.addListener(marker, 'click', zoom);
+				});
+	</script>
+</body>
+</html>
