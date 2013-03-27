@@ -1,0 +1,8 @@
+<div class="clearfix">
+    <span>{stdCode} {number}</span>
+    <span class="pull-right">
+            <button class="btn contact"><i class="icon-user"></i></button>
+            <button class="btn search"><i class="icon-search"></i></button>
+            <button class="btn map-marker"><i class="icon-map-marker"></i></button>
+    </span>
+</div>

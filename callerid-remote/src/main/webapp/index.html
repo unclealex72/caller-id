@@ -37,87 +37,14 @@
 			<h1 id="banner" class="span10">Who's Calling?</h1>
 			<p class="span2">user</p>
 		</header>
-		<section class="row">
-			<section id="calls" class="span6">
-				<div id="call1" class="clearfix">
-					<span>01256 460837</span>
-					<span class="pull-right">
-                            <button class="btn"><i class="icon-search"></i></button>
-        					<button class="btn"><i class="icon-map-marker"></i></button>
-        		    </span>
+		<section class="row" id="all-calls">
+			<section class="span6">
+				<div id="carousel" data-interval="false" class="carousel slide">
+					<div id="calls" class="carousel-inner"></div>
 				</div>
-                <div id="call2" class="clearfix">
-                    <span>01256 732827</span>
-                    <span class="pull-right">
-                            <button class="btn"><i class="icon-search"></i></button>
-                            <button class="btn"><i class="icon-map-marker"></i></button>
-                    </span>
+                <div class="pagination pagination-right">
+                    <ul id="nav"></ul>
                 </div>
-                <div id="call3" class="clearfix">
-                    <span>01256 460837</span>
-                    <span class="pull-right">
-                            <button class="btn"><i class="icon-search"></i></button>
-                            <button class="btn"><i class="icon-map-marker"></i></button>
-                    </span>
-                </div>
-                <div id="call4" class="clearfix">
-                    <span>01256 732827</span>
-                    <span class="pull-right">
-                            <button class="btn"><i class="icon-search"></i></button>
-                            <button class="btn"><i class="icon-map-marker"></i></button>
-                    </span>
-                </div>
-                <div id="call5" class="clearfix">
-                    <span>01256 460837</span>
-                    <span class="pull-right">
-                            <button class="btn"><i class="icon-search"></i></button>
-                            <button class="btn"><i class="icon-map-marker"></i></button>
-                    </span>
-                </div>
-                <div id="call6" class="clearfix">
-                    <span>01256 732827</span>
-                    <span class="pull-right">
-                            <button class="btn"><i class="icon-search"></i></button>
-                            <button class="btn"><i class="icon-map-marker"></i></button>
-                    </span>
-                </div>
-                <div id="call7" class="clearfix">
-                    <span>01256 460837</span>
-                    <span class="pull-right">
-                            <button class="btn"><i class="icon-search"></i></button>
-                            <button class="btn"><i class="icon-map-marker"></i></button>
-                    </span>
-                </div>
-                <div id="call8" class="clearfix">
-                    <span>01256 732827</span>
-                    <span class="pull-right">
-                            <button class="btn"><i class="icon-search"></i></button>
-                            <button class="btn"><i class="icon-map-marker"></i></button>
-                    </span>
-                </div>
-                <div id="call9" class="clearfix">
-                    <span>01256 460837</span>
-                    <span class="pull-right">
-                            <button class="btn"><i class="icon-search"></i></button>
-                            <button class="btn"><i class="icon-map-marker"></i></button>
-                    </span>
-                </div>
-                <div id="call10" class="clearfix">
-                    <span>01256 732827</span>
-                    <span class="pull-right">
-                            <button class="btn"><i class="icon-search"></i></button>
-                            <button class="btn"><i class="icon-map-marker"></i></button>
-                    </span>
-                </div>
-				<div class="pagination pagination-right">
-					<ul>
-						<li class="disabled"><a href="#">&laquo;</a></li>
-						<li class="active"><a href="#">1</a></li>
-						<li><a href="#">2</a></li>
-						<li><a href="#">3</a></li>
-						<li><a href="#">&raquo;</a></li>
-					</ul>
-				</div>
 			</section>
 			<section class="span6">
 				<div id="map_canvas"></div>
@@ -134,22 +61,88 @@
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script src="http://code.jquery.com/jquery.js"></script>
 	<script src="js/bootstrap.min.js"></script>
-    <script type="text/javascript"
-        src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBPMGnJoq56NXDaFb21WdN_kkb585Q-qt4&amp;sensor=true"></script>
+	<script src="js/dust-full-1.2.2.js"></script>
+	<script src="js/dust-helpers-1.1.1.js"></script>
+	<script type="text/javascript"
+		src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBPMGnJoq56NXDaFb21WdN_kkb585Q-qt4&amp;sensor=true"></script>
 
 	<script type="text/javascript">
-		$(document).ready(
-				function() {
-					$("#map_canvas").height($("#calls").height());
-					var mapOptions = {
-						center : new google.maps.LatLng(50, 0),
-						zoom : 5,
-						mapTypeId : google.maps.MapTypeId.ROADMAP
-					};
-					map = new google.maps.Map(document.getElementById("map_canvas"),
-							mapOptions);
-					//google.maps.event.addListener(marker, 'click', zoom);
+		function loadDustResource(resourceName) {
+			return $.ajax({
+				url : "template/" + resourceName + ".dust",
+				dataType : "text",
+				success : function(resource) {
+					dust.loadSource(dust.compile(resource, resourceName));
+				}
+			});
+		}
+		function createPage(pageNumber, calls) {
+			var pageId = "page" + pageNumber;
+            var navId = "nav" + pageNumber;
+			dust.render("page", {
+				id : pageId
+			}, function(err, results) {
+				$("#calls").append(results);
+			});
+            dust.render("nav", {
+                id : navId,
+                idx : pageNumber
+            }, function(err, results) {
+                $("#nav").append(results);
+            });
+			var page = $("#" + pageId)
+            var nav = $("#" + navId)
+			if (!pageNumber) {
+				page.add(nav).addClass("active")
+			}
+			$.each(calls, function(idx, call) {
+				dust.render("call", call, function(err, results) {
+					page.append(results);
+				})
+			});
+		}
+		function loadCalls() {
+			return $.ajax({
+				url : "calls.json",
+				dataType : "json",
+				success : function(calls) {
+					var page = 0;
+					while (calls.length) {
+						createPage(page++, calls.splice(0, 10));
+					}
+		            $("#carousel").bind('slid', function() { 
+		                var index = $(this).find(".active").index(); 
+		                $("#nav li").removeClass("active").eq(index).addClass("active"); 
+		            });
+		            $("#nav a").click(function(e) {
+		                var page = parseInt($(this).attr("data-page")); 
+                        $("#carousel").carousel("pause");
+		                $("#carousel").carousel(page);
+		            }); 
+				}
+			});
+		}
+		function initialiseMap() {
+			$("#map_canvas").height($("#all-calls").height());
+			var mapOptions = {
+				center : new google.maps.LatLng(50, 0),
+				zoom : 5,
+				mapTypeId : google.maps.MapTypeId.ROADMAP
+			};
+			map = new google.maps.Map(document.getElementById("map_canvas"),
+					mapOptions);
+		}
+		$(document).ready(function() {
+			var queue = $.Deferred();
+			queue.resolve();
+			$.each([ "call", "page", "nav" ], function(idx, resource) {
+				queue = queue.then(function() {
+					loadDustResource(resource)
 				});
+			});
+			queue = queue.then(loadCalls);
+			queue = queue.then(initialiseMap);
+		});
 	</script>
 </body>
 </html>
