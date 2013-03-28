@@ -23,50 +23,34 @@
  */
 package uk.co.unclealex.callerid.remote.view
 
-import javax.validation.constraints.NotNull
 import org.codehaus.jackson.annotate.JsonCreator
 import org.codehaus.jackson.annotate.JsonProperty
 import org.codehaus.jackson.map.annotate.JsonSerialize
 import org.codehaus.jackson.map.annotate.JsonSerialize$Inclusion
 
 /**
- * A call is a JSON representation of all known details about a call record. This can then be interrogated
- * and displayed by a client.
+ * A JSON compatible class that represents the Google contact who made a call.
  */
- @JsonSerialize(include=Inclusion::NON_NULL)
- @Data class Call {
-   
-   /**
-    * The ISO 8601 date and time this call was received.
-    */
-   val String time
-
-   /**
-    * The telephone number of the caller who made this call.
-    */
-   val Number number      
-
-   /**
-    * The originating location of this call. This will always contain at least the country of origin.
-    */
-   val Location location
-   
-   /**
-    * The contact who called, if known.
-    */
-   val Contact contact
-   
+@JsonSerialize(include=Inclusion::NON_NULL)
+ @Data class Contact {
+    
+    /**
+     * The name of the contact who made the call.
+     */
+    val String name
+    
+    /**
+     * The address of the contact who made the call.
+     */
+    val String address
+    
   @JsonCreator
-  new(@NotNull @JsonProperty("time") String time,
-      @NotNull @JsonProperty("number") Number number,
-      @NotNull @JsonProperty("location") Location location,
-      @JsonProperty("contact") Contact contact
+  new(@JsonProperty("name") String name, 
+      @JsonProperty("address") String address
   ) {
     super();
-    this._time = time
-    this._number = number
-    this._location = location
-    this._contact = contact
+    this._name = name
+    this._address = address
   }
-   
+    
 }

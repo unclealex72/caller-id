@@ -30,43 +30,35 @@ import org.codehaus.jackson.map.annotate.JsonSerialize
 import org.codehaus.jackson.map.annotate.JsonSerialize$Inclusion
 
 /**
- * A call is a JSON representation of all known details about a call record. This can then be interrogated
- * and displayed by a client.
+ * A JSON compatible class that represents where a call was made from.
  */
- @JsonSerialize(include=Inclusion::NON_NULL)
- @Data class Call {
+@JsonSerialize(include=Inclusion::NON_NULL)
+ @Data class Location {
    
    /**
-    * The ISO 8601 date and time this call was received.
-    */
-   val String time
-
-   /**
-    * The telephone number of the caller who made this call.
-    */
-   val Number number      
-
-   /**
-    * The originating location of this call. This will always contain at least the country of origin.
-    */
-   val Location location
+    * The country from where this call originated.
+    */ 
+   val String country
    
    /**
-    * The contact who called, if known.
+    * The ISO 3166-1 alpha-2 code of the country from where this call originated.
     */
-   val Contact contact
+   val String countryCode;
+   
+   /**
+    * The geographical city where this call was made or null if the number was non-geographic.
+    */
+   val String city;
    
   @JsonCreator
-  new(@NotNull @JsonProperty("time") String time,
-      @NotNull @JsonProperty("number") Number number,
-      @NotNull @JsonProperty("location") Location location,
-      @JsonProperty("contact") Contact contact
+  new(@NotNull @JsonProperty("country") String country, 
+      @NotNull @JsonProperty("countryCode") String countryCode, 
+      @JsonProperty("city") String city
   ) {
     super();
-    this._time = time
-    this._number = number
-    this._location = location
-    this._contact = contact
+    this._country = country
+    this._countryCode = countryCode
+    this._city = city
   }
-   
+    
 }

@@ -30,43 +30,35 @@ import org.codehaus.jackson.map.annotate.JsonSerialize
 import org.codehaus.jackson.map.annotate.JsonSerialize$Inclusion
 
 /**
- * A call is a JSON representation of all known details about a call record. This can then be interrogated
- * and displayed by a client.
+ * A JSON compatible class that represents the telephone number that made a call.
  */
- @JsonSerialize(include=Inclusion::NON_NULL)
- @Data class Call {
-   
-   /**
-    * The ISO 8601 date and time this call was received.
+@JsonSerialize(include=Inclusion::NON_NULL)
+ @Data class Number {
+    /**
+    * The international prefix of the telephone number that made this call.
     */
-   val String time
+    val String internationalPrefix
 
-   /**
-    * The telephone number of the caller who made this call.
+    /**
+    * The STD code of the telephone number that made this call or null if the number was non-geographic.
     */
-   val Number number      
+    val String stdCode
 
-   /**
-    * The originating location of this call. This will always contain at least the country of origin.
+    /**
+    * The non-geographical part of the telephone number that made this call.
     */
-   val Location location
-   
-   /**
-    * The contact who called, if known.
-    */
-   val Contact contact
-   
-  @JsonCreator
-  new(@NotNull @JsonProperty("time") String time,
-      @NotNull @JsonProperty("number") Number number,
-      @NotNull @JsonProperty("location") Location location,
-      @JsonProperty("contact") Contact contact
-  ) {
-    super();
-    this._time = time
-    this._number = number
-    this._location = location
-    this._contact = contact
-  }
-   
+    val String number
+
+    @JsonCreator
+    new(
+        @NotNull @JsonProperty("internationalPrefix") String internationalPrefix,
+        @JsonProperty("stdCode") String stdCode,
+        @NotNull @JsonProperty("number") String number
+    ) {
+        super();
+        this._internationalPrefix = internationalPrefix
+        this._stdCode = stdCode
+        this._number = number
+    }
+
 }

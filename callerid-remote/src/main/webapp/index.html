@@ -37,8 +37,8 @@
 			<h1 id="banner" class="span10">Who's Calling?</h1>
 			<p class="span2">user</p>
 		</header>
-		<section class="row" id="all-calls">
-			<section class="span6">
+		<section class="row">
+			<section class="span6" id="all-calls">
 				<div id="carousel" data-interval="false" class="carousel slide">
 					<div id="calls" class="carousel-inner"></div>
 				</div>
@@ -67,6 +67,10 @@
 		src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBPMGnJoq56NXDaFb21WdN_kkb585Q-qt4&amp;sensor=true"></script>
 
 	<script type="text/javascript">
+	    var map;
+	    geocoder = new google.maps.Geocoder();
+        var marker = new google.maps.Marker();
+	    
 		function loadDustResource(resourceName) {
 			return $.ajax({
 				url : "template/" + resourceName + ".dust",
@@ -118,7 +122,29 @@
 		                var page = parseInt($(this).attr("data-page")); 
                         $("#carousel").carousel("pause");
 		                $("#carousel").carousel(page);
-		            }); 
+		            });
+		            $("#calls button.contact").click(function(e) {
+		            	var number = $(this).attr("data-number");
+		            	alert("Contact: " + number);
+		            });
+                    $("#calls button.search").click(function(e) {
+                        var searchTerm = $(this).attr("data-search-term");
+                        alert("Search: " + searchTerm);
+                    });
+                    $("#calls button.map-marker").click(function(e) {
+                        var countryCode = $(this).attr("data-country-code");
+                        var location = $(this).attr("data-location");
+                        geocoder.geocode( { address: location, region: countryCode }, function(results, status) {
+                            if (status == google.maps.GeocoderStatus.OK) {
+                              map.panTo(results[0].geometry.location);
+                              marker.setMap(map);
+                              marker.setPosition(results[0].geometry.location);
+                            } else {
+                              alert("Geocode was not successful for the following reason: " + status);
+                            }
+                          });
+
+                    });
 				}
 			});
 		}

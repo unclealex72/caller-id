@@ -1,8 +1,27 @@
 <div class="clearfix">
-    <span>{stdCode} {number}</span>
+    <span class="number">
+      +{number.internationalPrefix} {number.stdCode} {number.number}
+    </span>
+    {?contact}
+        <span class="contact"> {contact.name}</span>
+    {/contact}
+    {^contact}
+        <span class="location"> {?location.city}{location.city}, {/location.city}{location.country}</span>
+    {/contact}
     <span class="pull-right">
-            <button class="btn contact"><i class="icon-user"></i></button>
-            <button class="btn search"><i class="icon-search"></i></button>
-            <button class="btn map-marker"><i class="icon-map-marker"></i></button>
+            <button {?contact}disabled="true"{/contact}
+                class="btn contact"
+                data-number="+{number.internationalPrefix}{number.stdCode}{number.number}">
+                <i class="icon-user"></i>
+            </button>
+            <button {?contact}disabled="true"{/contact} class="btn search"
+                data-search-term="0{number.stdCode}{number.number}">
+                <i class="icon-search"></i>
+            </button>
+            <button class="btn map-marker"
+                data-country-code="{location.countryCode}"
+                data-location="{?contact.address}{contact.address}{/contact.address}{^contact.address}{?location.city}{location.city}{/location.city}{^location.city}{location.country}{/location.city}{/contact.address}">
+                <i class="icon-map-marker"></i>
+            </button>
     </span>
 </div>
