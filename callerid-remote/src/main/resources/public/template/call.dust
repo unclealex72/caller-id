@@ -10,17 +10,17 @@
     {/contact}
     <span class="pull-right">
             <button {?contact}disabled="true"{/contact}
-                class="btn contact"
-                data-number="+{number.internationalPrefix}{number.stdCode}{number.number}">
+                {~s}class="btn contact"
+                {~s}data-number="+{number.internationalPrefix}{number.stdCode}{number.number}">
                 <i class="icon-user"></i>
             </button>
             <button {?contact}disabled="true"{/contact} class="btn search"
-                data-search-term="0{number.stdCode}{number.number}">
+                {~s}data-search-term="0{number.stdCode}{number.number}">
                 <i class="icon-search"></i>
             </button>
             <button class="btn map-marker"
-                data-country-code="{location.countryCode}"
-                data-location="{?contact.address}{contact.address}{/contact.address}{^contact.address}{?location.city}{location.city}{/location.city}{^location.city}{location.country}{/location.city}{/contact.address}">
+                {~s}data-country-code="{location.countryCode}"
+                {~s}data-location="{?contact.address}{contact.address}{/contact.address}{^contact.address}{?location.city}{location.city}{/location.city}{^location.city}{location.country}{/location.city}{/contact.address}">
                 <i class="icon-map-marker"></i>
             </button>
     </span>
