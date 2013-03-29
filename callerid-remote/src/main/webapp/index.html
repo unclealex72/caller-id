@@ -124,6 +124,16 @@
 					while (calls.length) {
 						createPage(page++, calls.splice(0, 10));
 					}
+                    // Make sure that all carousel pages have the same height.
+					var height = null
+					$("#calls>div").each(function(page) {
+						if (height) {
+							$(this).height(height);
+						}
+						else {
+							height = $(this).height();
+						}
+					});
 					// Link the paging controls to the carousel.
 		            $("#carousel").bind('slid', function() { 
 		                var index = $(this).find(".active").index(); 
