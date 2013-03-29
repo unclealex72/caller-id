@@ -55,6 +55,22 @@
 		</footer>
 	</div>
 
+	<div id="contact-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="contact-modal-label" aria-hidden="true">
+	  <div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	    <h3 id="contact-modal-label">Modal header</h3>
+	  </div>
+	  <div class="modal-body">
+	    <p>Copy the text below and use the <i>Go</i> button below to go the Google Contacts page.</p>
+	    <textarea id="contact-text-area" rows="1" readonly="true"></textarea>
+	  </div>
+	  <div class="modal-footer">
+	    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+	    <button
+	       onclick="window.open('https://www.google.com/contacts', target='_blank'); return true;" 
+	       class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Go</button>
+	  </div>
+	</div>
 
 	<!-- Le javascript
     ================================================== -->
@@ -108,6 +124,7 @@
 					while (calls.length) {
 						createPage(page++, calls.splice(0, 10));
 					}
+					// Link the paging controls to the carousel.
 		            $("#carousel").bind('slid', function() { 
 		                var index = $(this).find(".active").index(); 
 		                $("#nav li").removeClass("active").eq(index).addClass("active"); 
@@ -117,13 +134,18 @@
                         $("#carousel").carousel("pause");
 		                $("#carousel").carousel(page);
 		            });
+		            
+		            // Add functionality to all the buttons.
 		            $("#calls button.contact").click(function(e) {
-		            	var number = $(this).attr("data-number");
-		            	alert("Contact: " + number);
+                        $("#contact-text-area").text($(this).attr("data-number"));
+		            	$('#contact-modal').on('shown', function () {
+	                        $("#contact-text-area")[0].select();
+		            	});
+		            	$("#contact-modal").modal("show");
 		            });
                     $("#calls button.search").click(function(e) {
                         var searchTerm = $(this).attr("data-search-term");
-                        alert("Search: " + searchTerm);
+                        window.open("https://www.google.co.uk/search?q=" + searchTerm, "_blank");
                     });
                     $("#calls button.map-marker").click(function(e) {
                         var countryCode = $(this).attr("data-country-code");
