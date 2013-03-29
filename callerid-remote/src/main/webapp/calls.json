@@ -392,15 +392,5 @@
   "contact" : {
     "name" : "University of Surrey"
   }
-},{
-  "time" : "2012-11-05T15:10Z",
-  "number" : {
-    "internationalPrefix" : "33",
-    "number" : "800162362"
-  },
-  "location" : {
-    "country" : "France",
-    "countryCode" : "FR"
-  }
 }
 ]

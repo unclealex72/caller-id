@@ -59,27 +59,21 @@
 	<!-- Le javascript
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<script src="http://code.jquery.com/jquery.js"></script>
-	<script src="resources/js/bootstrap.min.js"></script>
-	<script src="resources/js/dust-full-1.2.2.js"></script>
-	<script src="resources/js/dust-helpers-1.1.1.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+	<script type="text/javascript" src="resources/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="resources/js/dust-full-1.2.2.js"></script>
+	<script type="text/javascript" src="resources/js/dust-helpers-1.1.1.js"></script>
 	<script type="text/javascript"
 		src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBPMGnJoq56NXDaFb21WdN_kkb585Q-qt4&amp;sensor=true"></script>
-
+    <script type="text/javascript" src="template/call.js"></script>
+    <script type="text/javascript" src="template/nav.js"></script>
+    <script type="text/javascript" src="template/page.js"></script>
+    
 	<script type="text/javascript">
 	    var map;
 	    geocoder = new google.maps.Geocoder();
         var marker = new google.maps.Marker();
 	    
-		function loadDustResource(resourceName) {
-			return $.ajax({
-				url : "resources/template/" + resourceName + ".dust",
-				dataType : "text",
-				success : function(resource) {
-					dust.loadSource(dust.compile(resource, resourceName));
-				}
-			});
-		}
 		function createPage(pageNumber, calls) {
 			var pageId = "page" + pageNumber;
             var navId = "nav" + pageNumber;
@@ -161,11 +155,6 @@
 		$(document).ready(function() {
 			var queue = $.Deferred();
 			queue.resolve();
-			$.each([ "call", "page", "nav" ], function(idx, resource) {
-				queue = queue.then(function() {
-					loadDustResource(resource)
-				});
-			});
 			queue = queue.then(loadCalls);
 			queue = queue.then(initialiseMap);
 		});
