@@ -67,7 +67,7 @@ abstract class AbstractDustTest {
             [|
                 new InputStreamReader(
                     typeof(AbstractDustTest).classLoader.getResourceAsStream(
-                        '''public/template/«dustTemplateName».dust'''), "UTF-8")],
+                        '''template/«dustTemplateName».dust'''), "UTF-8")],
             templateBuilder
         )
         val String templateSource = templateBuilder.toString
