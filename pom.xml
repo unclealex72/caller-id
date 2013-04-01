@@ -12,8 +12,6 @@
   <packaging>pom</packaging>
 
   <properties>
-    <spring-version>3.1.2.RELEASE</spring-version>
-    <persistence-version>1.0.0-SNAPSHOT</persistence-version>
     <xtend-version>2.4.0</xtend-version>
     <xtend-gen>${project.build.directory}/generated-sources/xtend</xtend-gen>
     <xtend-gen-test>${project.build.directory}/generated-test-sources/xtend</xtend-gen-test>
