@@ -133,8 +133,26 @@
       </exclusions>
     </dependency>
 
-    <!-- Test dependencies -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>13.0.1</version>
+    </dependency>
 
+    <!-- Google contacts dependencies -->
+    <dependency>
+      <groupId>org.openengsb.wrapped</groupId>
+      <artifactId>com.google.gdata-contacts</artifactId>
+      <version>1.41.5.w1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.collections</groupId>
+          <artifactId>google-collections</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- Test dependencies -->
     <dependency>
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
