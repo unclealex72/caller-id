@@ -21,18 +21,24 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.model
+package uk.co.unclealex.callerid.remote.google
 
 /**
- * A representation of the two types of OAuth tokens given out by Google.
+ * An interface for classes that allow the application's unique OAuth keys to be refactored away from the
+ * implementation of conversing with Google.
  */
-enum OauthTokenType {
+interface GoogleConfiguration {
+    
     /**
-     * The short lived access token.
+     * Get the private consumer secret for this application.
+     * @return The private consumer secret for this application.
      */
-	ACCESS,
-	/**
-	 * The long lived refresh token.
-	 */
-	REFRESH
+    def String getConsumerSecret()
+    
+    /**
+     * Get the public consumer ID for this application.
+     * @return The public consumer ID for this application.
+     */
+    def String getConsumerId()
+    
 }

@@ -21,18 +21,17 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.model
+package uk.co.unclealex.callerid.remote.google
 
 /**
- * A representation of the two types of OAuth tokens given out by Google.
+ * An interface for finding the current time. This is abstracted out as to allow test classes to inject a known
+ * time as now.
  */
-enum OauthTokenType {
+interface NowService {
+
     /**
-     * The short lived access token.
+     * Get the current system time.
+     * @return the current system time.
      */
-	ACCESS,
-	/**
-	 * The long lived refresh token.
-	 */
-	REFRESH
+    def long now()
 }

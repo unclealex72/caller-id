@@ -21,18 +21,23 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.model
+package uk.co.unclealex.callerid.remote.google;
 
-/**
- * A representation of the two types of OAuth tokens given out by Google.
- */
-enum OauthTokenType {
+import java.util.Set
+import uk.co.unclealex.callerid.remote.model.User
+
+interface GoogleContactsService {
+
     /**
-     * The short lived access token.
+     * Get all the Google contacts for a user.
+     * @param user The Google user whose contacts are to be queried.
+     * @return A set of Google user's contacts.
      */
-	ACCESS,
-	/**
-	 * The long lived refresh token.
-	 */
-	REFRESH
+	def Set<GoogleContact> getAllContacts(User user);
+
+    /**
+     * Install a Google success code for a user.
+     */
+	def void installSuccessCode(User user, String successCode);
+
 }

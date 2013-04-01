@@ -21,18 +21,32 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.model
+package uk.co.unclealex.callerid.remote.google
+
+import org.codehaus.jackson.annotate.JsonCreator
+import javax.validation.constraints.NotNull
+import org.codehaus.jackson.annotate.JsonProperty
 
 /**
- * A representation of the two types of OAuth tokens given out by Google.
+ * A JSON serialisable instance of GoogleConfiguration.
  */
-enum OauthTokenType {
+@Data class GoogleConfigurationBean implements GoogleConfiguration {
     /**
-     * The short lived access token.
+     * The private consumer secret for this application.
      */
-	ACCESS,
-	/**
-	 * The long lived refresh token.
-	 */
-	REFRESH
+    val String consumerSecret
+
+    /**
+     * The public consumer ID for this application.
+     */
+    val String consumerId
+
+    @JsonCreator
+    new(
+        @NotNull @JsonProperty("consumerSecret") String consumerSecret,
+        @NotNull @JsonProperty("consumerId") String consumerId
+    ) {
+        this._consumerSecret = consumerSecret
+        this._consumerId = consumerId
+    }
 }

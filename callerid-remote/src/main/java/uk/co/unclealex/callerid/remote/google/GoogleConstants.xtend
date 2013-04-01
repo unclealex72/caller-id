@@ -21,18 +21,30 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.model
+package uk.co.unclealex.callerid.remote.google
 
 /**
- * A representation of the two types of OAuth tokens given out by Google.
+ * An interface for classes that contain the constants used to talk to Google. These constants are abstracted out
+ * for testing purposes.
  */
-enum OauthTokenType {
+interface GoogleConstants {
+    
     /**
-     * The short lived access token.
+     * Get the URL used to get OAuth tokens from Google.
+     * @return The URL used to get OAuth tokens from Google.
      */
-	ACCESS,
-	/**
-	 * The long lived refresh token.
-	 */
-	REFRESH
+    def String getOauthTokenUrl()
+    
+    /**
+     * Get the URL used to get contacts from Google.
+     * @return The URL used to get contacts from Google.
+     */
+    def String getContactFeedUrl()
+    
+    /**
+     * Get the amount of time (in milliseconds) before expiry that an access token should be rerequested.
+     * @return The amount of time (in milliseconds) before expiry that an access token should be rerequested.
+     */
+    def Long getTokenExpiryTimeout()
+ 
 }

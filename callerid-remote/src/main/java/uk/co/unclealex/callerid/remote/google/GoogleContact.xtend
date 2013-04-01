@@ -21,18 +21,27 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.model
+package uk.co.unclealex.callerid.remote.google
+
+import java.util.Set
 
 /**
- * A representation of the two types of OAuth tokens given out by Google.
+ * A data class used to return contact's telephone numbers from Google. 
  */
-enum OauthTokenType {
+@Data class GoogleContact {
+    
     /**
-     * The short lived access token.
+     * The name of the contact.
      */
-	ACCESS,
-	/**
-	 * The long lived refresh token.
-	 */
-	REFRESH
+    var String name
+    
+    /**
+     * The address of the contact, if any.
+     */
+    var String address
+    
+    /**
+     * The telephone numbers where this contact may call from.
+     */
+    var Set<String> telephoneNumbers
 }

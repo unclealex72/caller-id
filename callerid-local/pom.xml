@@ -26,6 +26,12 @@
       <version>1.6.6</version>
     </dependency>
 
+     <dependency>
+       <groupId>com.google.api-client</groupId>
+       <artifactId>google-api-client</artifactId>
+       <version>1.10.2-beta</version>
+    </dependency>
+
     <dependency>
       <groupId>${executable-groupId}</groupId>
       <artifactId>executable-dependency</artifactId>
@@ -42,12 +48,6 @@
       <groupId>uk.co.unclealex</groupId>
       <artifactId>process-support</artifactId>
       <version>2.0.1</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.google.api-client</groupId>
-      <artifactId>google-api-client</artifactId>
-      <version>1.10.2-beta</version>
     </dependency>
 
     <dependency>

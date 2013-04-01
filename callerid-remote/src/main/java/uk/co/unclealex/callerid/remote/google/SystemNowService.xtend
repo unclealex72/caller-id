@@ -21,18 +21,18 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.model
+package uk.co.unclealex.callerid.remote.google
+
+import uk.co.unclealex.callerid.remote.google.NowService
 
 /**
- * A representation of the two types of OAuth tokens given out by Google.
+ * The default implementation of {@link uk.co.unclealex.callerid.remote.google.NowService} that calls
+ * {@link System#currentTimeMillis}
  */
-enum OauthTokenType {
-    /**
-     * The short lived access token.
-     */
-	ACCESS,
-	/**
-	 * The long lived refresh token.
-	 */
-	REFRESH
+class SystemNowService implements NowService {
+    
+    override now() {
+        System::currentTimeMillis
+    }
+    
 }

@@ -21,18 +21,25 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.model
+package uk.co.unclealex.callerid.remote.google
+
+import uk.co.unclealex.callerid.remote.google.GoogleConstants
 
 /**
- * A representation of the two types of OAuth tokens given out by Google.
+ * The default implementation of {@link uk.co.unclealex.callerid.remote.google.GoogleConstants}
  */
-enum OauthTokenType {
-    /**
-     * The short lived access token.
-     */
-	ACCESS,
-	/**
-	 * The long lived refresh token.
-	 */
-	REFRESH
+class GoogleConstantsImpl implements GoogleConstants {
+    
+    override getOauthTokenUrl() {
+        "https://accounts.google.com/o/oauth2/token"
+    }
+    
+    override getContactFeedUrl() {
+        "https://www.google.com/m8/feeds/contacts/default/full"
+    }
+    
+    override getTokenExpiryTimeout() {
+        600_000l
+    }
+    
 }
