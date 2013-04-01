@@ -10,7 +10,7 @@
   <groupId>uk.co.unclealex.callerid</groupId>
   <artifactId>callerid-remote</artifactId>
   <packaging>war</packaging>
-  <name>web Maven Webapp</name>
+  <name>CallerID remote webapp</name>
   <url>http://maven.apache.org</url>
 
   <properties>
