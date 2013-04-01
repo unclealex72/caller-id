@@ -24,32 +24,43 @@
 package uk.co.unclealex.callerid.remote.model;
 
 import java.util.List
+import javax.jdo.annotations.Column
+import javax.jdo.annotations.IdGeneratorStrategy
+import javax.jdo.annotations.IdentityType
+import javax.jdo.annotations.PersistenceCapable
+import javax.jdo.annotations.Persistent
+import javax.jdo.annotations.PrimaryKey
+import javax.jdo.annotations.Unique
+import javax.validation.constraints.NotNull
+
 import static extension org.apache.commons.lang3.builder.EqualsBuilder.*
-import static extension org.apache.commons.lang3.builder.ToStringBuilder.*
 import static extension org.apache.commons.lang3.builder.HashCodeBuilder.*
+import static extension org.apache.commons.lang3.builder.ToStringBuilder.*
+import javax.jdo.annotations.Element
 
 /**
  * A persitable person who can use the system.
  */
-//@Entity
+@PersistenceCapable(identityType = IdentityType::DATASTORE, table="users", detachable="true")
 class User {
 
-    //@Id
-    //@GeneratedValue
-    //@Column(name="id")
+    @PrimaryKey(name="id")
+    @Persistent(valueStrategy = IdGeneratorStrategy::NATIVE)
     @Property var Integer id
 
     /**
      * The user's Google username.
      */
-    //@Column(name="username", nullable=false, unique=true)
+    @NotNull
+    @Unique
+    @Column(name="username")
 	@Property var String username;
 
     /**
      * The OAuth tokens given by Google single sign on.
      */
-    //@OneToMany(cascade=CascadeType::ALL)
-    //@Column(name="oauthTokens")
+    @Persistent
+    @Element(dependent="true")
 	@Property var List<OauthToken> oauthTokens;
 	
     override equals(Object obj) {

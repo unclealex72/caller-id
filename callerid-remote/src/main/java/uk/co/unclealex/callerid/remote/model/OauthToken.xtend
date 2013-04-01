@@ -24,6 +24,13 @@
 package uk.co.unclealex.callerid.remote.model;
 
 import java.util.Date
+import javax.jdo.annotations.Column
+import javax.jdo.annotations.IdGeneratorStrategy
+import javax.jdo.annotations.IdentityType
+import javax.jdo.annotations.PersistenceCapable
+import javax.jdo.annotations.Persistent
+import javax.jdo.annotations.PrimaryKey
+import javax.validation.constraints.NotNull
 
 import static extension org.apache.commons.lang3.builder.EqualsBuilder.*
 import static extension org.apache.commons.lang3.builder.HashCodeBuilder.*
@@ -32,31 +39,30 @@ import static extension org.apache.commons.lang3.builder.ToStringBuilder.*
 /**
  * A persisted representation of an OAuth token that has been handed out by Google for single sign on.
  */
-//@Entity
+@PersistenceCapable(identityType = IdentityType::DATASTORE, table="tokens", detachable="true")
 class OauthToken {
 
-    //@Id
-    //@GeneratedValue
-    //@Column(name="id")
+    @PrimaryKey(name="id")
+    @Persistent(valueStrategy = IdGeneratorStrategy::NATIVE)
     @Property var Integer id
 
     /**
      * The type of the token being persisted.
      */
-    //@Enumerated(EnumType::STRING)
-    //@Column(name="tokenType", nullable=false)
+    @NotNull
+    @Column(name="tokenType")
 	@Property var OauthTokenType tokenType;
 
     /**
      * The value of the token being persisted.
      */
-    //@Column(name="token", nullable=false)
+    @Column(name="token")
 	@Property var String token;
 
     /**
      * The date and time that the token expires or null if the token does not expire.
      */
-    //@Column(name="expiryDate")
+    @Column(name="expiryDate")
 	@Property var Date expiryDate;
 	
     override equals(Object obj) {

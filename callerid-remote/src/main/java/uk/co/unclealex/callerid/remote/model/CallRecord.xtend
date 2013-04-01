@@ -24,7 +24,14 @@
 package uk.co.unclealex.callerid.remote.model;
 
 import java.util.Date
-import javax.persistence.Entity
+import javax.jdo.annotations.Column
+import javax.jdo.annotations.IdGeneratorStrategy
+import javax.jdo.annotations.IdentityType
+import javax.jdo.annotations.PersistenceCapable
+import javax.jdo.annotations.Persistent
+import javax.jdo.annotations.PrimaryKey
+import javax.jdo.annotations.Unique
+import javax.validation.constraints.NotNull
 
 import static extension org.apache.commons.lang3.builder.EqualsBuilder.*
 import static extension org.apache.commons.lang3.builder.HashCodeBuilder.*
@@ -33,24 +40,26 @@ import static extension org.apache.commons.lang3.builder.ToStringBuilder.*
 /**
  * A persisted representation of a call that has been received.
  */
-@Entity
+@PersistenceCapable(identityType = IdentityType::DATASTORE, table="calls", detachable="true")
 class CallRecord {
 
-    //@Id
-    //@GeneratedValue
-    //@Column(name="id")
+    @PrimaryKey(name="id")
+    @Persistent(valueStrategy = IdGeneratorStrategy::NATIVE)
     @Property var Integer id
     
     /**
      * The date and time this call was received.
      */
-    //@Column(name="callDate", nullable=false, unique=true)
+    @NotNull
+    @Unique
+    @Column(name="callDate")
 	@Property var Date callDate
 
     /**
      * The telephone number that called.
      */
-    //@Column(name="telephoneNumber", nullable=false)
+    @NotNull
+    @Column(name="telephoneNumber")
 	@Property var String telephoneNumber
 
     override equals(Object obj) {
