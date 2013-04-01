@@ -51,6 +51,7 @@ import org.springframework.transaction.annotation.Transactional
 import uk.co.unclealex.callerid.remote.model.OauthToken
 import uk.co.unclealex.callerid.remote.model.OauthTokenType
 import uk.co.unclealex.callerid.remote.model.User
+import javax.inject.Inject
 
 /**
  * The default implementation of {@link GoogleContactsService}. Note that there are no unit tests for this
@@ -61,18 +62,25 @@ class GoogleContactsServiceImpl implements GoogleContactsService {
     /**
      * The Google configuration object used to configure how to get contacts from Google.
      */
-    @Property var GoogleConfiguration googleConfiguration
+    @Property val GoogleConfiguration googleConfiguration
 
     /**
      * The Google constants object used to configure how to get contacts from Google.
      */
-    @Property var GoogleConstants googleConstants
+    @Property val GoogleConstants googleConstants
 
     /**
      * The service used to get the current time.
      */
-    @Property var NowService nowService
+    @Property val NowService nowService
 
+    @Inject
+    new(GoogleConfiguration googleConfiguration, GoogleConstants googleConstants, NowService nowService) {
+        this._googleConfiguration = googleConfiguration
+        this._googleConstants = googleConstants
+        this._nowService = nowService
+    }
+    
     def ContactsService createContactsService(User user) {
         return new ContactsService("callerid.unclealex.co.uk", user.accessToken)
     }
