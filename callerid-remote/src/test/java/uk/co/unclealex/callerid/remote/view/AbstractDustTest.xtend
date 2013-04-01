@@ -28,7 +28,6 @@ import java.io.InputStreamReader
 import java.io.Reader
 import java.io.StringReader
 import java.io.StringWriter
-import java.util.Map
 import javax.xml.parsers.DocumentBuilderFactory
 import org.codehaus.jackson.map.ObjectMapper
 import org.junit.Before
