@@ -166,6 +166,7 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
    *           if any element is null
    * @since 3.0 (source-compatible since 2.0)
    */
+  @SafeVarargs
   public static <E> ImmutableSet<E> of(
       final E e1,
       final E e2,
@@ -630,7 +631,7 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
      *           if {@code elements} is null or contains a null element
      */
     @Override
-    public Builder<E> add(final E... elements) {
+    public Builder<E> add(@SuppressWarnings("unchecked") final E... elements) {
       for (int i = 0; i < elements.length; i++) {
         ObjectArrays.checkElementNotNull(elements[i], i);
       }
