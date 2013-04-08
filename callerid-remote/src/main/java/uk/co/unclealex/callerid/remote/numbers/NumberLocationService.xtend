@@ -1,10 +1,13 @@
-package uk.co.unclealex.callerid.server.service;
+package uk.co.unclealex.callerid.remote.numbers
 
-import uk.co.unclealex.callerid.shared.model.PhoneNumber;
-
+/**
+ * An interface for classes that can turn a telephone number in string form into a normalised phone number.
+ */
 public interface NumberLocationService {
 
-	public PhoneNumber decomposeNumber(String number);
-	public String normaliseNumber(String number);
+    /**
+     * Decompose a telephone number into a normalised {@link PhoneNumber}.
+     */
+	def PhoneNumber decompose(String number);
 
 }
