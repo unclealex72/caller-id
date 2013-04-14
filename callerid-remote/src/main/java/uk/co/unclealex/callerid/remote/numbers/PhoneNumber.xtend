@@ -23,6 +23,8 @@
  */
 package uk.co.unclealex.callerid.remote.numbers
 
+import com.google.common.base.Optional
+
 /**
  * The representation of a telephone number that called.
  */
@@ -44,7 +46,7 @@ package uk.co.unclealex.callerid.remote.numbers
     /**
      * The city from which this phone number was made, if known.
      */
-    val City city
+    val Optional<City> city
 
     /**
      * The rest of the number that called, minus the international and STD codes.

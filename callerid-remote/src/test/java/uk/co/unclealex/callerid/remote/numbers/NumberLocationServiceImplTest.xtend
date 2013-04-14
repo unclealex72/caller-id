@@ -54,14 +54,14 @@ class NumberLocationServiceImplTest {
 
     def void andExpect(String receivedNumber, Iterable<String> expectedCountryNames, String expectedCityName,
         String expectedNumber, String expectedNormalisedNumber) {
-        receivedNumber.decompose => [
+        receivedNumber.decompose.get => [
             assertThat("The returned phone number had the wrong countries", countries.map[name],
                 contains(Iterables::toArray(expectedCountryNames, typeof(String))))
             if (expectedCityName == null) {
-                assertNull("The returned phone number had a non-null city.", city)
+                assertFalse("The returned phone number had a non-null city.", city.isPresent)
             }
             else {
-                assertEquals("The returned phone number had the wrong city.", expectedCityName, city.name)
+                assertEquals("The returned phone number had the wrong city.", expectedCityName, city.get.name)
             }
             assertEquals("The returned phone number had the wrong number.",
                 expectedNumber, number)

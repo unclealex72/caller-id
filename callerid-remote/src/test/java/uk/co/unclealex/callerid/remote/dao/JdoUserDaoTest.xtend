@@ -36,6 +36,8 @@ import uk.co.unclealex.callerid.remote.model.User
 import static org.hamcrest.Matchers.*
 import static org.junit.Assert.*
 
+import static extension uk.co.unclealex.xtend.OptionalExtensions.*
+
 /**
  * @author alex
  *
@@ -59,7 +61,7 @@ class JdoUserDaoTest extends AbstractDaoTest {
         val accessToken = new OauthToken => [
             token = "access"
             tokenType = OauthTokenType::ACCESS
-            expiryDate = "05/09/1972 09:12:00".parse
+            expiryDate = "05/09/1972 09:12:00".parse.required
         ]
         val user = new User => [
             username = "alex"

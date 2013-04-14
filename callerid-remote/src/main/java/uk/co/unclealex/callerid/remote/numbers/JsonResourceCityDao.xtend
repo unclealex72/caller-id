@@ -24,54 +24,53 @@
 package uk.co.unclealex.callerid.remote.numbers
 
 import com.google.common.collect.Multimap
+import com.google.common.collect.Ordering
+import com.google.common.collect.Sets
+import com.google.common.collect.TreeMultimap
 import java.io.InputStream
 import java.util.List
+import java.util.Map
+import java.util.SortedSet
 import javax.annotation.PostConstruct
 import org.codehaus.jackson.map.ObjectMapper
 import org.codehaus.jackson.map.type.TypeFactory
 
+import static extension uk.co.unclealex.xtend.OrderingExtensions.*
+import static extension uk.co.unclealex.xtend.OptionalExtensions.*
 
-import java.util.SortedSet
-import com.google.common.collect.TreeMultimap
-import com.google.common.collect.Ordering
-import com.google.common.collect.Sets
-import static extension uk.co.unclealex.xtend.ComparatorExtensions.*
-import java.util.Map
+import static extension uk.co.unclealex.xtend.ObjectExtensions.*
 
 /**
  * An implementation of {@link CityDao} that uses a JSON resource
  * to store countries and cities.
  */
 class JsonResourceCityDao implements CityDao {
-
     /**
      * A multimap of all countries keyed by their international dialling codes. The collection values of this map are ordered
      * such that countries with more cities are listed first.
      */
     @Property var Multimap<String, Country> countriesByInternationalDiallingCode = TreeMultimap::create(
-        Ordering::natural,
-        compareBy[Country c | c.cities.length].reversed.then(compareBy[Country c | c.name]))
+        Ordering::natural, 
+        typeof(Country) <=> [-compareBy[cities.length] + compareBy[name]])
 
     /**
      * A multimap of all cities keyed by their international dialling codes. The collection values of this map are ordered
      * such that cities with longer std codes are listed first.
      */
     @Property var Multimap<String, City> citiesByInternationalDiallingCode = TreeMultimap::create(
-        Ordering::natural,
-        compareBy[City c | c.stdCode.length].reversed.then(compareBy[City c | c.stdCode].then(compareBy[City c | c.name])))
+        Ordering::natural, typeof(City) <=> [compareBy[-stdCode.length] + compareBy([stdCode], [name])])
 
     /**
      * A set of all known international dialling codes. The dialling codes are ordered longest first and then by value.
      */
     @Property var SortedSet<String> internationalDiallingCodes = Sets::newTreeSet(
-        compareBy[String s | s.length].reversed.then(Ordering::natural)
-    )
-    
+        -typeof(String).compareBy[length] + Ordering::natural)
+
     /**
      * A map that holds the country for each city.
      */
-     @Property var Map<City, Country> countriesByCity = newHashMap()
-     
+    @Property var Map<City, Country> countriesByCity = newHashMap()
+
     /**
      * Load all the countries from a JSON resource.
      */
@@ -82,14 +81,14 @@ class JsonResourceCityDao implements CityDao {
         try {
             val List<Country> countries = mapper.readValue(in,
                 TypeFactory::collectionType(typeof(List), typeof(Country)))
-            countries.forEach[ Country country |
+            countries.forEach [ Country country |
                 val internationalDiallingCode = country.internationalDiallingCode
                 internationalDiallingCodes.add(internationalDiallingCode)
                 countriesByInternationalDiallingCode.put(internationalDiallingCode, country)
                 citiesByInternationalDiallingCode.putAll(internationalDiallingCode, country.cities)
-                country.cities.forEach[City city | countriesByCity.put(city, country)]
+                country.cities.forEach[City city|countriesByCity.put(city, country)]
             ]
-            
+
         } finally {
             in.close
         }
@@ -98,15 +97,16 @@ class JsonResourceCityDao implements CityDao {
     override extractInternationalDiallingCode(String number) {
         internationalDiallingCodes.findFirst[number.startsWith(it)]
     }
-    
+
     override extractCity(String number, String internationalDiallingCode) {
-        citiesByInternationalDiallingCode.get(internationalDiallingCode).findFirst[number.startsWith(stdCode)]
+        citiesByInternationalDiallingCode.get(internationalDiallingCode).findFirst[number.startsWith(stdCode)].
+            asOptional
     }
-    
+
     override country(City city) {
         countriesByCity.get(city)
     }
-    
+
     override countries(String internationalDiallingCode) {
         countriesByInternationalDiallingCode.get(internationalDiallingCode)
     }

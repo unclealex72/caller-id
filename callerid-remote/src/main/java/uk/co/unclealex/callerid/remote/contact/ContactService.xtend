@@ -21,28 +21,25 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.google
+package uk.co.unclealex.callerid.remote.contact
 
 import com.google.common.base.Optional
-import java.util.Set
+import org.eclipse.xtext.xbase.lib.Functions
+import uk.co.unclealex.callerid.remote.google.GoogleContact
+import uk.co.unclealex.callerid.remote.numbers.PhoneNumber
+import uk.co.unclealex.callerid.remote.view.Contact
 
 /**
- * A data class used to return contact's telephone numbers from Google. 
+ * An interface for finding {@link Contact}s from {@link PhoneNumber}s.
  */
-@Data class GoogleContact {
-    
+interface ContactService {
     /**
-     * The name of the contact.
+     * Convert a {@link PhoneNumber} into a {@link GoogleContact}. The functional approach is used as to avoid
+     * having to create Spring prototype factories.
+     * @return A function that can convert a {@link PhoneNumber} into a {@link GoogleContact} by first preloading all
+     * Google contacts. It is undefined which contact is returned if the same phone number is shared by more than one
+     * contact.
      */
-    var String name
-    
-    /**
-     * The address of the contact, if any.
-     */
-    var Optional<String> address
-    
-    /**
-     * The telephone numbers where this contact may call from.
-     */
-    var Set<String> telephoneNumbers
+    def Functions$Function1<PhoneNumber, Optional<GoogleContact>> asContacts();
+
 }

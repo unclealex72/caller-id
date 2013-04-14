@@ -35,6 +35,7 @@ import javax.validation.constraints.NotNull
 import static extension org.apache.commons.lang3.builder.EqualsBuilder.*
 import static extension org.apache.commons.lang3.builder.HashCodeBuilder.*
 import static extension org.apache.commons.lang3.builder.ToStringBuilder.*
+import com.google.common.base.Optional
 
 /**
  * A persisted representation of an OAuth token that has been handed out by Google for single sign on.
@@ -56,6 +57,7 @@ class OauthToken {
     /**
      * The value of the token being persisted.
      */
+    @NotNull
     @Column(name="token")
 	@Property var String token;
 
@@ -63,7 +65,7 @@ class OauthToken {
      * The date and time that the token expires or null if the token does not expire.
      */
     @Column(name="expiryDate")
-	@Property var Date expiryDate;
+	@Property var Optional<Date> expiryDate;
 	
     override equals(Object obj) {
         reflectionEquals(obj)

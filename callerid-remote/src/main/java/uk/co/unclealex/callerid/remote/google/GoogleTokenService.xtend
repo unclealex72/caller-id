@@ -21,18 +21,26 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.google;
+package uk.co.unclealex.callerid.remote.google
 
-import java.util.Set
 import uk.co.unclealex.callerid.remote.model.User
 
-interface GoogleContactsService {
+/**
+ * An interface for retrieving OAuth access tokens from Google.
+ */
+interface GoogleTokenService {
 
     /**
-     * Get all the Google contacts for a user.
-     * @param user The Google user whose contacts are to be queried.
-     * @return A set of Google user's contacts.
+     * Get the access token for a user, refreshing it if neccessary.
+     * @param user The user who is requesting an access token.
+     * @return An OAuth access token that will allow a user to access their Google contacts.
      */
-	def Set<GoogleContact> getAllContacts(User user);
-
+    def String accessToken(User user)
+    
+    /**
+     * Install a Google success code for a user.
+     * @param The user who made the request for a success code.
+     * @param The success code supplied by Google.
+     */
+    def void installSuccessCode(User user, String successCode);
 }

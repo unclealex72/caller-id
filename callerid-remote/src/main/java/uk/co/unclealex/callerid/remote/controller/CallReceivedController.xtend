@@ -19,20 +19,17 @@
  * under the License.    
  *
  * @author alex
- *
+ *  
  */
-package uk.co.unclealex.callerid.remote.google;
+package uk.co.unclealex.callerid.remote.controller
 
-import java.util.Set
-import uk.co.unclealex.callerid.remote.model.User
+import org.springframework.stereotype.Controller
 
-interface GoogleContactsService {
-
-    /**
-     * Get all the Google contacts for a user.
-     * @param user The Google user whose contacts are to be queried.
-     * @return A set of Google user's contacts.
-     */
-	def Set<GoogleContact> getAllContacts(User user);
-
+/**
+ * A Spring controller that receives a non-normalised telephone number, serialises it and returns a string
+ * representation of the call that was made.
+ */
+@Controller
+class CallReceivedController {
+    
 }

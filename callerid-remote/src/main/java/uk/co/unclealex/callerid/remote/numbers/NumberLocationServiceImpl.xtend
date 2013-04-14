@@ -23,6 +23,11 @@
  */
 package uk.co.unclealex.callerid.remote.numbers;
 
+import org.eclipse.xtext.xbase.lib.Functions
+
+import static extension uk.co.unclealex.xtend.OptionalExtensions.*
+import com.google.common.base.Optional
+
 /**
  * The default implementation of {@link NumberLocationService}.
  */
@@ -41,10 +46,8 @@ class NumberLocationServiceImpl implements NumberLocationService {
         #["00" -> international, "+" -> international, "0" -> national, "" -> local].map [
             val prefix = key
             val decomposer = value
-            if (number.startsWith(prefix)) {
-                decomposer.apply(number.substring(prefix.length))
-            }
-        ].findFirst[it != null]
+            if (number.startsWith(prefix)) decomposer.apply(number.substring(prefix.length))
+        ].filterNull.head.asOptional
     }
 
     /**
@@ -82,11 +85,9 @@ class NumberLocationServiceImpl implements NumberLocationService {
         val String normalisedNumber = "+" + number
         val String internationalDiallingCode = number.extractInternationalDiallingCode
         val String nationalNumber = number.substring(internationalDiallingCode.length)
-        val City city = nationalNumber.extractCity(internationalDiallingCode)
-        if (city == null) {
-            new PhoneNumber(normalisedNumber, internationalDiallingCode.countries, null, nationalNumber)
-        } else {
-            new PhoneNumber(normalisedNumber, #[city.country], city, nationalNumber.substring(city.stdCode.length))
-        }
+        val Optional<City> city = nationalNumber.extractCity(internationalDiallingCode)
+        city.optionalIf(
+            [new PhoneNumber(normalisedNumber, #[country], required, nationalNumber.substring(stdCode.length))], 
+            [|new PhoneNumber(normalisedNumber, internationalDiallingCode.countries, null, nationalNumber)])
     }
 }

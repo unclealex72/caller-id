@@ -24,6 +24,7 @@
 package uk.co.unclealex.callerid.remote.numbers
 
 import java.util.Collection
+import com.google.common.base.Optional
 
 /**
  * A data access interface used to find countries and cities from telephone numbers.
@@ -40,9 +41,9 @@ interface CityDao {
      * Find the city where a phone number (minus a leading zero or international dialling code) originated from.
      * @param number The phone number without an international dialling code to scan.
      * @param internationalDiallingCode The international dialling code used to limit the city search.
-     * @return The city from where the phone call originated or null if the phone number is non-geographic.
+     * @return The city from where the phone call originated or {@link Optional#absent} if the phone number is non-geographic.
      */
-    def City extractCity(String number, String internationalDiallingCode)
+    def Optional<City> extractCity(String number, String internationalDiallingCode)
 
     /**
      * Get a city's country.

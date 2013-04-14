@@ -23,10 +23,11 @@
  */
 package uk.co.unclealex.callerid.remote.numbers
 
+import com.google.common.base.Optional
 import org.junit.Test
 
-import static org.junit.Assert.*
 import static org.hamcrest.Matchers.*
+import static org.junit.Assert.*
 
 class JsonResourceCityDaoTest {
 
@@ -47,8 +48,8 @@ class JsonResourceCityDaoTest {
     @Test
     def void testExtractUkCity() {
         #{"1697500500" -> "Brampton", "1697300300" -> "Wigton", "1697400400" -> "Raughton Head"}.forEach[number, expectedCityName|
-            val City actualCity = number.extractCity("44")
-            assertEquals('''The wrong city was returned for number «number»''', expectedCityName, actualCity.name)]
+            val Optional<City> actualCity = number.extractCity("44")
+            assertEquals('''The wrong city was returned for number «number»''', expectedCityName, actualCity.get.name)]
     }
 
     @Test
