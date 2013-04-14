@@ -8,6 +8,10 @@ import java.util.List
 import java.util.Map
 import org.eclipse.xtext.xbase.lib.Pair
 
+import static extension java.net.URLEncoder.*
+import static extension java.net.URLDecoder.*
+import static com.google.common.base.Charsets.*
+
 /**
  * A class that represents a URL with its query parameters.
  */
@@ -40,7 +44,7 @@ import org.eclipse.xtext.xbase.lib.Pair
                 new UrlWithParameters(urlParts.get(0))
             case 2: {
                 new UrlWithParameters(urlParts.get(0)).withParameters(
-                    Splitter::on('&').omitEmptyStrings.withKeyValueSeparator("=").split(urlParts.get(1)))
+                    Splitter::on('&').omitEmptyStrings.withKeyValueSeparator("=").split(urlParts.get(1)).mapValues[it.decode(UTF_8.name)])
             }
             default: {
                 throw new IllegalArgumentException('''Cannot parse URL «url»''')
@@ -80,7 +84,7 @@ import org.eclipse.xtext.xbase.lib.Pair
             if (parameters.empty) {
                 url
             } else {
-                '''«url»?«Joiner::on('&').withKeyValueSeparator("=").join(parameters)»'''
+                '''«url»?«Joiner::on('&').withKeyValueSeparator("=").join(parameters.mapValues[it.encode(UTF_8.name)])»'''
             })
     }
 }

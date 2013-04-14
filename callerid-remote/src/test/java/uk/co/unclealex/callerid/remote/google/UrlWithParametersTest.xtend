@@ -51,7 +51,7 @@ class UrlWithParametersTest {
 
     @Test
     def void testParseTwoParameters() {
-        "http://www.dur.ac.uk?course=computing&year=3".parseAndExpect("http://www.dur.ac.uk", "course" -> "computing",
+        "http://www.dur.ac.uk?course=computing+science&year=3".parseAndExpect("http://www.dur.ac.uk", "course" -> "computing science",
             "year" -> "3")
     }
 
@@ -67,7 +67,7 @@ class UrlWithParametersTest {
 
     @Test
     def void testSerialiseTwoParameters() {
-        "http://www.dur.ac.uk?course=computing&year=3".isExpectedFrom("http://www.dur.ac.uk", "course" -> "computing",
+        "http://www.dur.ac.uk?course=computing+science&year=3".isExpectedFrom("http://www.dur.ac.uk", "course" -> "computing science",
             "year" -> "3")
     }
 
