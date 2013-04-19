@@ -26,8 +26,7 @@ package uk.co.unclealex.callerid.squeezebox
 
 import com.google.api.client.util.escape.Escaper
 import com.google.api.client.util.escape.PercentEscaper
-import javax.inject.Inject
-import org.eclipse.xtend.lib.Property
+
 import uk.co.unclealex.callerid.device.Device
 import uk.co.unclealex.process.packages.PackagesRequired
 
