@@ -16,9 +16,7 @@ class RemoteConfigurationTest extends FunSuite with ShouldMatchers {
             "password" : "Br1an",
             "url" : "https://www.somewhere.com/api"
         }"""
-    val mapper = new ObjectMapper()
-    mapper.registerModule(DefaultScalaModule)
-    val reader = mapper.reader(classOf[RemoteConfiguration])
+    val reader = new ObjectMapper().registerModule(DefaultScalaModule).reader(classOf[RemoteConfiguration])
     val actualConfiguration: RemoteConfiguration = reader.readValue(json)
     val expectedConfiguration = RemoteConfiguration("https://www.somewhere.com/api", username = "Brian", password = "Br1an")
     actualConfiguration should equal(expectedConfiguration)
