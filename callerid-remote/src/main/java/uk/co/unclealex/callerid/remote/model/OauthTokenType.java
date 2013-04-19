@@ -21,18 +21,18 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.model
+package uk.co.unclealex.callerid.remote.model;
 
 /**
  * A representation of the two types of OAuth tokens given out by Google.
  */
-enum OauthTokenType {
-    /**
-     * The short lived access token.
-     */
-	ACCESS,
-	/**
-	 * The long lived refresh token.
-	 */
-	REFRESH
+public enum OauthTokenType {
+  /**
+   * The short lived access token.
+   */
+  ACCESS,
+  /**
+   * The long lived refresh token.
+   */
+  REFRESH
 }
