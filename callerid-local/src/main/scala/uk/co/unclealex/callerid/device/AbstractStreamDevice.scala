@@ -10,13 +10,13 @@
  * with the License.  You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  *
  * @author alex
  *
@@ -33,22 +33,21 @@ import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import org.eclipse.xtend.lib.Property
 import java.nio.charset.Charset
+import java.io.BufferedWriter
 
-public abstract class AbstractStreamDevice implements Device {
-
+abstract class AbstractStreamDevice(
   /**
    * The {@link BufferedReader} used to wrap the supplied {@link InputStream}.
    */
-  @Property val BufferedReader reader;
-
+  reader: BufferedReader,
   /**
    * The {@link PrintWriter} used to wrap the supplied {@link OutputStream}.
    */
-  @Property val PrintWriter writer;
+  writer: BufferedWriter) extends Device {
 
   /**
    * Initialise this device.
-   * 
+   *
    * @param in
    *          The device's {@link InputStream}.
    * @param out
@@ -58,37 +57,36 @@ public abstract class AbstractStreamDevice implements Device {
    * @throws IOException
    *           Thrown if there are any I/O issues.
    */
-  public new(InputStream in, OutputStream out, Charset charset) throws IOException {
-    _reader = new BufferedReader(new InputStreamReader(in, charset));
-    _writer = new PrintWriter(new OutputStreamWriter(out, charset));
-      
+  def this(in: InputStream, out: OutputStream, charset: Charset) {
+    this(
+      new BufferedReader(new InputStreamReader(in, charset)),
+      new BufferedWriter(new OutputStreamWriter(out, charset)))
   }
 
   /**
    * {@inheritDoc}
    */
-  override String readLine() throws IOException {
-    return reader.readLine();
-  }
+  override def readLine =
+    Option.apply(reader.readLine)
 
   /**
    * {@inheritDoc}
    */
-  override writeLine(String command) throws IOException {
-    writer.println(command);
+  override def writeLine(command: String) {
+    writer.write(command);
+    writer.write('\n')
     writer.flush();
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @throws IOException
    */
-  override close() throws IOException {
+  override def close() {
     try {
       reader.close();
-    }
-    finally {
+    } finally {
       writer.close();
     }
   }
