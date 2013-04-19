@@ -23,25 +23,13 @@
  */
 package uk.co.unclealex.callerid.remote.google
 
-import com.google.api.client.auth.oauth2.TokenResponse
 import com.google.common.base.Optional
-import com.google.common.collect.Lists
-import com.google.common.io.Closeables
-import com.google.gdata.util.common.base.Charsets
-import com.google.gson.FieldNamingPolicy
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import java.io.InputStreamReader
-import java.io.Reader
+import com.google.gdata.client.GoogleService
+import com.google.gdata.client.authn.oauth.GoogleOAuthParameters
+import com.google.gdata.client.authn.oauth.OAuthHmacSha1Signer
 import java.util.Date
-import java.util.List
+import java.util.Map
 import javax.inject.Inject
-import org.apache.http.HttpResponse
-import org.apache.http.client.HttpClient
-import org.apache.http.client.entity.UrlEncodedFormEntity
-import org.apache.http.client.methods.HttpPost
-import org.apache.http.impl.client.DefaultHttpClient
-import org.apache.http.message.BasicNameValuePair
 import uk.co.unclealex.callerid.remote.model.OauthToken
 import uk.co.unclealex.callerid.remote.model.OauthTokenType
 import uk.co.unclealex.callerid.remote.model.User
@@ -52,7 +40,6 @@ import static extension uk.co.unclealex.xtend.OptionalExtensions.*
  * The default implementation of {@link GoogleTokenService}.
  */
 class GoogleTokenServiceImpl implements GoogleTokenService {
-    
     /**
      * The Google configuration object used to configure how to get contacts from Google.
      */
@@ -68,13 +55,32 @@ class GoogleTokenServiceImpl implements GoogleTokenService {
      */
     @Property val NowService nowService
 
+    /**
+     * The service used to send requests to Google on the wire.
+     */
+    @Property val GoogleRequestService googleRequestService
+
     @Inject
-    new(GoogleConfiguration googleConfiguration, GoogleConstants googleConstants, NowService nowService) {
+    new(GoogleConfiguration googleConfiguration, GoogleConstants googleConstants, NowService nowService,
+        GoogleRequestService googleRequestService) {
         this._googleConfiguration = googleConfiguration
         this._googleConstants = googleConstants
         this._nowService = nowService
+        this._googleRequestService = googleRequestService
     }
 
+    override secureForUser(GoogleService googleService, String googleScope, User user) {
+        googleService.userToken = user.accessToken
+        //new GoogleOAuthParameters() => [
+            //userToken = user.accessToken
+            //OAuthToken = user.accessToken
+            //OAuthConsumerSecret = googleConfiguration.consumerSecret
+            //OAuthConsumerKey = googleConfiguration.consumerId
+            //scope = googleScope
+            //googleService.setOAuthCredentials(it, new OAuthHmacSha1Signer)
+        //]
+    }
+    
     /**
      * Find a user's token by it's token type.
      * @param user The user to interrogate.
@@ -83,7 +89,7 @@ class GoogleTokenServiceImpl implements GoogleTokenService {
      */
     def Optional<OauthToken> findTokenByType(User user, OauthTokenType oauthTokenType) {
         user.oauthTokens.findFirst [
-            tokenType.equals(oauthTokenType)
+            oauthTokenType == tokenType
         ].asOptional
     }
 
@@ -112,6 +118,7 @@ class GoogleTokenServiceImpl implements GoogleTokenService {
         val OauthToken accessToken = optionalAccessToken.or(
             new OauthToken => [
                 tokenType = OauthTokenType::ACCESS
+                expiryDate = Optional::absent
                 user.oauthTokens.add(it)
             ]
         )
@@ -127,7 +134,7 @@ class GoogleTokenServiceImpl implements GoogleTokenService {
      * @return True if the token's expiry date is soon to expire, expired or non existent, false otherwise.
      */
     def boolean expired(OauthToken oauthToken) {
-        oauthToken.expiryDate.transform([time - googleConstants.tokenExpiryTimeout < nowService.now]).or(false)
+        oauthToken.expiryDate.transform([time - googleConstants.tokenExpiryTimeout < nowService.now]).or(true)
     }
 
     /**
@@ -139,33 +146,16 @@ class GoogleTokenServiceImpl implements GoogleTokenService {
      * @return The {@link TokenResponse} received from Google.
      */
     def TokenResponse requestToken(String tokenType, String token, String grantType, boolean includeRedirect) {
-        val HttpClient client = new DefaultHttpClient()
-        val HttpPost post = new HttpPost(googleConstants.oauthTokenUrl)
-        val List<BasicNameValuePair> formparams = Lists::newArrayList(
-            "client_id" -> googleConfiguration.consumerId,
-            "client_secret" -> googleConfiguration.consumerSecret,
-            tokenType -> token,
+        val Map<String, String> parameters = newHashMap(
+            "client_id" -> googleConfiguration.consumerId, 
+            "client_secret" -> googleConfiguration.consumerSecret, 
+            tokenType -> token, 
             "grant_type" -> grantType
-        ).map[new BasicNameValuePair(key, value)]
+        )
         if (includeRedirect) {
-            formparams.add(new BasicNameValuePair("redirect_uri", "urn:ietf:wg:oauth:2.0:oob"))
+            parameters.put("redirect_uri", "urn:ietf:wg:oauth:2.0:oob")
         }
-        val UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Charsets::UTF_8)
-        post.entity = entity
-        val HttpResponse response = client.execute(post)
-        val int statusCode = response.statusLine.statusCode
-        if (statusCode != 200) {
-            throw new GoogleAuthenticationFailedException(
-                "Requesting a token refresh resulted in a http status of " + statusCode)
-        }
-        val Reader reader = new InputStreamReader(response.entity.content, Charsets::UTF_8)
-        try {
-            val Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy::LOWER_CASE_WITH_UNDERSCORES).
-                create()
-            gson.fromJson(reader, typeof(TokenResponse))
-        } finally {
-            Closeables::closeQuietly(reader)
-        }
+        googleRequestService.sendRequest(googleConstants.oauthTokenUrl, parameters, typeof(TokenResponse))
     }
 
     /**

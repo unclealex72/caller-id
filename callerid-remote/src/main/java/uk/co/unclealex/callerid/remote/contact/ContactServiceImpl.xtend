@@ -23,19 +23,18 @@
  */
 package uk.co.unclealex.callerid.remote.contact
 
+import com.google.common.base.Optional
+import com.google.gdata.client.contacts.ContactsService
 import java.util.Map
 import org.eclipse.xtext.xbase.lib.Functions
 import uk.co.unclealex.callerid.remote.dao.UserDao
-import uk.co.unclealex.callerid.remote.google.ContactsService
 import uk.co.unclealex.callerid.remote.google.GoogleContact
 import uk.co.unclealex.callerid.remote.google.GoogleContactsService
 import uk.co.unclealex.callerid.remote.numbers.NumberLocationService
 import uk.co.unclealex.callerid.remote.numbers.PhoneNumber
-import com.google.common.base.Optional
 
 import static extension com.google.common.base.Optional.*
 import static extension uk.co.unclealex.xtend.OptionalExtensions.*
-
 
 /**
  * The default implementation of {@link ContactsService}.

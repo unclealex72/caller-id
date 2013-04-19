@@ -12,11 +12,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <xtend-version>2.4.0</xtend-version>
-    <xtend-gen>${project.build.directory}/generated-sources/xtend</xtend-gen>
-    <xtend-gen-test>${project.build.directory}/generated-test-sources/xtend</xtend-gen-test>
     <scala-version>2.10.1</scala-version>
-    <xtensions-version>1.0.0-SNAPSHOT</xtensions-version>
   </properties>
   <modules>
     <module>callerid-local</module>
@@ -30,16 +26,6 @@
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
       <version>${scala-version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.xtend</groupId>
-      <artifactId>org.eclipse.xtend.lib</artifactId>
-      <version>${xtend-version}</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.co.unclealex</groupId>
-      <artifactId>xtensions</artifactId>
-      <version>${xtensions-version}</version>
     </dependency>
 
     <!-- Scala test -->
@@ -81,23 +67,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.eclipse.xtend</groupId>
-        <artifactId>xtend-maven-plugin</artifactId>
-        <version>${xtend-version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>testCompile</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${xtend-gen}</outputDirectory>
-              <testOutputDirectory>${xtend-gen-test}</testOutputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>1.7</version>
@@ -110,7 +79,6 @@
             </goals>
             <configuration>
               <sources>
-                <source>${xtend-gen}</source>
                 <source>src/main/scala</source>
               </sources>
             </configuration>
@@ -123,7 +91,6 @@
             </goals>
             <configuration>
               <sources>
-                <source>${xtend-gen-test}</source>
                 <source>src/test/scala</source>
               </sources>
             </configuration>
@@ -199,17 +166,7 @@
     </pluginManagement>
   </build>
 
-  <repositories>
-    <repository>
-      <id>xtend</id>
-      <url>http://build.eclipse.org/common/xtend/maven/</url>
-    </repository>
-  </repositories>
   <pluginRepositories>
-    <pluginRepository>
-      <id>xtend</id>
-      <url>http://build.eclipse.org/common/xtend/maven/</url>
-    </pluginRepository>
     <pluginRepository>
         <id>oss-releases</id>
         <url>https://oss.sonatype.org/content/repositories/releases/</url>

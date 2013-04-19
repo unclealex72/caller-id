@@ -26,6 +26,7 @@ package uk.co.unclealex.callerid.remote.google
 import com.google.common.base.Optional
 import com.google.common.collect.Lists
 import com.google.common.collect.Sets
+import com.google.gdata.client.Service
 import com.google.gdata.data.contacts.ContactEntry
 import com.google.gdata.data.contacts.ContactFeed
 import com.google.gdata.data.extensions.PostalAddress
@@ -45,6 +46,9 @@ import static extension uk.co.unclealex.xtend.OptionalExtensions.*
 @Transactional
 class GoogleContactsServiceImpl implements GoogleContactsService {
 
+    /**
+     * The service used to get tokens from Google.
+     */
     @Property val extension GoogleTokenService googleTokenService
 
     /**
@@ -58,19 +62,18 @@ class GoogleContactsServiceImpl implements GoogleContactsService {
         this._googleTokenService = googleTokenService
     }
 
-    def ContactsService createContactsService(User user) {
-        return new ContactsService("callerid.unclealex.co.uk", user.accessToken)
-    }
-
     override getAllContacts(User user) {
-        val ContactsService contactsService = createContactsService(user)
-        val ContactFeed resultFeed = contactsService.getFeed(new URL(googleConstants.contactFeedUrl),
-            typeof(ContactFeed))
+        val URL url = new UrlWithParameters(
+            googleConstants.contactFeedUrl,
+            "access_token" -> user.accessToken,
+            "max-results" -> Integer::MAX_VALUE
+        ).toURL
+        val ContactFeed resultFeed = new Service().getFeed(url, typeof(ContactFeed))
         Sets::newHashSet(
-            resultFeed.entries.filter[hasName].map [
-                new GoogleContact(name.fullName.value, findPostalAddress,
+            resultFeed.entries.filter[!title.plainText.nullOrEmpty].map [
+                new GoogleContact(title.plainText.trim, findPostalAddress,
                     Sets::newHashSet(phoneNumbers.map[phoneNumber]))
-            ])
+        ])
     }
 
     /**
@@ -86,7 +89,12 @@ class GoogleContactsServiceImpl implements GoogleContactsService {
         addresses.addAll(entry.structuredPostalAddresses.map[toAddress])
         val List<Pair<String, Boolean>> primaryAddresses = Lists::newArrayList(addresses.filter[value])
         val List<Pair<String, Boolean>> addressesToUse = #[primaryAddresses, addresses].findFirst[!it.empty]
-        addressesToUse.head.asOptional.transform([key.replace("\n", ", ")])
+        if (addressesToUse == null) {
+            Optional::absent
+        }
+        else {
+            addressesToUse.head.asOptional.transform([key.replace("\n", ", ")])            
+        }
     }
 
     /**

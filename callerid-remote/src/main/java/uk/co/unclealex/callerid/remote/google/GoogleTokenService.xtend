@@ -23,12 +23,21 @@
  */
 package uk.co.unclealex.callerid.remote.google
 
+import com.google.gdata.client.GoogleService
 import uk.co.unclealex.callerid.remote.model.User
 
 /**
  * An interface for retrieving OAuth access tokens from Google.
  */
 interface GoogleTokenService {
+    
+    /**
+     * Add user credentials to a Google service.
+     * @param googleService The service that will be used to speak to google.
+     * @param scope The scope of the request being made to Google.
+     * @param user The user who's information is being retrieved.
+     */
+    def void secureForUser(GoogleService googleService, String scope, User user)
 
     /**
      * Get the access token for a user, refreshing it if neccessary.
