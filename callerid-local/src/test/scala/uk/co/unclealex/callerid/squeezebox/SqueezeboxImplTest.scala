@@ -39,19 +39,19 @@ import uk.co.unclealex.process.packages.PackagesRequired
  */
 class SqueezeboxImplTest extends FunSuite with ShouldMatchers with MockFactory {
 
-  def testQueryCommand() {
-    runCommandTest("player count ?", "player count 2", "2");
+  test("query command") {
+    runCommandTest("player count ?", Some("player count 2"), Some("2"));
   }
 
-  def testNonQueryCommand() {
-    runCommandTest("xx display", "ok", "ok");
+  test("non-query command") {
+    runCommandTest("xx display", Some("ok"), Some("ok"));
   }
 
-  def testNullCommand() {
-    runCommandTest("xx display", null, null);
+  test("null command") {
+    runCommandTest("xx display", None, None);
   }
 
-  def testDisplayToTwoSqueezeboxes() {
+  test("display to two squeezeboxes") {
     val responses = Map(
       "player count ?" -> "player count 2",
       "player id 0 ?" -> "player id 0 00:11",
@@ -59,7 +59,7 @@ class SqueezeboxImplTest extends FunSuite with ShouldMatchers with MockFactory {
     val device = new MapDevice(responses)
     val squeezebox = new SqueezeboxImpl(device)
     squeezebox.displayText("Top Line", "Bottom Line!")
-    device.commands.toSeq should equal(ListBuffer(
+    device.commands.toSeq should equal(List(
       "player count ?",
       "player id 0 ?",
       "00:11 display Top%20Line Bottom%20Line%21 30",
@@ -67,9 +67,9 @@ class SqueezeboxImplTest extends FunSuite with ShouldMatchers with MockFactory {
       "00:22 display Top%20Line Bottom%20Line%21 30").toSeq)
   }
 
-  def runCommandTest(command: String, response: String, expectedResult: String) {
+  def runCommandTest(command: String, response: Option[String], expectedResult: Option[String]) {
     val device = stub[Device]
-    (device.readLine _).when().returning(Some(response))
+    (device.readLine _).when().returning(response)
     val squeezebox = new SqueezeboxImpl(device)
     val actualResult = squeezebox.execute(command);
     (device.writeLine _).verify(command)

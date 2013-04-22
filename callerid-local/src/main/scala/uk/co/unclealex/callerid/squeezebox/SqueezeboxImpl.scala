@@ -56,22 +56,20 @@ class SqueezeboxImpl(squeezeboxDevice: Device) extends Squeezebox {
    * @param bottomLine the bottom line of text to display.
    */
   def displayText(player: Int, topLine: String, bottomLine: String) {
-    var playerId = execute("player id %d ?", player)
-    execute(
-      "%s display %s %s %d",
-      playerId,
-      percentEscaper.escape(topLine),
-      percentEscaper.escape(bottomLine),
-      30)
+    var playerId = execute(s"player id ${player} ?")
+    playerId.map { id =>
+      execute(
+        s"${id} display ${percentEscaper.escape(topLine)} ${percentEscaper.escape(bottomLine)} 30")
+    }.getOrElse(
+      throw new IllegalStateException(s"Querying the ID of squeezebox player ${player} failed."))
   }
 
   def countPlayers: Int =
     Integer.parseInt(execute("player count ?").get)
 
   def execute(command: String, args: Any*): Option[String] = {
-    var fullCommand = String.format(command, args);
-    squeezeboxDevice.writeLine(fullCommand);
+    squeezeboxDevice.writeLine(command);
     squeezeboxDevice.readLine.map(
-      response => if (fullCommand.endsWith("?")) response.substring(fullCommand.length - 1) else response)
+      response => if (command.endsWith("?")) response.substring(command.length - 1) else response)
   }
 }
