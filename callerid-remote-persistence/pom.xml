@@ -5,6 +5,7 @@
     <artifactId>callerid</artifactId>
     <version>2.0.0-SNAPSHOT</version>
   </parent>
+  <groupId>uk.co.unclealex.callerid</groupId>
   <artifactId>callerid-remote-persistence</artifactId>
   <name>callerid-remote-persistence</name>
   <description>
