@@ -13,10 +13,12 @@
 
   <properties>
     <scala-version>2.10.1</scala-version>
+    <spring-version>3.2.2.RELEASE</spring-version>
   </properties>
   <modules>
     <module>callerid-local</module>
     <module>callerid-remote</module>
+    <module>callerid-remote-persistence</module>
   </modules>
 
   <dependencies>
