@@ -37,14 +37,14 @@ class UrlWithParametersTest extends FunSuite with ShouldMatchers {
   implicit class UrlWithParametersTestImplicits(url: String) {
 
     def parseAndExpect(expectedUrl: String, expectedParameters: Pair[String, String]*) = {
-      val expectedUrlWithParameters = UrlWithParameters(expectedUrl, expectedParameters.toMap)
-      val actualUrlWithParameters: UrlWithParameters = UrlWithParameters(url)
-      actualUrlWithParameters should equal(expectedUrlWithParameters)
+      val urlWithParameters = UrlWithParameters.parse(url)
+      urlWithParameters.url should equal(expectedUrl)
+      urlWithParameters.parameters.toList.sorted should equal(expectedParameters.toList.sorted)
     }
 
     def isExpectedFrom(actualUrl: String, parameters: Pair[String, String]*) = {
       val actualUrlWithParameters = UrlWithParameters(actualUrl, parameters.toMap)
-      actualUrlWithParameters should equal(new URL(url))
+      actualUrlWithParameters.toURL should equal(new URL(url))
     }
 
   }

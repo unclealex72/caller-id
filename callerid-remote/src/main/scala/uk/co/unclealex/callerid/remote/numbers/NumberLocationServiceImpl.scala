@@ -36,28 +36,37 @@ class NumberLocationServiceImpl(
    */
   locationConfiguration: LocationConfiguration) extends NumberLocationService {
 
+  case class PrefixAndParser(prefix: String, parser: String => String)
+
   override def decompose(number: String): PhoneNumber = {
-    val functionsByPrefix = List(("00", international), ("+", international), ("0", national), ("", local))
-    toPhoneNumber(functionsByPrefix.find(p => number.startsWith(p._1)).get _2 (number))
+    val functionsByPrefix =
+      List(
+        PrefixAndParser("00", international),
+        PrefixAndParser("+", international),
+        PrefixAndParser("0", national),
+        PrefixAndParser("", local))
+    val matchingPrefixAndParser = functionsByPrefix.find { pp => number.startsWith(pp.prefix) }.get
+    val actualNumber = matchingPrefixAndParser.parser(number.substring(matchingPrefixAndParser.prefix.length))
+    toPhoneNumber(actualNumber)
   }
 
   /**
    * Convert an international string phone number into a normalised phone number.
    * @return A function that converts an international string phone number into a normalised phone number.
    */
-  def international = ((number: String) => number)
+  def international = (number: String) => number
 
   /**
    * Convert a national string phone number into a normalised phone number.
    * @return A function that converts a national string phone number into a normalised phone number.
    */
-  def national = (number => locationConfiguration.internationalCode + number)
+  def national = (number: String) => locationConfiguration.internationalCode + number
 
   /**
    * Convert a local string phone number into a normalised phone number.
    * @return A function that converts a local string phone number into a normalised phone number.
    */
-  def local = (number => locationConfiguration.internationalCode + locationConfiguration.stdCode + number)
+  def local = (number: String) => locationConfiguration.internationalCode + locationConfiguration.stdCode + number
 
   /**
    * Convert a phone number containing the international dialling code (without a 00 or + prefix),
@@ -71,7 +80,15 @@ class NumberLocationServiceImpl(
     val internationalDiallingCode = cityDao.extractInternationalDiallingCode(number)
     val nationalNumber = number.substring(internationalDiallingCode.length)
     val city = cityDao.extractCity(nationalNumber, internationalDiallingCode)
-    city.map((c: City) => PhoneNumber(normalisedNumber, List(cityDao.countryOf(c)), city, nationalNumber.substring(c.stdCode.length())))
-      .getOrElse(PhoneNumber(normalisedNumber, cityDao.countries(internationalDiallingCode), None, nationalNumber))
+    city.map {
+      (c: City) =>
+        val country = cityDao.countryOf(c)
+        PhoneNumber(normalisedNumber, List(country), city, nationalNumber.substring(c.stdCode.length()))
+    }
+      .getOrElse {
+        val countries = cityDao.countries(internationalDiallingCode)
+        PhoneNumber(normalisedNumber, cityDao.countries(internationalDiallingCode), None, nationalNumber)
+      }
   }
+
 }

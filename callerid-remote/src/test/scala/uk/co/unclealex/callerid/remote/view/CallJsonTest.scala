@@ -30,6 +30,8 @@ import org.scalatest.GivenWhenThen
 import scala.io.Source
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.annotation.JsonInclude
 
 /**
  * Test that calls can be serialised into and deserialised from JSON.
@@ -86,15 +88,16 @@ class CallJsonTest extends FunSuite with ShouldMatchers with GivenWhenThen {
     "call-non-geographic-without-contact.json" deserialisesTo (
       Call(
         "2012-11-05T15:10Z",
-        new Number("33", null, "800162362"),
-        new Location("France", "FR", null),
-        null))
+        new Number("33", None, "800162362"),
+        new Location("France", "FR", None),
+        None))
   }
 
   implicit class TestCase(resourceName: String) {
     def deserialisesTo(call: Call) {
-      val objectMapper = new ObjectMapper().registerModule(DefaultScalaModule)
-      val resourceContent = Source.fromURL(getClass.getClassLoader.getResource(resourceName)).mkString("\n")
+      val objectMapper =
+        new ObjectMapper().registerModule(DefaultScalaModule).setSerializationInclusion(JsonInclude.Include.NON_NULL)
+      val resourceContent = Source.fromURL(getClass.getClassLoader.getResource(resourceName)).mkString
       Given(s"The resource ${resourceName}")
       When(s"Trying to deserialise it")
       val deserialisedJsonCall = objectMapper.readValue(resourceContent, classOf[Call])

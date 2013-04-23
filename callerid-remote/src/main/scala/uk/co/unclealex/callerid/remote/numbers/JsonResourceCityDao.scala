@@ -60,7 +60,7 @@ class JsonResourceCityDao extends CityDao {
   /**
    * A set of all known international dialling codes. The dialling codes are ordered longest first and then by value.
    */
-  val internationalDiallingCodes = new TreeSet[String]()(Ordering.by(-_.length))
+  val internationalDiallingCodes = new TreeSet[String]()(Ordering.by((s: String) => (-s.length, s)))
 
   /**
    * A map that holds the country for each city.
@@ -71,7 +71,7 @@ class JsonResourceCityDao extends CityDao {
     val mapper = new ObjectMapper().registerModule(DefaultScalaModule)
     val in = getClass.getClassLoader.getResourceAsStream("countries.json")
     try {
-      val countries: List[Country] = mapper.readValue(in, new TypeReference[List[String]] {})
+      val countries: List[Country] = mapper.readValue(in, new TypeReference[List[Country]] {})
       countries.foreach(country => {
         val internationalDiallingCode = country.internationalDiallingCode
         internationalDiallingCodes += internationalDiallingCode

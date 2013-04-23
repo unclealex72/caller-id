@@ -27,6 +27,7 @@ import org.codehaus.jackson.annotate.JsonCreator
 import org.codehaus.jackson.annotate.JsonProperty
 import org.codehaus.jackson.map.annotate.JsonSerialize
 import org.codehaus.jackson.map.annotate.JsonSerialize$Inclusion
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 
 /**
  * A JSON compatible class that represents the Google contact who made a call.

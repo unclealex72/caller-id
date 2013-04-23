@@ -14,24 +14,6 @@ import com.google.common.base.Joiner
 case class UrlWithParameters(url: String, parameters: Map[String, String] = Map()) {
 
   /**
-   * A class to parse a URL into a URL with parameters.
-   */
-  object UrlWithParameters {
-
-    def parse(url: URL): UrlWithParameters = parse(url.toString())
-
-    def parse(url: String): UrlWithParameters = {
-      val urlParts = url.split('?')
-      urlParts.length match {
-        case 1 => new UrlWithParameters(urlParts(0))
-        case 2 => new UrlWithParameters(
-          urlParts(0), Splitter.on('&').omitEmptyStrings.withKeyValueSeparator("=").split(urlParts(1)).toMap)
-        case _ => throw new IllegalArgumentException(s"Cannot parse URL $url")
-      }
-    }
-  }
-
-  /**
    * Add or update a parameters.
    * @param extraParameters The parameters to add or update.
    * @return A new {@link UrlWithParameters} with the extra parameters.
@@ -58,3 +40,35 @@ case class UrlWithParameters(url: String, parameters: Map[String, String] = Map(
         url + "?" + Joiner.on("&").withKeyValueSeparator("=").join(parameters.mapValues { encode(_, UTF_8.name) })
       })
 }
+
+/**
+ * A class to parse a URL into a URL with parameters.
+ */
+object UrlWithParameters {
+
+  def parse(url: URL): UrlWithParameters = parse(url.toString())
+
+  def parse(url: String): UrlWithParameters = {
+    val urlParts = splitOnce(url, '?')
+    urlParts match {
+      case (url, None) => new UrlWithParameters(url)
+      case (url, Some(parameterString)) =>
+        val parameters = parameterString.split('&')
+        val parameterMap = parameters.map { param =>
+          val kv = splitOnce(param, '=')
+          kv._1 -> decode(kv._2.getOrElse(""), UTF_8.name)
+        }.toMap
+        new UrlWithParameters(url, parameterMap)
+    }
+  }
+
+  private def splitOnce(str: String, splitOn: Char): Pair[String, Option[String]] = {
+    val parts = str.split(splitOn)
+    parts.length match {
+      case 1 => parts(0) -> None
+      case 2 => parts(0) -> Some(parts(1))
+      case _ => throw new IllegalArgumentException(s"Cannot split string segment $str using separator $splitOn")
+    }
+  }
+}
+

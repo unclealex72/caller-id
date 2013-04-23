@@ -2,21 +2,17 @@ package uk.co.unclealex.callerid.remote.numbers
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FunSuite
+import org.scalatest.BeforeAndAfterAll
 
-class NumberLocationServiceImplTest extends FunSuite with ShouldMatchers {
+class NumberLocationServiceImplTest extends FunSuite with ShouldMatchers with BeforeAndAfterAll {
 
-  implicit class TestCase(receivedNumber: String) {
-    def decomposesTo(expectedCityName: Option[String], expectedNumber: String, expectedNormalisedNumber: String, expectedCountryNames: String*) = {
-      val phoneNumber = numberLocationServiceImpl.decompose(receivedNumber)
-      phoneNumber.countries.map(_.name).toList should equal(expectedCountryNames.toList)
-      phoneNumber.city.map(_.name) should equal(expectedCityName)
-      phoneNumber.number should equal(expectedNumber)
-      phoneNumber.normalisedNumber should equal(expectedNormalisedNumber)
-    }
+  var cityDao: CityDao = null
+  var numberLocationServiceImpl: NumberLocationService = null
 
+  override def beforeAll = {
+    cityDao = new JsonResourceCityDao
+    numberLocationServiceImpl = new NumberLocationServiceImpl(cityDao, new LocationConfiguration("44", "1256"))
   }
-  val cityDao = new JsonResourceCityDao
-  val numberLocationServiceImpl = new NumberLocationServiceImpl(cityDao, new LocationConfiguration("44", "1256"))
 
   test("local number") {
     "999888" decomposesTo (Some("Basingstoke"), "999888", "+441256999888", "United Kingdom")
@@ -46,5 +42,15 @@ class NumberLocationServiceImplTest extends FunSuite with ShouldMatchers {
     "+3490987654" decomposesTo (None, "90987654", "+3490987654", "Spain")
   }
 
+  implicit class TestCase(receivedNumber: String) {
+    def decomposesTo(expectedCityName: Option[String], expectedNumber: String, expectedNormalisedNumber: String, expectedCountryNames: String*) = {
+      val phoneNumber = numberLocationServiceImpl.decompose(receivedNumber)
+      phoneNumber.countries.map(_.name).toList should equal(expectedCountryNames.toList)
+      phoneNumber.city.map(_.name) should equal(expectedCityName)
+      phoneNumber.number should equal(expectedNumber)
+      phoneNumber.normalisedNumber should equal(expectedNormalisedNumber)
+    }
+
+  }
 }
 

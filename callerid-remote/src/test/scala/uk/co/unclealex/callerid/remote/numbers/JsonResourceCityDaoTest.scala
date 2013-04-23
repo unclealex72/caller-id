@@ -26,10 +26,15 @@ package uk.co.unclealex.callerid.remote.numbers
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.GivenWhenThen
+import org.scalatest.BeforeAndAfterAll
 
-class JsonResourceCityDaoTest extends FunSuite with ShouldMatchers with GivenWhenThen {
+class JsonResourceCityDaoTest extends FunSuite with ShouldMatchers with GivenWhenThen with BeforeAndAfterAll {
 
-  val jsonResourceCityDao = new JsonResourceCityDao
+  var jsonResourceCityDao: CityDao = null
+
+  override def beforeAll = {
+    jsonResourceCityDao = new JsonResourceCityDao
+  }
 
   test("Extracting the international code") {
     jsonResourceCityDao.extractInternationalDiallingCode("441256118118") should equal("44")
