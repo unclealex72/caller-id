@@ -10,74 +10,72 @@
  * with the License.  You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  *
  * @author unclealex72
  *
  */
 package uk.co.unclealex.callerid.remote.google;
 
-import static org.junit.Assert.*
-import static extension uk.co.unclealex.callerid.remote.google.UrlWithParameters.*
-import org.junit.Test
 import java.net.URL
+import org.scalatest.FunSuite
+import org.scalatest.matchers.ShouldMatchers
+import uk.co.unclealex.callerid.remote.google.UrlWithParameters._
 
 /**
  * @author alex
  *
  */
-class UrlWithParametersTest {
+class UrlWithParametersTest extends FunSuite with ShouldMatchers {
 
-    @Test
-    def void testParseNoParameters() {
-        "http://www.dur.ac.uk".parseAndExpect("http://www.dur.ac.uk")
-    }
+  implicit class UrlWithParametersTestImplicits(url: String) {
 
-    @Test
-    def void testParseNoParametersWithTrailingQuestionMark() {
-        "http://www.dur.ac.uk?".parseAndExpect("http://www.dur.ac.uk")
+    def parseAndExpect(expectedUrl: String, expectedParameters: Pair[String, String]*) = {
+      val expectedUrlWithParameters = UrlWithParameters(expectedUrl, expectedParameters.toMap)
+      val actualUrlWithParameters: UrlWithParameters = UrlWithParameters(url)
+      actualUrlWithParameters should equal(expectedUrlWithParameters)
     }
 
-    @Test
-    def void testParseOneParameter() {
-        "http://www.dur.ac.uk?course=computing".parseAndExpect("http://www.dur.ac.uk", "course" -> "computing")
+    def isExpectedFrom(actualUrl: String, parameters: Pair[String, String]*) = {
+      val actualUrlWithParameters = UrlWithParameters(actualUrl, parameters.toMap)
+      actualUrlWithParameters should equal(new URL(url))
     }
 
-    @Test
-    def void testParseTwoParameters() {
-        "http://www.dur.ac.uk?course=computing+science&year=3".parseAndExpect("http://www.dur.ac.uk", "course" -> "computing science",
-            "year" -> "3")
-    }
+  }
 
-    @Test
-    def void testSerialiseNoParameters() {
-        "http://www.dur.ac.uk".isExpectedFrom("http://www.dur.ac.uk")
-    }
+  test("parse with no parameters") {
+    "http://www.dur.ac.uk" parseAndExpect ("http://www.dur.ac.uk")
+  }
 
-    @Test
-    def void testSerialiseOneParameter() {
-        "http://www.dur.ac.uk?course=computing".isExpectedFrom("http://www.dur.ac.uk", "course" -> "computing")
-    }
+  test("parse no parameters with trailing question mark") {
+    "http://www.dur.ac.uk?" parseAndExpect ("http://www.dur.ac.uk")
+  }
 
-    @Test
-    def void testSerialiseTwoParameters() {
-        "http://www.dur.ac.uk?course=computing+science&year=3".isExpectedFrom("http://www.dur.ac.uk", "course" -> "computing science",
-            "year" -> "3")
-    }
+  test("parse one parameter") {
+    "http://www.dur.ac.uk?course=computing" parseAndExpect ("http://www.dur.ac.uk", "course" -> "computing")
+  }
 
-    def void parseAndExpect(String url, String expectedUrl, Pair<String, String>... expectedParameters) {
-        val UrlWithParameters expectedUrlWithParameters = new UrlWithParameters(expectedUrl, expectedParameters);
-        assertEquals("The url was parsed incorrectly", expectedUrlWithParameters, new URL(url).parse)
-    }
-    
-    def void isExpectedFrom(String expectedUrl, String url, Pair<String, String>... parameters) {
-        val UrlWithParameters actualUrlWithParameters = new UrlWithParameters(url, parameters)
-        assertEquals("The url was serialised incorrectly.", new URL(expectedUrl), actualUrlWithParameters.toURL)
-    }
+  test("parse two parameters") {
+    "http://www.dur.ac.uk?course=computing+science&year=3" parseAndExpect ("http://www.dur.ac.uk", "course" -> "computing science",
+      "year" -> "3")
+  }
+
+  test("serialise no parameters") {
+    "http://www.dur.ac.uk" isExpectedFrom ("http://www.dur.ac.uk")
+  }
+
+  test("serialise one parameter") {
+    "http://www.dur.ac.uk?course=computing" isExpectedFrom ("http://www.dur.ac.uk", "course" -> "computing")
+  }
+
+  test("serialise two parameters") {
+    "http://www.dur.ac.uk?course=computing+science&year=3" isExpectedFrom ("http://www.dur.ac.uk", "course" -> "computing science",
+      "year" -> "3")
+  }
 }

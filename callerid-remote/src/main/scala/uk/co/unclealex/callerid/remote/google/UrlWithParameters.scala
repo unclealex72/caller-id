@@ -1,90 +1,60 @@
 package uk.co.unclealex.callerid.remote.google
 
-import com.google.common.base.Joiner
-import com.google.common.base.Splitter
-import com.google.common.collect.Lists
+import java.net.URLEncoder._
+import java.net.URLDecoder._
+import com.google.common.base.Charsets._
 import java.net.URL
-import java.util.List
-import java.util.Map
-import org.eclipse.xtext.xbase.lib.Pair
-
-import static extension java.net.URLEncoder.*
-import static extension java.net.URLDecoder.*
-import static com.google.common.base.Charsets.*
-
+import com.google.common.base.Splitter
+import scala.collection.JavaConversions._
+import scala.collection.immutable.HashMap
+import com.google.common.base.Joiner
 /**
  * A class that represents a URL with its query parameters.
  */
-@Data class UrlWithParameters {
-    /**
-     * The URL without any parameters.
-     */
-    var String url
+case class UrlWithParameters(url: String, parameters: Map[String, String] = Map()) {
 
-    /**
-     * The map of parameters of the url.
-     */
-    var Map<String, String> parameters = newLinkedHashMap()
+  /**
+   * A class to parse a URL into a URL with parameters.
+   */
+  object UrlWithParameters {
 
-    /**
-     * Simple constructor.
-     */
-    protected new(String url, Pair<? extends Object, ? extends Object>... extraParameters) {
-        this._url = url
-        extraParameters.forEach[_parameters.put(key.toString, value.toString)]
+    def parse(url: URL): UrlWithParameters = parse(url.toString())
+
+    def parse(url: String): UrlWithParameters = {
+      val urlParts = url.split('?')
+      urlParts.length match {
+        case 1 => new UrlWithParameters(urlParts(0))
+        case 2 => new UrlWithParameters(
+          urlParts(0), Splitter.on('&').omitEmptyStrings.withKeyValueSeparator("=").split(urlParts(1)).toMap)
+        case _ => throw new IllegalArgumentException(s"Cannot parse URL $url")
+      }
     }
+  }
 
-    /**
-     * Parse a URL, discovering its parameters.
-     */
-    def static parse(URL url) {
-        val List<String> urlParts = Lists::newArrayList(Splitter::on('?').split(url.toString))
-        switch (urlParts.size) {
-            case 1:
-                new UrlWithParameters(urlParts.get(0))
-            case 2: {
-                new UrlWithParameters(urlParts.get(0)).withParameters(
-                    Splitter::on('&').omitEmptyStrings.withKeyValueSeparator("=").split(urlParts.get(1)).mapValues[it.decode(UTF_8.name)])
-            }
-            default: {
-                throw new IllegalArgumentException('''Cannot parse URL «url»''')
-            }
-        }
-    }
+  /**
+   * Add or update a parameters.
+   * @param extraParameters The parameters to add or update.
+   * @return A new {@link UrlWithParameters} with the extra parameters.
+   */
+  def withParameters(extraParameters: Pair[Any, Any]*): UrlWithParameters =
+    withParameters(extraParameters.toMap)
 
-    /**
-     * Add or update a parameters.
-     * @param extraParameters The parameters to add or update.
-     * @return this.
-     */
-    def UrlWithParameters withParameters(Pair<? extends Object, ? extends Object>... extraParameters) {
-        extraParameters.forEach [ name, value |
-            parameters.put(name.toString, value.toString)
-        ]
-        this
-    }
+  /**
+   * Add or update a parameters.
+   * @param extraParameters The parameters to add or update.
+   * @return A new {@link UrlWithParameters} with the extra parameters.
+   */
+  def withParameters(extraParameters: Map[Any, Any]): UrlWithParameters =
+    new UrlWithParameters(url, parameters ++ extraParameters.map { p => Pair(p._1.toString, p._2.toString) })
 
-    /**
-     * Add or update a parameters.
-     * @param extraParameters The parameters to add or update.
-     * @return this.
-     */
-    def UrlWithParameters withParameters(Map<? extends Object, ? extends Object> extraParameters) {
-        extraParameters.forEach [ name, value |
-            parameters.put(name.toString, value.toString)
-        ]
-        this
-    }
-
-    /**
-     * Convert to a plain URL.
-     */
-    def URL toURL() {
-        new URL(
-            if (parameters.empty) {
-                url
-            } else {
-                '''«url»?«Joiner::on('&').withKeyValueSeparator("=").join(parameters.mapValues[it.encode(UTF_8.name)])»'''
-            })
-    }
+  /**
+   * Convert to a plain URL.
+   */
+  def toURL: URL =
+    new URL(
+      if (parameters.isEmpty) {
+        url
+      } else {
+        url + "?" + Joiner.on("&").withKeyValueSeparator("=").join(parameters.mapValues { encode(_, UTF_8.name) })
+      })
 }

@@ -10,59 +10,46 @@
  * with the License.  You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  *
  * @author alex
  *
  */
 package uk.co.unclealex.callerid.remote.numbers
 
-import com.google.common.base.Optional
-import org.junit.Test
+import org.scalatest.FunSuite
+import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.GivenWhenThen
 
-import static org.hamcrest.Matchers.*
-import static org.junit.Assert.*
+class JsonResourceCityDaoTest extends FunSuite with ShouldMatchers with GivenWhenThen {
 
-class JsonResourceCityDaoTest {
+  val jsonResourceCityDao = new JsonResourceCityDao
 
-    @Property val extension JsonResourceCityDao jsonResourceCityDao
+  test("Extracting the international code") {
+    jsonResourceCityDao.extractInternationalDiallingCode("441256118118") should equal("44")
+  }
 
-    new() {
-        this._jsonResourceCityDao = new JsonResourceCityDao => [
-            loadCountries
-        ]
+  test("Extracting UK cities") {
+    Map("1697500500" -> "Brampton", "1697300300" -> "Wigton", "1697400400" -> "Raughton Head").foreach {
+      case (number, expectedCityName) =>
+        When(s"Trying to find the city for ${number}")
+        Then(s"The city name should be ${expectedCityName}")
+        jsonResourceCityDao.extractCity(number, "44").get.name should equal(expectedCityName)
     }
+  }
 
-    @Test
-    def void textExtractInternationalCode() {
-        assertEquals("The wrong international code was extracted.", "44",
-            "441256118118".extractInternationalDiallingCode)
-    }
+  test("Get country for city") {
+    val basingstoke = City(name = "Basingstoke", stdCode = "1256")
+    jsonResourceCityDao.countryOf(basingstoke).name should equal("United Kingdom")
+  }
 
-    @Test
-    def void testExtractUkCity() {
-        #{"1697500500" -> "Brampton", "1697300300" -> "Wigton", "1697400400" -> "Raughton Head"}.forEach[number, expectedCityName|
-            val Optional<City> actualCity = number.extractCity("44")
-            assertEquals('''The wrong city was returned for number «number»''', expectedCityName, actualCity.get.name)]
-    }
-
-    @Test
-    def void testCountry() {
-        val City basingstoke = new City("Basingstoke", "1256")
-        val String actualCountryName = basingstoke.country.name
-        assertEquals("The wrong country was returned for Basingstoke.", "United Kingdom", actualCountryName)
-    }
-
-    @Test
-    def void testCountries() {
-        val Iterable<String> americasNames = "44".countries.map[name]
-        assertThat("The wrong countries for international code 44 were returned", americasNames,
-            contains("United Kingdom", "Guernsey", "Isle of Man", "Jersey"))
-    }
+  test("Get countries") {
+    jsonResourceCityDao.countries("44").map(_.name) should equal(List("United Kingdom", "Guernsey", "Isle of Man", "Jersey"))
+  }
 }

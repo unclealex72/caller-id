@@ -1,72 +1,50 @@
 package uk.co.unclealex.callerid.remote.numbers
 
-import com.google.common.collect.Iterables
-import org.junit.Test
+import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.FunSuite
 
-import static org.hamcrest.Matchers.*
-import static org.junit.Assert.*
+class NumberLocationServiceImplTest extends FunSuite with ShouldMatchers {
 
-class NumberLocationServiceImplTest {
-
-    @Property val extension NumberLocationServiceImpl numberLocationServiceImpl
-
-    new() {
-        this._numberLocationServiceImpl = new NumberLocationServiceImpl => [
-            cityDao = new JsonResourceCityDao => [ loadCountries ]
-            locationConfiguration = new LocationConfigurationBean("44", "1256")
-        ]
+  implicit class TestCase(receivedNumber: String) {
+    def decomposesTo(expectedCityName: Option[String], expectedNumber: String, expectedNormalisedNumber: String, expectedCountryNames: String*) = {
+      val phoneNumber = numberLocationServiceImpl.decompose(receivedNumber)
+      phoneNumber.countries.map(_.name).toList should equal(expectedCountryNames.toList)
+      phoneNumber.city.map(_.name) should equal(expectedCityName)
+      phoneNumber.number should equal(expectedNumber)
+      phoneNumber.normalisedNumber should equal(expectedNormalisedNumber)
     }
 
-    @Test
-    def void testLocal() {
-        "999888".andExpect(#["United Kingdom"], "Basingstoke", "999888", "+441256999888")
-    }
+  }
+  val cityDao = new JsonResourceCityDao
+  val numberLocationServiceImpl = new NumberLocationServiceImpl(cityDao, new LocationConfiguration("44", "1256"))
 
-    @Test
-    def void testNational() {
-        "01483123456".andExpect(#["United Kingdom"], "Guildford", "123456", "+441483123456")
-    }
-    
-    @Test
-    def void testLocalNonGeographic() {
-        "0800999888".andExpect(#["United Kingdom", "Guernsey", "Isle of Man", "Jersey"], null, "800999888", "+44800999888")
-    }
+  test("local number") {
+    "999888" decomposesTo (Some("Basingstoke"), "999888", "+441256999888", "United Kingdom")
+  }
 
-    @Test
-    def void testInternationalDoubleZero() {
-        "003410987654".andExpect(#["Spain"], "Madrid", "987654", "+3410987654")
-    }
-    
-    @Test
-    def void testInternationalPlus() {
-        "+3410987654".andExpect(#["Spain"], "Madrid", "987654", "+3410987654")
-    }
+  test("national number") {
+    "01483123456" decomposesTo (Some("Guildford"), "123456", "+441483123456", "United Kingdom")
+  }
 
-    @Test
-    def void testInternationalNonGeographicDoubleZero() {
-        "003490987654".andExpect(#["Spain"], null, "90987654", "+3490987654")
-    }
+  test("local non-geographic number") {
+    "0800999888" decomposesTo (None, "800999888", "+44800999888", "United Kingdom", "Guernsey", "Isle of Man", "Jersey")
+  }
 
-    @Test
-    def void testInternationalNonGeographicPlus() {
-        "+3490987654".andExpect(#["Spain"], null, "90987654", "+3490987654")
-    }
+  test("international number with a 00 prefix") {
+    "003410987654" decomposesTo (Some("Madrid"), "987654", "+3410987654", "Spain")
+  }
 
-    def void andExpect(String receivedNumber, Iterable<String> expectedCountryNames, String expectedCityName,
-        String expectedNumber, String expectedNormalisedNumber) {
-        receivedNumber.decompose.get => [
-            assertThat("The returned phone number had the wrong countries", countries.map[name],
-                contains(Iterables::toArray(expectedCountryNames, typeof(String))))
-            if (expectedCityName == null) {
-                assertFalse("The returned phone number had a non-null city.", city.isPresent)
-            }
-            else {
-                assertEquals("The returned phone number had the wrong city.", expectedCityName, city.get.name)
-            }
-            assertEquals("The returned phone number had the wrong number.",
-                expectedNumber, number)
-            assertEquals("The returned phone number had the wrong normalised phone number.",
-                expectedNormalisedNumber, normalisedNumber)
-        ]
-    }
+  test("international number with a + prefix") {
+    "+3410987654" decomposesTo (Some("Madrid"), "987654", "+3410987654", "Spain")
+  }
+
+  test("international non-geographic with a 00 prefix") {
+    "003490987654" decomposesTo (None, "90987654", "+3490987654", "Spain")
+  }
+
+  test("international non-geographic with a + prefix") {
+    "+3490987654" decomposesTo (None, "90987654", "+3490987654", "Spain")
+  }
+
 }
+

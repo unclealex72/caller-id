@@ -10,13 +10,13 @@
  * with the License.  You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  *
  * @author alex
  *
@@ -30,45 +30,25 @@ import org.codehaus.jackson.annotate.JsonCreator
 /**
  * A JSON compatible class that encapsulate Google token responses.
  */
-@Data class TokenResponse {
-    
-  /** Access token issued by the authorization server. */
-  val String accessToken;
-
+case class TokenResponse(
+  /** The Access token issued by the authorization server. */
+  accessToken: String,
   /**
    * Token type (as specified in <a
    * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-23#section-7.1">Access Token Types</a>).
    */
-  val String tokenType;
-
+  tokenType: String,
   /**
-   * Lifetime in seconds of the access token (for example 3600 for an hour) or {@code null} for
-   * none.
+   * Lifetime in seconds of the access token (for example 3600 for an hour).
    */
-  val Long expiresInSeconds;
-
+  expiresInSeconds: Option[Long],
   /**
-   * Refresh token which can be used to obtain new access tokens using {@link RefreshTokenRequest}
-   * or {@code null} for none.
+   * Refresh token which can be used to obtain new access tokens using {@link RefreshTokenRequest}.
    */
-  val String refreshToken;
-
+  refreshToken: Option[String],
   /**
    * Scope of the access token as specified in <a
-   * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-23#section-3.3">Access Token Scope</a> or
-   * {@code null} for none.
+   * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-23#section-3.3">Access Token Scope</a>.
    */
-  val String scope;
-    
-  @JsonCreator
-  new(@JsonProperty("access_token") String accessToken, @JsonProperty("token_type") String tokenType,
-    @JsonProperty("expires_in") Long expiresInSeconds, @JsonProperty("refresh_token") String refreshToken,
-    @JsonProperty("scope") String scope
-  ) {
-      this._accessToken = accessToken
-      this._tokenType = tokenType
-      this._expiresInSeconds = expiresInSeconds
-      this._refreshToken = refreshToken
-      this._scope = scope
-  }
-}
+  scope: Option[String])
+

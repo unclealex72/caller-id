@@ -10,44 +10,42 @@
  * with the License.  You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  *
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.dao
+package uk.co.unclealex.callerid.remote.google
 
-import com.sun.jersey.api.client.Client
-import com.sun.jersey.api.client.config.DefaultClientConfig
-import com.sun.jersey.api.json.JSONConfiguration
 import com.sun.jersey.core.util.MultivaluedMapImpl
-import java.util.Collections
-import java.util.Map
-import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.MultivaluedMap
-import uk.co.unclealex.callerid.remote.google.GoogleRequestService
+import com.sun.jersey.api.client.config.ClientConfig
+import com.sun.jersey.api.client.config.DefaultClientConfig
+import scala.collection.JavaConversions._
+import com.sun.jersey.api.json.JSONConfiguration
+import com.sun.jersey.api.client.Client
+import javax.ws.rs.core.MediaType
+import scala.collection.Map
 
 /**
  * An implementation of {@link GoogleRequestService} that uses Jersey to serialise and deserialise Google requests.
  */
-class JerseyGoogleRequestService implements GoogleRequestService {
+class JerseyGoogleRequestService extends GoogleRequestService {
 
-    override <R> sendRequest(String url, Map<String, String> formParameters, Class<R> responseType) {
-        val Client client = Client::create(new DefaultClientConfig => [
-            it.features.put(JSONConfiguration::FEATURE_POJO_MAPPING, true)
-        ])
-        val MultivaluedMap<String, String> formParams = new MultivaluedMapImpl
-        formParameters.forEach[key, value|
-            formParams.put(key, Collections::singletonList(value))
-        ]
-        client.resource(url).type(MediaType::APPLICATION_FORM_URLENCODED_TYPE).accept(MediaType::APPLICATION_JSON_TYPE).
-            post(responseType, formParams)
-    }
+  override def sendRequest[R](url: String, formParameters: Map[String, String], responseType: Class[R]) = {
+    val clientConfig: ClientConfig = new DefaultClientConfig
+    clientConfig.getFeatures() += Pair(JSONConfiguration.FEATURE_POJO_MAPPING, true)
+    val client = Client.create(clientConfig)
+    val formParams: MultivaluedMap[String, String] = new MultivaluedMapImpl
+    formParameters.foreach { case (k, v) => formParams.putSingle(k, v) }
+    client.resource(url).`type`(MediaType.APPLICATION_FORM_URLENCODED_TYPE).accept(MediaType.APPLICATION_JSON_TYPE).
+      post(responseType, formParams)
+  }
 
 }

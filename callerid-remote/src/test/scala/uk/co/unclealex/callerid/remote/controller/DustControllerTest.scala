@@ -1,39 +1,39 @@
 package uk.co.unclealex.callerid.remote.controller
 
-import java.io.FileNotFoundException
-import org.junit.Test
-
-import static org.junit.Assert.*
+import org.scalatest.FunSuite
+import org.scalatest.matchers.Matcher
+import org.scalatest.matchers.ShouldMatchers
+import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseBody
 
 /**
  * Test that dust templates can be compiled.
  */
-class DustControllerTest {
+class DustControllerTest extends FunSuite with ShouldMatchers {
 
-    @Test
-    def void testSimpleCompilation() {
-        runTest("simple",
-            '''(function(){dust.register("simple",body_0);function body_0(chk,ctx){return chk.write("Hello ").reference(ctx.get("world"),ctx,"h");}return body_0;})();''')
+  val dustController = new DustController(Set("simple", "helper"))
+  
+  test("simple compilation") {
+        "simple" should compileTo(
+            """(function(){dust.register("simple",body_0);function body_0(chk,ctx){return chk.write("Hello ").reference(ctx.get("world"),ctx,"h");}return body_0;})();""")
     }
 
-    @Test
-    def void testCompilationWithHelpers() {
-        runTest("helper",
-            '''(function(){dust.register("helper",body_0);function body_0(chk,ctx){return chk.helper("math",ctx,{},{"key":"16","method":"add","operand":"4"});}return body_0;})();''')
+    test("compilation with helpers") {
+        "helper" should compileTo(
+            """(function(){dust.register("helper",body_0);function body_0(chk,ctx){return chk.helper("math",ctx,{},{"key":"16","method":"add","operand":"4"});}return body_0;})();""")
     }
 
-    @Test(expected=typeof(FileNotFoundException))
-    def void testMissing() {
-        runTest("missing", '''''')
+    test("missing") {
+        "missing" should compileTo("""""")
     }
 
-    def void runTest(String templateName, String expectedCompilationResults) {
-        new DustController => [
-            templateNames = #{"simple", "helper"}
-            precompile
-            val String actualCompilationResults = template(templateName)
-            assertEquals('''Template «templateName» did not compile correctly.''', expectedCompilationResults,
-                actualCompilationResults)
-        ]
+    def compileTo(expectedCompilationResults: String) : Matcher[String] = {
+      new Matcher[String]() {
+        override def apply(left : String) = {
+          val actualCompilationResults = dustController.template(left)
+          equal(expectedCompilationResults).apply(actualCompilationResults)
+        }
+      }
     }
 }

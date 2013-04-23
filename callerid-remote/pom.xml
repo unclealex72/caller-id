@@ -13,11 +13,6 @@
   <name>CallerID remote webapp</name>
   <url>http://maven.apache.org</url>
 
-  <properties>
-    <datanucleus-version>3.1.0-release</datanucleus-version>
-    <spring-version>3.2.2.RELEASE</spring-version>
-  </properties>
-
   <dependencies>
 
     <dependency>
@@ -26,20 +21,12 @@
         <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <!-- Persistence -->
-    
+
     <dependency>
-        <groupId>uk.co.unclealex.persistence</groupId>
-        <artifactId>persistence-jdo-spring</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.datanucleus</groupId>
-      <artifactId>datanucleus-accessplatform-jdo-rdbms</artifactId>
-      <version>${datanucleus-version}</version>
-      <type>pom</type>
-    </dependency>
-    
+        <groupId>${project.groupId}</groupId>
+        <artifactId>callerid-remote-persistence</artifactId>
+        <version>${project.version}</version>
+    </dependency>    
     <!-- Spring 3 dependencies -->
     <dependency>
       <groupId>org.springframework</groupId>
@@ -50,11 +37,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>${spring-version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-orm</artifactId>
       <version>${spring-version}</version>
     </dependency>
 
@@ -142,13 +124,6 @@
 
     <!-- Test dependencies -->
     <dependency>
-      <groupId>xmlunit</groupId>
-      <artifactId>xmlunit</artifactId>
-      <version>1.4</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-test</artifactId>
         <version>${spring-version}</version>
@@ -162,48 +137,9 @@
       <scope>test</scope>
     </dependency>
     
-    <dependency>
-        <groupId>org.hsqldb</groupId>
-        <artifactId>hsqldb</artifactId>
-        <version>2.2.4</version>
-        <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.datanucleus</groupId>
-        <artifactId>maven-datanucleus-plugin</artifactId>
-        <version>${datanucleus-version}</version>
-        <configuration>
-          <api>jdo</api>
-          <fork>true</fork>
-          <persistenceUnitName>calls</persistenceUnitName>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>enhance</goal>
-            </goals>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.datanucleus</groupId>
-            <artifactId>datanucleus-core</artifactId>
-            <version>${datanucleus-version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.datanucleus</groupId>
-            <artifactId>datanucleus-api-jdo</artifactId>
-            <version>${datanucleus-version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-
-    </plugins>
     <finalName>whoscalling</finalName>
   </build>
 </project>

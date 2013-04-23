@@ -89,7 +89,7 @@
         <artifactId>maven-executable-plugin</artifactId>
         <version>${executable-version}</version>
         <extensions>true</extensions>
-      </plugin>
+      </plugin>      
     </plugins>
   </build>
 

@@ -10,46 +10,40 @@
  * with the License.  You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  *
  * @author alex
  *
  */
 package uk.co.unclealex.callerid.remote.numbers
 
-import com.google.common.base.Optional
-
 /**
  * The representation of a telephone number that called.
  */
-@Data class PhoneNumber {
-    /**
-     * The normalised number that called. A normalised number is of the form <i>+iisssnnnn</i> or <i>+iinnnn</i>
-     * where <i>ii</i> is the international dialling code, <i>sss</i> is the STD code less the leading zero (if any) and <i>nnnn</i> is
-     * the remaining number.
-     */
-    val String normalisedNumber
-
-    /**
-     * The list of countries from where this phone number could have originated. If the city is known then this list
-     * will be of length exactly one. Otherwise, the countries will be listed with the country with the most cities
-     * first.
-     */
-    val Iterable<Country> countries
-
-    /**
-     * The city from which this phone number was made, if known.
-     */
-    val Optional<City> city
-
-    /**
-     * The rest of the number that called, minus the international and STD codes.
-     */
-    val String number
-}
+case class PhoneNumber(
+  /**
+   * The normalised number that called. A normalised number is of the form <i>+iisssnnnn</i> or <i>+iinnnn</i>
+   * where <i>ii</i> is the international dialling code, <i>sss</i> is the STD code less the leading zero (if any) and <i>nnnn</i> is
+   * the remaining number.
+   */
+  normalisedNumber: String,
+  /**
+   * The list of countries from where this phone number could have originated. If the city is known then this list
+   * will be of length exactly one. Otherwise, the countries will be listed with the country with the most cities
+   * first.
+   */
+  countries: Iterable[Country],
+  /**
+   * The city from which this phone number was made, if known.
+   */
+  city: Option[City],
+  /**
+   * The rest of the number that called, minus the international and STD codes.
+   */
+  number: String)

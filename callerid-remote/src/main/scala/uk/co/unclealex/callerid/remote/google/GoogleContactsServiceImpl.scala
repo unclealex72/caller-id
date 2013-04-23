@@ -10,20 +10,19 @@
  * with the License.  You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  *
  * @author unclealex72
  *
  */
 package uk.co.unclealex.callerid.remote.google
 
-import com.google.common.base.Optional
 import com.google.common.collect.Lists
 import com.google.common.collect.Sets
 import com.google.gdata.client.Service
@@ -32,89 +31,69 @@ import com.google.gdata.data.contacts.ContactFeed
 import com.google.gdata.data.extensions.PostalAddress
 import com.google.gdata.data.extensions.StructuredPostalAddress
 import java.net.URL
-import java.util.List
-import javax.inject.Inject
-import org.eclipse.xtext.xbase.lib.Pair
 import org.springframework.transaction.annotation.Transactional
 import uk.co.unclealex.callerid.remote.model.User
-
-import static extension uk.co.unclealex.xtend.OptionalExtensions.*
-
+import scala.collection.JavaConversions._
 /**
  * The default implementation of {@link GoogleContactsService}.
  */
 @Transactional
-class GoogleContactsServiceImpl implements GoogleContactsService {
+class GoogleContactsServiceImpl(
+  /**
+   * The service used to get tokens from Google.
+   */
+  googleTokenService: GoogleTokenService,
+  /**
+   * The Google constants object used to configure how to get contacts from Google.
+   */
+  googleConstants: GoogleConstants) extends GoogleContactsService {
 
-    /**
-     * The service used to get tokens from Google.
-     */
-    @Property val extension GoogleTokenService googleTokenService
+  override def getAllContacts(user: User): Set[GoogleContact] = {
+    val url = new UrlWithParameters(googleConstants.contactFeedUrl)
+      .withParameters(("accessToken", googleTokenService.accessToken(user)), ("max-results", Int.MaxValue)).toURL
+    val resultFeed = new Service().getFeed(url, classOf[ContactFeed])
+    val hasTitleFilter = (ce: ContactEntry) => !ce.getTitle().getPlainText().trim().isEmpty()
+    val googleContactMapper = (ce: ContactEntry) =>
+      GoogleContact(
+        ce.getTitle().getPlainText().trim(),
+        findPostalAddress(ce),
+        ce.getPhoneNumbers().map(p => p.getPhoneNumber()).toSet)
+    resultFeed.getEntries().filter(hasTitleFilter).map(googleContactMapper).toSet
+  }
 
-    /**
-     * The Google constants object used to configure how to get contacts from Google.
-     */
-    @Property val GoogleConstants googleConstants
-
-    @Inject
-    new(GoogleTokenService googleTokenService, GoogleConstants googleConstants) {
-        this._googleConstants = googleConstants
-        this._googleTokenService = googleTokenService
+  /**
+   * Find a contact's postal address by looking through it's postal and structured postal addresses, returning
+   * a primary address if one exists, an arbitrary address if addresses exist but none or primary or absent if no
+   * address information has been held.
+   * @param entry The contact being searched.
+   * @return A formatted postal address.
+   */
+  def findPostalAddress(entry: ContactEntry): Option[String] = {
+    val addresses = (entry.getPostalAddresses().map(toAddress(_)) ++ entry.getStructuredPostalAddresses().map(toAddress(_))).toList
+    val primaryAddresses = addresses.filter(_._2)
+    val addressesToUse = List(primaryAddresses, addresses).map(_.map(_._1)).find(!_.isEmpty)
+    if (addressesToUse.isEmpty) {
+      None
+    } else {
+      addressesToUse.get.find(s => true).map(_.replace("\n", " "))
     }
+  }
 
-    override getAllContacts(User user) {
-        val URL url = new UrlWithParameters(
-            googleConstants.contactFeedUrl,
-            "access_token" -> user.accessToken,
-            "max-results" -> Integer::MAX_VALUE
-        ).toURL
-        val ContactFeed resultFeed = new Service().getFeed(url, typeof(ContactFeed))
-        Sets::newHashSet(
-            resultFeed.entries.filter[!title.plainText.nullOrEmpty].map [
-                new GoogleContact(title.plainText.trim, findPostalAddress,
-                    Sets::newHashSet(phoneNumbers.map[phoneNumber]))
-        ])
-    }
+  /**
+   * Convert a postal address into pair of a flag for whether the address is primary and a formatted string
+   * for the address itself.
+   * @param postalAddress The address to convert.
+   * @return A pair of a flag and a string.
+   */
+  def toAddress(postalAddress: PostalAddress): Pair[String, Boolean] =
+    new Pair(postalAddress.getValue(), postalAddress.getPrimary())
 
-    /**
-     * Find a contact's postal address by looking through it's postal and structured postal addresses, returning
-     * a primary address if one exists, an arbitrary address if addresses exist but none or primary or absent if no
-     * address information has been held.
-     * @param entry The contact being searched.
-     * @return A formatted postal address.
-     */
-    def Optional<String> findPostalAddress(ContactEntry entry) {
-        val List<Pair<String, Boolean>> addresses = newArrayList()
-        addresses.addAll(entry.postalAddresses.map[toAddress])
-        addresses.addAll(entry.structuredPostalAddresses.map[toAddress])
-        val List<Pair<String, Boolean>> primaryAddresses = Lists::newArrayList(addresses.filter[value])
-        val List<Pair<String, Boolean>> addressesToUse = #[primaryAddresses, addresses].findFirst[!it.empty]
-        if (addressesToUse == null) {
-            Optional::absent
-        }
-        else {
-            addressesToUse.head.asOptional.transform([key.replace("\n", ", ")])            
-        }
-    }
-
-    /**
-     * Convert a postal address into pair of a flag for whether the address is primary and a formatted string
-     * for the address itself.
-     * @param postalAddress The address to convert.
-     * @return A pair of a flag and a string.
-     */
-    def Pair<String, Boolean> toAddress(PostalAddress postalAddress) {
-        postalAddress.value -> postalAddress.primary
-    }
-
-    /**
-     * Convert a structured postal address into pair of a flag for whether the address is primary and a formatted string
-     * for the address itself.
-     * @param spa The address to convert.
-     * @return A pair of a flag and a string.
-     */
-    def Pair<String, Boolean> toAddress(StructuredPostalAddress spa) {
-        spa.formattedAddress.value -> if(spa.hasPrimary) spa.primary else false
-    }
-
+  /**
+   * Convert a structured postal address into pair of a flag for whether the address is primary and a formatted string
+   * for the address itself.
+   * @param spa The address to convert.
+   * @return A pair of a flag and a string.
+   */
+  def toAddress(spa: StructuredPostalAddress): Pair[String, Boolean] =
+    new Pair(spa.getFormattedAddress().getValue(), if (spa.hasPrimary) spa.getPrimary else false)
 }

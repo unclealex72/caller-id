@@ -24,19 +24,6 @@
 package uk.co.unclealex.callerid.remote.numbers
 
 /**
- * An interface that contains the locality of the telphone that is receiving calls.
+ * A JSON serialisable instance of LocationConfiguration.
  */
-interface LocationConfiguration {
-    
-    /**
-     * Get the international code for the telephone that is receiving calls.
-     * @return The international code for the telephone that is receiving calls.
-     */
-    def String getInternationalCode()
-    
-    /**
-     * Get the STD code for the telephone that is receiving calls.
-     * @return The STD code for the telephone that is receiving calls.
-     */
-    def String getStdCode()
-}
+case class LocationConfiguration(internationalCode : String, stdCode : String)

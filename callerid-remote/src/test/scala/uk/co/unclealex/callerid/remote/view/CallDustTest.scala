@@ -1,233 +1,190 @@
 package uk.co.unclealex.callerid.remote.view
 
-import org.junit.Test
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.w3c.dom.Document
-import static org.custommonkey.xmlunit.XMLUnit.*
-import static org.junit.Assert.*
-import org.codehaus.jackson.map.ObjectMapper
-import java.io.InputStream
+import javax.xml.xpath.XPathFactory
+import javax.xml.xpath.XPathConstants
 import org.w3c.dom.NodeList
-import java.util.Map
-import org.w3c.dom.Node
-import org.w3c.dom.Attr
+import scala.xml.Elem
+import scala.xml.NodeSeq
+import scala.xml.Node
+import org.scalatest.GivenWhenThen
+import org.scalatest.matchers.ShouldMatchers
 
 /**
  * Test the call.dust template.
  */
-class CallDustTest extends AbstractDustTest {
+class CallDustTest extends AbstractDustTest("call") with GivenWhenThen with ShouldMatchers {
 
-    new() {
-        super("call")
+  test("geographic with contact and address") {
+    "call-geographic-with-contact-and-address.json" expecting Expectations(
+      time = "2012-09-05T09:12T+01:00",
+      phoneNumber = "+44 1256 362362",
+      contact = Some("Beechdown Health Club"),
+      location = None,
+      contactNumber = None,
+      searchTerm = None,
+      mapCountryCode = "GB",
+      mapLocation = "Beechdown Park  Winchester Rd, Basingstoke, RG22 4ES")
+  }
+
+  test("geographic with contact but no address") {
+    "call-geographic-with-contact-but-no-address.json" expecting Expectations(
+      time = "2012-09-05T09:12T+01:00",
+      phoneNumber = "+44 1483 550550",
+      contact = Some("University of Surrey"),
+      location = None,
+      contactNumber = None,
+      searchTerm = None,
+      mapCountryCode = "GB",
+      mapLocation = "Guildford")
+  }
+
+  test("geographic without contact") {
+    "call-geographic-without-contact.json" expecting Expectations(
+      time = "2012-11-05T15:10Z",
+      phoneNumber = "+44 1256 362362",
+      contact = None,
+      location = Some("Basingstoke, United Kingdom"),
+      contactNumber = Some("+441256362362"),
+      searchTerm = Some("01256362362"),
+      mapCountryCode = "GB",
+      mapLocation = "Basingstoke")
+  }
+
+  test("non geographic with contact and address") {
+    "call-non-geographic-with-contact-and-address.json" expecting Expectations(
+      time = "2012-09-05T09:12T+01:00",
+      phoneNumber = "+1 800362362",
+      contact = Some("American Airlines"),
+      location = None,
+      contactNumber = None,
+      searchTerm = None,
+      mapCountryCode = "US",
+      mapLocation = "Los Angeles International Airport, 400 World Way, Los Angeles, CA 90045")
+  }
+
+  test("non geographic with contact but no address") {
+    "call-non-geographic-with-contact-but-no-address.json" expecting Expectations(
+      time = "2012-09-05T09:12T+01:00",
+      phoneNumber = "+44 7012550550",
+      contact = Some("University of Surrey"),
+      location = None,
+      contactNumber = None,
+      searchTerm = None,
+      mapCountryCode = "GB",
+      mapLocation = "United Kingdom")
+  }
+
+  test("non geographic without contact") {
+    "call-non-geographic-without-contact.json" expecting Expectations(
+      time = "2012-11-05T15:10Z",
+      phoneNumber = "+33 800162362",
+      contact = None,
+      location = Some("France"),
+      contactNumber = Some("+33800162362"),
+      searchTerm = Some("0800162362"),
+      mapCountryCode = "FR",
+      mapLocation = "France")
+  }
+
+  implicit class TestCase(jsonResource: String) {
+    def expecting(expectations: Expectations): Unit = {
+      val call =
+        new ObjectMapper().registerModule(DefaultScalaModule).
+          readValue(getClass.getClassLoader.getResource(jsonResource), classOf[Call])
+      val root = renderAsXml(call)
+      expect(
+        "telephone number",
+        root \\ "span" \ "@class" filter (_.text == "number"),
+        Some(expectations.phoneNumber))
+      expect(
+        "contact",
+        root \\ "span" \ "@class" filter (_.text == "contact"),
+        expectations.contact)
+      expect(
+        "location",
+        root \\ "span" \ "@class" filter (_.text == "location"),
+        expectations.location)
+      expectButton(root, "contact",
+        expectations.contactNumber.map(contactNumber => Map("number" -> contactNumber)))
+      expectButton(root, "search",
+        expectations.searchTerm.map(searchTerm => Map("search-term" -> searchTerm)))
+      expectButton(root, "map-marker",
+        Some(Map("country-code" -> expectations.mapCountryCode, "location" -> expectations.mapLocation)))
     }
 
-    @Test
-    def void testGeographicWithContactAndAddress() {
-        "call-geographic-with-contact-and-address.json".expecting [
-            time = "2012-09-05T09:12T+01:00"
-            phoneNumber = "+44 1256 362362"
-            contact = "Beechdown Health Club"
-            location = null
-            contactNumber = null
-            searchTerm = null
-            mapCountryCode = "GB"
-            mapLocation = "Beechdown Park  Winchester Rd, Basingstoke, RG22 4ES"
-        ]
+    def expect(objectName: String, expectedNodes: NodeSeq, expectedText: Option[String]) = {
+      expectedText.map {
+        expectedText =>
+          When(s"Expecting exactly one ${objectName}")
+          expectedNodes should have length (1)
+          expectedNodes(0).text should equal(expectedText)
+      }.getOrElse {
+        When(s"Expecting no ${objectName}")
+        expectedNodes should have length (0)
+      }
     }
 
-    @Test
-    def void testGeographicWithContactButNoAddress() {
-        "call-geographic-with-contact-but-no-address.json".expecting [
-            time = "2012-09-05T09:12T+01:00"
-            phoneNumber = "+44 1483 550550"
-            contact = "University of Surrey"
-            location = null
-            contactNumber = null
-            searchTerm = null
-            mapCountryCode = "GB"
-            mapLocation = "Guildford"
-        ]
+    def expectButton(root: Elem, buttonClass: String, expectedDataParameters: Option[Map[String, String]]) = {
+      val matchedNodes = root \\ "button" \ "@class" filter (_.text == s"btn ${buttonClass}")
+      When(s"searching for a button with class ${buttonClass}")
+      matchedNodes should have length (1)
+      val attributes = matchedNodes(0).attributes
+      expectedDataParameters.map {
+        expectedDataParameters =>
+          Then("the button should not be disabled")
+          attributes.get("disabled") should equal(None)
+          expectedDataParameters.foreach {
+            case (name, value) =>
+              val attributeName = s"data-${name}"
+              Then(s"it should have an attribute called ${attributeName}")
+              attributes.get(attributeName) should equal(Some(value))
+          }
+      }.getOrElse {
+        Then("the button should not disabled")
+        attributes.get("disabled") should not equal (None)
+      }
     }
+  }
 
-    @Test
-    def void testGeographicWithoutContact() {
-        "call-geographic-without-contact.json".expecting [
-            time = "2012-11-05T15:10Z"
-            phoneNumber = "+44 1256 362362"
-            contact = null
-            location = "Basingstoke, United Kingdom"
-            contactNumber = "+441256362362"
-            searchTerm = "01256362362"
-            mapCountryCode = "GB"
-            mapLocation = "Basingstoke"
-        ]
-    }
-
-    @Test
-    def void testNonGeographicWithContactAndAddress() {
-        "call-non-geographic-with-contact-and-address.json".expecting [
-            time = "2012-09-05T09:12T+01:00"
-            phoneNumber = "+1 800362362"
-            contact = "American Airlines"
-            location = null
-            contactNumber = null
-            searchTerm = null
-            mapCountryCode = "US"
-            mapLocation = "Los Angeles International Airport, 400 World Way, Los Angeles, CA 90045"
-        ]
-    }
-
-    @Test
-    def void testNonGeographicWithContactButNoAddress() {
-        "call-non-geographic-with-contact-but-no-address.json".expecting [
-            time = "2012-09-05T09:12T+01:00"
-            phoneNumber = "+44 7012550550"
-            contact = "University of Surrey"
-            location = null
-            contactNumber = null
-            searchTerm = null
-            mapCountryCode = "GB"
-            mapLocation = "United Kingdom"
-        ]
-    }
-
-    @Test
-    def void testNonGeographicWithoutContact() {
-        "call-non-geographic-without-contact.json".expecting [
-            time = "2012-11-05T15:10Z"
-            phoneNumber = "+33 800162362"
-            contact = null
-            location = "France"
-            contactNumber = "+33800162362"
-            searchTerm = "0800162362"
-            mapCountryCode = "FR"
-            mapLocation = "France"
-        ]
-    }
-
-    def void expecting(String callResource, Procedures$Procedure1<Expectations> expectationBuilder) {
-        val Expectations expectations = new Expectations()
-        expectationBuilder.apply(expectations)
-        val InputStream in = typeof(AbstractDustTest).classLoader.getResourceAsStream(callResource)
-        try {
-            val Call call = new ObjectMapper().readValue(in, typeof(Call))
-            val Document document = renderAsXml(call)
-            expectations => [
-                expect(
-                    document,
-                    "The wrong telephone number was displayed",
-                    "The wrong number of numbers were displayed",
-                    "//span[@class='number']",
-                    phoneNumber
-                )
-                expect(
-                    document,
-                    "The wrong contact was displayed",
-                    "The wrong number of contacts were displayed",
-                    "//span[@class='contact']",
-                    contact
-                )
-                expect(
-                    document,
-                    "The wrong location was displayed",
-                    "The wrong number of locations were displayed",
-                    "//span[@class='location']",
-                    location
-                )
-                expectButton(document, "contact",
-                    if(contactNumber != null) #{"number" -> contactNumber})
-                expectButton(document, "search",
-                    if(searchTerm != null) #{"search-term" -> searchTerm})
-                expectButton(document, "map-marker",
-                    #{"country-code" -> mapCountryCode, "location" -> mapLocation})
-            ]
-        } finally {
-            in.close
-        }
-    }
-
-    def void expect(Document doc, String messageForExisting, String messageForMiscount, String xpath,
-        String expectedText) {
-        val matchedNodes = newXpathEngine.getMatchingNodes(xpath, doc)
-        if (expectedText == null) {
-            assertEquals(messageForMiscount, 0, matchedNodes.length)
-        } else {
-            assertEquals(messageForMiscount, 1, matchedNodes.length)
-            assertEquals(messageForExisting, expectedText, matchedNodes.text)
-        }
-    }
-
-    def void expectButton(Document doc, String buttonClass, Map<String, String> expectedDataParameters) {
-        val matchedNodes = newXpathEngine.getMatchingNodes('''//button[@class='btn «buttonClass»']''', doc)
-        assertEquals('''The wrong number of «buttonClass» buttons were found''', 1, matchedNodes.length)
-        val attributes = matchedNodes.item(0).attributes
-        if (expectedDataParameters == null) {
-            assertNotNull('''Could not find the disabled attribute for button «buttonClass»''',
-                attributes.getNamedItem("disabled"))
-        } else {
-            assertNull('''Button «buttonClass» was marked as disabled when it was not expected to be''',
-                attributes.getNamedItem("disabled"))
-            expectedDataParameters.forEach [ name, value |
-                val attributeName = '''data-«name»'''
-                val attribute = attributes.getNamedItem(attributeName) as Attr
-                assertNotNull('''Could not find an attribute called «attributeName» on button «buttonClass»''',
-                    attribute)
-                assertEquals('''Attribute «attributeName» on button «buttonClass» was incorrect.''', value,
-                    attribute.value)
-            ]
-        }
-    }
-
-    def String text(Node node) {
-        node.textContent.trim.replaceAll("\\s+", " ")
-    }
-
-    def String text(NodeList nodeList) {
-        nodeList.item(0).text
-    }
 }
 
 /**
  * A bean used to encapsulate what is expected in each test
  */
-class Expectations {
-    /**
-     * The expected formatted time.
-     */
-    @Property var String time
-
-    /**
-     * The phone number that is expected to be displayed.
-     */
-    @Property var String phoneNumber
-
-    /**
-     * The contact that is expected to be displayed or null if no contact is expected.
-     */
-    @Property var String contact
-
-    /**
-     * The location that is expected to be displayed or null if no location is expected.
-     */
-    @Property var String location
-
-    /**
-     * The number that is expected to be pushed onto the clipboard for adding or editing a contact or null if 
-     * the contact button is expected to be disabled.
-     */
-    @Property var String contactNumber
-
-    /**
-     * The search term that is expected to be sent to Google or null if the search button is expected to be disabled.
-     */
-    @Property var String searchTerm
-
-    /**
-     * The country code used to search on Google maps.
-     */
-    @Property var String mapCountryCode
-
-    /**
-     * The location used to search for on Google maps.
-     */
-    @Property var String mapLocation
-}
+case class Expectations(
+  /**
+   * The expected formatted time.
+   */
+  time: String,
+  /**
+   * The phone number that is expected to be displayed.
+   */
+  phoneNumber: String,
+  /**
+   * The contact that is expected to be displayed or None if no contact is expected.
+   */
+  contact: Option[String],
+  /**
+   * The location that is expected to be displayed or None if no location is expected.
+   */
+  location: Option[String],
+  /**
+   * The number that is expected to be pushed onto the clipboard for adding or editing a contact or None if
+   * the contact button is expected to be disabled.
+   */
+  contactNumber: Option[String],
+  /**
+   * The search term that is expected to be sent to Google or None if the search button is expected to be disabled.
+   */
+  searchTerm: Option[String],
+  /**
+   * The country code used to search on Google maps.
+   */
+  mapCountryCode: String,
+  /**
+   * The location used to search for on Google maps.
+   */
+  mapLocation: String)

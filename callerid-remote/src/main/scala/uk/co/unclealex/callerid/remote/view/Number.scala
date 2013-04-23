@@ -10,13 +10,13 @@
  * with the License.  You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  *
  * @author alex
  *
@@ -32,33 +32,18 @@ import org.codehaus.jackson.map.annotate.JsonSerialize$Inclusion
 /**
  * A JSON compatible class that represents the telephone number that made a call.
  */
-@JsonSerialize(include=Inclusion::NON_NULL)
- @Data class Number {
-    /**
-    * The international prefix of the telephone number that made this call.
-    */
-    val String internationalPrefix
 
-    /**
-    * The STD code of the telephone number that made this call or null if the number was non-geographic.
-    */
-    val String stdCode
+case class Number(
+  /**
+   * The international prefix of the telephone number that made this call.
+   */
+  internationalPrefix: String,
 
-    /**
-    * The non-geographical part of the telephone number that made this call.
-    */
-    val String number
-
-    @JsonCreator
-    new(
-        @NotNull @JsonProperty("internationalPrefix") String internationalPrefix,
-        @JsonProperty("stdCode") String stdCode,
-        @NotNull @JsonProperty("number") String number
-    ) {
-        super();
-        this._internationalPrefix = internationalPrefix
-        this._stdCode = stdCode
-        this._number = number
-    }
-
-}
+  /**
+   * The STD code of the telephone number that made this call or none if the number was non-geographic.
+   */
+  stdCode: Option[String],
+  /**
+   * The non-geographical part of the telephone number that made this call.
+   */
+  number: String)
