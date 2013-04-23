@@ -97,15 +97,15 @@ class CallDustTest extends AbstractDustTest("call") with GivenWhenThen with Shou
       val root = renderAsXml(call)
       expect(
         "telephone number",
-        root \\ "span" \ "@class" filter (_.text == "number"),
+        root \\ "span" find { _ \ "@class" find { _.text == "number" } isDefined },
         Some(expectations.phoneNumber))
       expect(
         "contact",
-        root \\ "span" \ "@class" filter (_.text == "contact"),
+        root \\ "span" find { _ \ "@class" find { _.text == "contact" } isDefined },
         expectations.contact)
       expect(
         "location",
-        root \\ "span" \ "@class" filter (_.text == "location"),
+        root \\ "span" find { _ \ "@class" find { _.text == "location" } isDefined },
         expectations.location)
       expectButton(root, "contact",
         expectations.contactNumber.map(contactNumber => Map("number" -> contactNumber)))
@@ -115,23 +115,23 @@ class CallDustTest extends AbstractDustTest("call") with GivenWhenThen with Shou
         Some(Map("country-code" -> expectations.mapCountryCode, "location" -> expectations.mapLocation)))
     }
 
-    def expect(objectName: String, expectedNodes: NodeSeq, expectedText: Option[String]) = {
+    def expect(objectName: String, expectedNode: Option[Node], expectedText: Option[String]) = {
       expectedText.map {
         expectedText =>
           When(s"Expecting exactly one ${objectName}")
-          expectedNodes should have length (1)
-          expectedNodes(0).text should equal(expectedText)
+          expectedNode should not be None
+          expectedNode.get.text.trim.replaceAll("\\s+", " ") should equal(expectedText.trim.replaceAll("\\s+", " "))
       }.getOrElse {
         When(s"Expecting no ${objectName}")
-        expectedNodes should have length (0)
+        expectedNode should be(None)
       }
     }
 
     def expectButton(root: Elem, buttonClass: String, expectedDataParameters: Option[Map[String, String]]) = {
-      val matchedNodes = root \\ "button" \ "@class" filter (_.text == s"btn ${buttonClass}")
+      val matchedNode = root \\ "button" find { _ \ "@class" find { _.text == s"btn ${buttonClass}" } isDefined }
       When(s"searching for a button with class ${buttonClass}")
-      matchedNodes should have length (1)
-      val attributes = matchedNodes(0).attributes
+      matchedNode should not be None
+      val attributes = matchedNode.get.attributes
       expectedDataParameters.map {
         expectedDataParameters =>
           Then("the button should not be disabled")
@@ -140,7 +140,7 @@ class CallDustTest extends AbstractDustTest("call") with GivenWhenThen with Shou
             case (name, value) =>
               val attributeName = s"data-${name}"
               Then(s"it should have an attribute called ${attributeName}")
-              attributes.get(attributeName) should equal(Some(value))
+              attributes.get(attributeName).map { _.text } should equal(Some(value))
           }
       }.getOrElse {
         Then("the button should not disabled")

@@ -36,6 +36,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 import scala.xml.Document
 import scala.xml.XML
 import scala.xml.Elem
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 /**
  * A base class for tests regarding dust.js templates.
@@ -56,7 +57,7 @@ abstract class AbstractDustTest(dustTemplateName: String) extends FunSuite with 
       Context.exit
     }
     val templateSource = Source.fromInputStream(
-      getClass.getClassLoader.getResourceAsStream("public/js/dust-full-1.2.2.js")).getLines().mkString("\n")
+      getClass.getClassLoader.getResourceAsStream(s"template/${dustTemplateName}.dust")).mkString
     val dustContext = Context.enter
     try {
       val compileScope = dustContext.newObject(GLOBAL_SCOPE)
@@ -75,8 +76,8 @@ abstract class AbstractDustTest(dustTemplateName: String) extends FunSuite with 
     val renderScope = dustContext.newObject(GLOBAL_SCOPE)
     renderScope.setParentScope(GLOBAL_SCOPE)
 
-    val json = new ObjectMapper().writeValueAsString(context)
-    val renderScript = """
+    val json = new ObjectMapper().registerModule(DefaultScalaModule).writeValueAsString(context)
+    val renderScript = s"""
         {
           dust.render(
             name,
