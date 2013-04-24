@@ -22,7 +22,7 @@
   </modules>
 
   <dependencies>
-  
+
     <!-- Scala -->
     <dependency>
       <groupId>org.scala-lang</groupId>
@@ -38,12 +38,12 @@
 
     <!-- Scala test -->
     <dependency>
-        <groupId>org.scalamock</groupId>
-        <artifactId>scalamock-scalatest-support_2.10</artifactId>
-        <version>3.0.1</version>
-        <scope>test</scope>
+      <groupId>org.scalamock</groupId>
+      <artifactId>scalamock-scalatest-support_2.10</artifactId>
+      <version>3.0.1</version>
+      <scope>test</scope>
     </dependency>
-    
+
   </dependencies>
 
   <build>
@@ -52,7 +52,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skipTests>true</skipTests>
+          <!--  skipTests>true</skipTests-->
         </configuration>
       </plugin>
       <!-- enable scalatest -->
@@ -176,12 +176,12 @@
 
   <pluginRepositories>
     <pluginRepository>
-        <id>oss-releases</id>
-        <url>https://oss.sonatype.org/content/repositories/releases/</url>
+      <id>oss-releases</id>
+      <url>https://oss.sonatype.org/content/repositories/releases/</url>
     </pluginRepository>
     <pluginRepository>
-        <id>oss-public</id>
-        <url>https://oss.sonatype.org/content/groups/public/</url>
+      <id>oss-public</id>
+      <url>https://oss.sonatype.org/content/groups/public/</url>
     </pluginRepository>
   </pluginRepositories>
 
