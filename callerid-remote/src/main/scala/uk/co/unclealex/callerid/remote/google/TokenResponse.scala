@@ -39,7 +39,7 @@ case class TokenResponse(
   /**
    * Lifetime in seconds of the access token (for example 3600 for an hour).
    */
-  @JsonProperty("expires_in") expiresInSeconds: Option[Long],
+  @JsonProperty("expires_in") expiresInSeconds: Option[Int],
   /**
    * Refresh token which can be used to obtain new access tokens using {@link RefreshTokenRequest}.
    */

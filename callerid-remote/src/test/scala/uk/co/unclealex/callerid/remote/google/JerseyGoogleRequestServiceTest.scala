@@ -65,7 +65,7 @@ class JerseyGoogleRequestServiceTest extends FunSuite with ShouldMatchers with G
         { "access_token" : "myAccessToken",
           "token_type" : "myTokenType",
           "refresh_token" : "myRefreshToken",
-          "expires_in" : 12345,
+          "expires_in" : 3600,
           "scope" : "myScope"
         }
         """
@@ -83,13 +83,12 @@ class JerseyGoogleRequestServiceTest extends FunSuite with ShouldMatchers with G
     try {
       server.start()
       val tokenResponse =
-        new JerseyGoogleRequestService().sendRequest(
-          classOf[TokenResponse], s"http://localhost:${port}/request", parameters)
+        new JerseyGoogleRequestService().sendRequest(s"http://localhost:${port}/request", parameters)
       Then("a reponse token should be returned")
       tokenResponse should equal(
         TokenResponse(
           accessToken = "myAccessToken", tokenType = "myTokenType",
-          refreshToken = Some("myRefreshToken"), expiresInSeconds = Some(12345), scope = Some("myScope")))
+          refreshToken = Some("myRefreshToken"), expiresInSeconds = Some(3600), scope = Some("myScope")))
     } finally {
       server.stop()
     }

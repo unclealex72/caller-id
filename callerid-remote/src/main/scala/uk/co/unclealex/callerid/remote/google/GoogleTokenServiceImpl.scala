@@ -116,7 +116,7 @@ class GoogleTokenServiceImpl(
     if (includeRedirect) {
       parameters += "redirect_uri" -> "urn:ietf:wg:oauth:2.0:oob"
     }
-    googleRequestService.sendRequest(classOf[TokenResponse], googleConstants.oauthTokenUrl, parameters)
+    googleRequestService.sendRequest(googleConstants.oauthTokenUrl, parameters)
   }
 
   /**
@@ -144,7 +144,7 @@ class GoogleTokenServiceImpl(
    * @return The date and time the token expires.
    */
   def expiryDate(tokenResponse: TokenResponse): Option[Date] =
-    tokenResponse.expiresInSeconds.map(secs => new Date(secs * 1000 + nowService.now))
+    tokenResponse.expiresInSeconds.map(secs => new Date(secs * 1000L + nowService.now))
 
   /**
    * Determine whether an access token has expired.

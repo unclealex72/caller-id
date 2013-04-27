@@ -32,6 +32,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.MultivaluedMap
 import uk.co.unclealex.callerid.remote.json.ScalaObjectMapperProvider
+import com.sun.jersey.api.client.filter.LoggingFilter
 
 /**
  * An implementation of {@link GoogleRequestService} that uses Jersey to serialise and deserialise Google requests.
@@ -41,14 +42,16 @@ class JerseyGoogleRequestService extends GoogleRequestService {
   val client: Client = {
     val clientConfig = new DefaultClientConfig
     clientConfig.getClasses() += classOf[ScalaObjectMapperProvider]
-    Client.create(clientConfig)
+    val client = Client.create(clientConfig)
+    client.addFilter(new LoggingFilter(System.out))
+    client
   }
 
-  override def sendRequest[R](clazz: Class[R], url: String, formParameters: Map[String, String]): R = {
+  override def sendRequest(url: String, formParameters: Map[String, String]): TokenResponse = {
     val formParams: MultivaluedMap[String, String] = new MultivaluedMapImpl
     formParameters.foreach { case (k, v) => formParams.putSingle(k, v) }
     client.resource(url).`type`(MediaType.APPLICATION_FORM_URLENCODED_TYPE).accept(MediaType.APPLICATION_JSON_TYPE).
-      post(clazz, formParams)
+      post(classOf[TokenResponse], formParams)
   }
 
 }

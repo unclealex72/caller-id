@@ -26,9 +26,15 @@ package uk.co.unclealex.callerid.remote.google
 import scala.collection.Map
 
 /**
- * An interface allowing the abstraction of requesting receiving Google Json objects.
+ * An interface allowing the abstraction of requesting receiving Google Json token objects.
  */
 trait GoogleRequestService {
 
-  def sendRequest[R](clazz: Class[R], url: String, formParameters: Map[String, String]): R
+  /**
+   * Send a token request to Google.
+   * @param url The google URL to call
+   * @param formParameters The form parameters to send.
+   * @return The token response object from Google.
+   */
+  def sendRequest(url: String, formParameters: Map[String, String]): TokenResponse
 }

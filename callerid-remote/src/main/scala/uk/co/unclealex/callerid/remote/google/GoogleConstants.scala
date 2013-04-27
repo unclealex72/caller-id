@@ -29,10 +29,6 @@ package uk.co.unclealex.callerid.remote.google
  */
 case class GoogleConstants(
   /**
-   * The URL used to get a success code from Google.
-   */
-  oauthServerUrl: String = "https://accounts.google.com/o/oauth2/auth",
-  /**
    * The URL used to get OAuth tokens from Google.
    */
   oauthTokenUrl: String = "https://accounts.google.com/o/oauth2/token",
