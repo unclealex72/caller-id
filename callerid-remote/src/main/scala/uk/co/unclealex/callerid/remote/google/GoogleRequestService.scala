@@ -30,5 +30,5 @@ import scala.collection.Map
  */
 trait GoogleRequestService {
 
-  def sendRequest[R](url: String, formParameters: Map[String, String], responseType: Class[R]): R
+  def sendRequest[R](clazz: Class[R], url: String, formParameters: Map[String, String]): R
 }

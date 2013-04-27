@@ -29,6 +29,10 @@ package uk.co.unclealex.callerid.remote.google
  */
 case class GoogleConstants(
   /**
+   * The URL used to get a success code from Google.
+   */
+  oauthServerUrl: String = "https://accounts.google.com/o/oauth2/auth",
+  /**
    * The URL used to get OAuth tokens from Google.
    */
   oauthTokenUrl: String = "https://accounts.google.com/o/oauth2/token",
@@ -36,6 +40,10 @@ case class GoogleConstants(
    * The URL used to get contacts from Google.
    */
   contactFeedUrl: String = "https://www.google.com/m8/feeds/contacts/default/full",
+  /**
+   * The authorisation scope for contacts.
+   */
+  contactFeedScope: String = "https://www.google.com/m8/feeds",
   /**
    * The amount of time (in milliseconds) before expiry that an access token should be rerequested.
    */

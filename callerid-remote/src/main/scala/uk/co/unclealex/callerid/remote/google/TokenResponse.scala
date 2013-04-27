@@ -23,32 +23,30 @@
  */
 package uk.co.unclealex.callerid.remote.google
 
-import com.google.api.client.auth.oauth2.RefreshTokenRequest
-import org.codehaus.jackson.annotate.JsonProperty
-import org.codehaus.jackson.annotate.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * A JSON compatible class that encapsulate Google token responses.
  */
 case class TokenResponse(
   /** The Access token issued by the authorization server. */
-  accessToken: String,
+  @JsonProperty("access_token") accessToken: String,
   /**
    * Token type (as specified in <a
    * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-23#section-7.1">Access Token Types</a>).
    */
-  tokenType: String,
+  @JsonProperty("token_type") tokenType: String,
   /**
    * Lifetime in seconds of the access token (for example 3600 for an hour).
    */
-  expiresInSeconds: Option[Long],
+  @JsonProperty("expires_in") expiresInSeconds: Option[Long],
   /**
    * Refresh token which can be used to obtain new access tokens using {@link RefreshTokenRequest}.
    */
-  refreshToken: Option[String],
+  @JsonProperty("refresh_token") refreshToken: Option[String],
   /**
    * Scope of the access token as specified in <a
    * href="http://tools.ietf.org/html/draft-ietf-oauth-v2-23#section-3.3">Access Token Scope</a>.
    */
-  scope: Option[String])
+  @JsonProperty("scope") scope: Option[String])
 

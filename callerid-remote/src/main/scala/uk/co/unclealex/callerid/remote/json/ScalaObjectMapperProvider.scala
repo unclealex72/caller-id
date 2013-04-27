@@ -18,26 +18,32 @@
  * specific language governing permissions and limitations
  * under the License.
  *
+ * @author unclealex72
+ *
+ */
+
+package uk.co.unclealex.callerid.remote.json
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import javax.ws.rs.ext.ContextResolver
+import javax.ws.rs.ext.Provider
+
+/**
+ * A class and object used to get the default object mapper with the scala modulre already registered.
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.view
+@Provider
+class ScalaObjectMapperProvider extends ContextResolver[ObjectMapper] {
 
-/**
- * A JSON compatible class that represents the telephone number that made a call.
- */
+  override def getContext(clazz: Class[_]): ObjectMapper = {
+    ScalaObjectMapper
+  }
+}
 
-case class Number(
-  /**
-   * The international prefix of the telephone number that made this call.
-   */
-  internationalPrefix: String,
+object ScalaObjectMapper extends ObjectMapper {
 
-  /**
-   * The STD code of the telephone number that made this call or none if the number was non-geographic.
-   */
-  stdCode: Option[String],
-  /**
-   * The non-geographical part of the telephone number that made this call.
-   */
-  number: String)
+  super.registerModule(DefaultScalaModule)
+
+}

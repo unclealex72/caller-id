@@ -23,17 +23,9 @@
  */
 package uk.co.unclealex.callerid.remote.google
 
-import com.google.common.collect.Lists
-import com.google.common.collect.Sets
-import com.google.gdata.client.Service
-import com.google.gdata.data.contacts.ContactEntry
-import com.google.gdata.data.contacts.ContactFeed
-import com.google.gdata.data.extensions.PostalAddress
-import com.google.gdata.data.extensions.StructuredPostalAddress
-import java.net.URL
-import org.springframework.transaction.annotation.Transactional
-import uk.co.unclealex.callerid.remote.model.User
 import scala.collection.JavaConversions._
+
+import org.springframework.transaction.annotation.Transactional
 /**
  * The default implementation of {@link GoogleContactsService}.
  */
@@ -46,8 +38,9 @@ class GoogleContactsServiceImpl(
   /**
    * The Google constants object used to configure how to get contacts from Google.
    */
-  googleConstants: GoogleConstants) extends GoogleContactsService {
+  googleConstants: GoogleConstants) /*extends GoogleContactsService*/ {
 
+  /*
   override def getAllContacts(user: User): Set[GoogleContact] = {
     val url = new UrlWithParameters(googleConstants.contactFeedUrl)
       .withParameters(("accessToken", googleTokenService.accessToken(user)), ("max-results", Int.MaxValue)).toURL
@@ -96,4 +89,6 @@ class GoogleContactsServiceImpl(
    */
   def toAddress(spa: StructuredPostalAddress): Pair[String, Boolean] =
     new Pair(spa.getFormattedAddress().getValue(), if (spa.hasPrimary) spa.getPrimary else false)
+    * 
+    */
 }

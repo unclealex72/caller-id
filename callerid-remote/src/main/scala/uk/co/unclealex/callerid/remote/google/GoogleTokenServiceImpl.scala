@@ -23,20 +23,20 @@
  */
 package uk.co.unclealex.callerid.remote.google
 
-import com.google.gdata.client.GoogleService
-import com.google.gdata.client.authn.oauth.GoogleOAuthParameters
-import com.google.gdata.client.authn.oauth.OAuthHmacSha1Signer
+import java.util.Date
+import scala.collection.JavaConversions._
+import scala.collection.mutable.Map
 import uk.co.unclealex.callerid.remote.model.OauthToken
 import uk.co.unclealex.callerid.remote.model.OauthTokenType
 import uk.co.unclealex.callerid.remote.model.User
-import scala.collection.JavaConversions._
-import scala.collection.mutable.Map
-import java.util.Date
+import scala.collection.mutable.Buffer
+import java.util.ArrayList
 
 /**
  * The default implementation of {@link GoogleTokenService}.
  */
 class GoogleTokenServiceImpl(
+
   /**
    * The Google configuration object used to configure how to get contacts from Google.
    */
@@ -56,10 +56,6 @@ class GoogleTokenServiceImpl(
    * The service used to send requests to Google on the wire.
    */
   googleRequestService: GoogleRequestService) extends GoogleTokenService {
-
-  override def secureForUser(googleService: GoogleService, googleScope: String, user: User): Unit = {
-    googleService.setUserToken(accessToken(user))
-  }
 
   /**
    * Implicits for Users and their tokens.
@@ -118,9 +114,9 @@ class GoogleTokenServiceImpl(
       tokenType -> token,
       "grant_type" -> grantType)
     if (includeRedirect) {
-      parameters += Pair("redirect_uri", "urn:ietf:wg:oauth:2.0:oob")
+      parameters += "redirect_uri" -> "urn:ietf:wg:oauth:2.0:oob"
     }
-    googleRequestService.sendRequest(googleConstants.oauthTokenUrl, parameters, classOf[TokenResponse])
+    googleRequestService.sendRequest(classOf[TokenResponse], googleConstants.oauthTokenUrl, parameters)
   }
 
   /**

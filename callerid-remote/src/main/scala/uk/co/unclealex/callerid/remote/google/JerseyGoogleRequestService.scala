@@ -23,29 +23,32 @@
  */
 package uk.co.unclealex.callerid.remote.google
 
-import com.sun.jersey.core.util.MultivaluedMapImpl
-import javax.ws.rs.core.MultivaluedMap
+import scala.collection.JavaConversions._
+import scala.collection.Map
+import com.sun.jersey.api.client.Client
 import com.sun.jersey.api.client.config.ClientConfig
 import com.sun.jersey.api.client.config.DefaultClientConfig
-import scala.collection.JavaConversions._
-import com.sun.jersey.api.json.JSONConfiguration
-import com.sun.jersey.api.client.Client
+import com.sun.jersey.core.util.MultivaluedMapImpl
 import javax.ws.rs.core.MediaType
-import scala.collection.Map
+import javax.ws.rs.core.MultivaluedMap
+import uk.co.unclealex.callerid.remote.json.ScalaObjectMapperProvider
 
 /**
  * An implementation of {@link GoogleRequestService} that uses Jersey to serialise and deserialise Google requests.
  */
 class JerseyGoogleRequestService extends GoogleRequestService {
 
-  override def sendRequest[R](url: String, formParameters: Map[String, String], responseType: Class[R]) = {
-    val clientConfig: ClientConfig = new DefaultClientConfig
-    clientConfig.getFeatures() += Pair(JSONConfiguration.FEATURE_POJO_MAPPING, true)
-    val client = Client.create(clientConfig)
+  val client: Client = {
+    val clientConfig = new DefaultClientConfig
+    clientConfig.getClasses() += classOf[ScalaObjectMapperProvider]
+    Client.create(clientConfig)
+  }
+
+  override def sendRequest[R](clazz: Class[R], url: String, formParameters: Map[String, String]): R = {
     val formParams: MultivaluedMap[String, String] = new MultivaluedMapImpl
     formParameters.foreach { case (k, v) => formParams.putSingle(k, v) }
     client.resource(url).`type`(MediaType.APPLICATION_FORM_URLENCODED_TYPE).accept(MediaType.APPLICATION_JSON_TYPE).
-      post(responseType, formParams)
+      post(clazz, formParams)
   }
 
 }
