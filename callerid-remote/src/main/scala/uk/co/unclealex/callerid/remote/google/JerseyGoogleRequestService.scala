@@ -42,9 +42,7 @@ class JerseyGoogleRequestService extends GoogleRequestService {
   val client: Client = {
     val clientConfig = new DefaultClientConfig
     clientConfig.getClasses() += classOf[ScalaObjectMapperProvider]
-    val client = Client.create(clientConfig)
-    client.addFilter(new LoggingFilter(System.out))
-    client
+    Client.create(clientConfig)
   }
 
   override def sendRequest(url: String, formParameters: Map[String, String]): TokenResponse = {

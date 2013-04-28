@@ -8,6 +8,7 @@ import com.google.common.base.Splitter
 import scala.collection.JavaConversions._
 import scala.collection.immutable.HashMap
 import com.google.common.base.Joiner
+import java.net.URI
 /**
  * A class that represents a URL with its query parameters.
  */
@@ -45,6 +46,20 @@ case class UrlWithParameters(url: String, parameters: Map[String, String] = Map(
  * A class to parse a URL into a URL with parameters.
  */
 object UrlWithParameters {
+
+  /**
+   * Implicit classes for URLs, URIs and strings.
+   */
+  abstract class UrlWithParametersAbstractImplicits[V](value: V) {
+
+    def withParameters(parameters: Map[Any, Any]) = {
+      UrlWithParameters.parse(value.toString).withParameters(parameters)
+    }
+  }
+
+  implicit class UrlWithParametersStringImplicits(value: String) extends UrlWithParametersAbstractImplicits[String](value)
+  implicit class UrlWithParametersUrlImplicits(value: URL) extends UrlWithParametersAbstractImplicits[URL](value)
+  implicit class UrlWithParametersUriImplicits(value: URI) extends UrlWithParametersAbstractImplicits[URI](value)
 
   def parse(url: URL): UrlWithParameters = parse(url.toString())
 
