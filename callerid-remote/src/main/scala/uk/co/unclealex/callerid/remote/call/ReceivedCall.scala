@@ -18,22 +18,27 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * @author alex
+ * @author unclealex72
  *
  */
-package uk.co.unclealex.callerid.remote.contact
 
-import uk.co.unclealex.callerid.remote.google.GoogleContact
+package uk.co.unclealex.callerid.remote.call
+
 import uk.co.unclealex.callerid.remote.numbers.PhoneNumber
 
 /**
- * An interface for finding {@link Contact}s from {@link PhoneNumber}s.
+ * A class that encapsulates a received call.
+ * @author alex
+ *
  */
-trait ContactService {
-
+case class ReceivedCall(
   /**
-   * Get all contacts by their normalised phone number.
+   * The number that made the call
    */
-  def getContactsByNormalisedPhoneNumber: Map[String, Contact]
+  phoneNumber: PhoneNumber,
+  /**
+   * The name of the contact associated with the phone number.
+   */
+  contact: Option[String]) {
 
 }

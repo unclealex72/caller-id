@@ -48,15 +48,15 @@ class ContactServiceImpl(
    */
   userDao: UserDao) extends ContactService {
 
-  override def getContactsByPhoneNumber = {
+  override def getContactsByNormalisedPhoneNumber = {
     val allContacts =
       userDao.getAll().map(googleContactsService.getAllContacts _).flatten
-    val contactsByPhoneNumber = new HashMap[PhoneNumber, Contact]
+    val contactsByPhoneNumber = new HashMap[String, Contact]
     allContacts.foreach {
       contact =>
         val phoneNumbers = contact.telephoneNumbers.map(numberLocationService.decompose _)
         phoneNumbers.foreach {
-          phoneNumber => contactsByPhoneNumber += phoneNumber -> Contact(contact.name, contact.address)
+          phoneNumber => contactsByPhoneNumber += phoneNumber.normalisedNumber -> Contact(contact.name, contact.address)
         }
     }
     contactsByPhoneNumber.toMap

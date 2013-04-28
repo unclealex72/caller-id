@@ -18,22 +18,23 @@
  * specific language governing permissions and limitations
  * under the License.
  *
+ * @author unclealex72
+ *
+ */
+
+package uk.co.unclealex.callerid.remote.call
+
+/**
+ * A service that handles a call being received.
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.contact
-
-import uk.co.unclealex.callerid.remote.google.GoogleContact
-import uk.co.unclealex.callerid.remote.numbers.PhoneNumber
-
-/**
- * An interface for finding {@link Contact}s from {@link PhoneNumber}s.
- */
-trait ContactService {
+trait CallReceivedService {
 
   /**
-   * Get all contacts by their normalised phone number.
+   * Acknowledge that a call has been made and persist it.
+   * @param number The number that called.
+   * @return A {@link ReceivedCall} that identifies who made this call.
    */
-  def getContactsByNormalisedPhoneNumber: Map[String, Contact]
-
+  def callReceived(number: String): ReceivedCall
 }

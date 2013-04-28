@@ -14,22 +14,22 @@
     
     <context:annotation-config />
     <tx:annotation-driven />
-    
+
+    <!-- DAOs -->    
     <bean id="userDao" class="uk.co.unclealex.callerid.remote.dao.JdoUserDao"/>
     <bean id="callRecordDao" class="uk.co.unclealex.callerid.remote.dao.JdoCallRecordDao"/>
     
-    <bean id="googleConfiguration" class="uk.co.unclealex.configuration.spring.ConfigurationFactoryBean">
-        <property name="configurationResource" value="classpath:callerid.json"/>
-        <property name="configurationClass" value="uk.co.unclealex.callerid.remote.google.GoogleConfigurationBean"/>
-    </bean>
-    
-    <bean id="googleConstants" class="uk.co.unclealex.callerid.remote.google.GoogleConstantsImpl"/>
-    
+    <!-- Google -->
+    <bean id="googleRequestService" class="uk.co.unclealex.callerid.remote.google.JerseyGoogleRequestService"/>
     <bean id="nowService" class="uk.co.unclealex.callerid.remote.google.SystemNowService"/>
+    <bean id="googleConstants" class="uk.co.unclealex.callerid.remote.google.GoogleConstants"/>
+    <bean id="googleTokenService" class="uk.co.unclealex.callerid.remote.google.GoogleTokenServiceImpl"/>
+    <bean id="googleConfiguration"/>
+    <bean id="googleContactsParser" class="uk.co.unclealex.callerid.remote.google.GoogleContactsParserImpl"/>
+    <bean id="googleContactsService" class="uk.co.unclealex.callerid.remote.google.GoogleContactsServiceImpl"/>
     
-    <bean id="googleContactsService" class="uk.co.unclealex.callerid.remote.google.GoogleContactsServiceImpl">
-        <constructor-arg ref="googleConfiguration"/>
-        <constructor-arg ref="googleConstants"/>
-        <constructor-arg ref="nowService"/>
-    </bean>
+    <!-- Phone Numbers -->
+    <bean id="cityDao" class="uk.co.unclealex.callerid.remote.numbers.JsonResourceCityDao"/>
+    <bean id="numberLocationService" class="uk.co.unclealex.callerid.remote.numbers.NumberLocationServiceImpl"/>
+    <bean id="locationConfiguration"/>
 </beans>

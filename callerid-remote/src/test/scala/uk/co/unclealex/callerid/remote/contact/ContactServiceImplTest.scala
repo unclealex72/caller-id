@@ -43,7 +43,7 @@ class ContactServiceImplTest extends FunSuite with ShouldMatchers with GivenWhen
 
   test("Get all contacts") {
     val numberLocationService = new NumberLocationService {
-      override def decompose(number: String) = number asPhoneNumber
+      override def decompose(number: String) = PhoneNumber("+" + number, List(), None, number)
     }
     val freddie = "freddie" asUser Set(GoogleContact("John", Some("Heathrow"), Set("1", "2")))
     val brian = "brian" asUser Set(
@@ -56,19 +56,17 @@ class ContactServiceImplTest extends FunSuite with ShouldMatchers with GivenWhen
     val userDao = stub[UserDao]
     (userDao.getAll _).when().returns(users.map { case (u, cs) => u })
     val contactService = new ContactServiceImpl(googleContactsService, numberLocationService, userDao)
-    val actualContactsByPhoneNumber = contactService.getContactsByPhoneNumber
+    val actualContactsByPhoneNumber = contactService.getContactsByNormalisedPhoneNumber
     val expectedContactsByPhoneNumber = Map(
-      ("1" asPhoneNumber) -> Contact("John", Some("Heathrow")),
-      ("2" asPhoneNumber) -> Contact("John", Some("Heathrow")),
-      ("3" asPhoneNumber) -> Contact("Roger", None),
-      ("4" asPhoneNumber) -> Contact("Roger", None),
-      ("5" asPhoneNumber) -> Contact("Spike", None))
+      "+1" -> Contact("John", Some("Heathrow")),
+      "+2" -> Contact("John", Some("Heathrow")),
+      "+3" -> Contact("Roger", None),
+      "+4" -> Contact("Roger", None),
+      "+5" -> Contact("Spike", None))
     actualContactsByPhoneNumber should equal(expectedContactsByPhoneNumber)
   }
 
   implicit class StringImplicits(str: String) {
-
-    def asPhoneNumber = new PhoneNumber(str, List(), None, str)
 
     def asUser(googleContacts: Set[GoogleContact]) = {
       val user = new User
