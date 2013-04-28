@@ -39,14 +39,16 @@ class NumberLocationServiceImpl(
   case class PrefixAndParser(prefix: String, parser: String => String)
 
   override def decompose(number: String): PhoneNumber = {
+    val trimmedNumber = number.replaceAll("\\s+", "")
     val functionsByPrefix =
       List(
         PrefixAndParser("00", international),
         PrefixAndParser("+", international),
         PrefixAndParser("0", national),
         PrefixAndParser("", local))
-    val matchingPrefixAndParser = functionsByPrefix.find { pp => number.startsWith(pp.prefix) }.get
-    val actualNumber = matchingPrefixAndParser.parser(number.substring(matchingPrefixAndParser.prefix.length))
+    val matchingPrefixAndParser = functionsByPrefix.find { pp => trimmedNumber.startsWith(pp.prefix) }.get
+    val actualNumber = matchingPrefixAndParser.parser(
+      trimmedNumber.substring(matchingPrefixAndParser.prefix.length))
     toPhoneNumber(actualNumber)
   }
 

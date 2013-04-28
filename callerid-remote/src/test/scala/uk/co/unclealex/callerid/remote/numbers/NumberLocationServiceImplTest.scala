@@ -14,6 +14,10 @@ class NumberLocationServiceImplTest extends FunSuite with ShouldMatchers with Be
     numberLocationServiceImpl = new NumberLocationServiceImpl(cityDao, new LocationConfiguration("44", "1256"))
   }
 
+  test("number with spaces") {
+    " +34  10 987654 " decomposesTo (Some("Madrid"), "987654", "+3410987654", "Spain")
+  }
+
   test("local number") {
     "999888" decomposesTo (Some("Basingstoke"), "999888", "+441256999888", "United Kingdom")
   }
