@@ -19,15 +19,7 @@ case class UrlWithParameters(url: String, parameters: Map[String, String] = Map(
    * @param extraParameters The parameters to add or update.
    * @return A new {@link UrlWithParameters} with the extra parameters.
    */
-  def withParameters(extraParameters: Pair[Any, Any]*): UrlWithParameters =
-    withParameters(extraParameters.toMap)
-
-  /**
-   * Add or update a parameters.
-   * @param extraParameters The parameters to add or update.
-   * @return A new {@link UrlWithParameters} with the extra parameters.
-   */
-  def withParameters(extraParameters: Map[Any, Any]): UrlWithParameters =
+  def withParameters(extraParameters: Map[_ <: Any, _ <: Any]): UrlWithParameters =
     new UrlWithParameters(url, parameters ++ extraParameters.map { p => Pair(p._1.toString, p._2.toString) })
 
   /**
@@ -52,7 +44,7 @@ object UrlWithParameters {
    */
   abstract class UrlWithParametersAbstractImplicits[V](value: V) {
 
-    def withParameters(parameters: Map[Any, Any]) = {
+    def withParameters(parameters: Map[_ <: Any, _ <: Any]) = {
       UrlWithParameters.parse(value.toString).withParameters(parameters)
     }
   }
