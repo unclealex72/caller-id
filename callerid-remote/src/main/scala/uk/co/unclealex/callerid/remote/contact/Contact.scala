@@ -18,22 +18,23 @@
  * specific language governing permissions and limitations
  * under the License.
  *
+ * @author unclealex72
+ *
+ */
+
+package uk.co.unclealex.callerid.remote.contact
+
+/**
+ * A class that represents a known person who may have called.
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.contact
-
-import uk.co.unclealex.callerid.remote.google.GoogleContact
-import uk.co.unclealex.callerid.remote.numbers.PhoneNumber
-
-/**
- * An interface for finding {@link Contact}s from {@link PhoneNumber}s.
- */
-trait ContactService {
-
+case class Contact(
   /**
-   * Get all contacts by their phone number.
+   * The name of the contact
    */
-  def getContactsByPhoneNumber: Map[PhoneNumber, Contact];
-
-}
+  name: String,
+  /**
+   * The address of the contact.
+   */
+  address: Option[String])
