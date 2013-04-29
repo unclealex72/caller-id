@@ -36,7 +36,7 @@ class NumberFormatterImpl(
    */
   locationConfiguration: LocationConfiguration) extends NumberFormatter {
 
-  def format(phoneNumber: PhoneNumber): List[String] = {
+  def formatNumber(phoneNumber: PhoneNumber): List[String] = {
     val internationalDiallingCode = phoneNumber.countries.headOption.map { country =>
       if (country.internationalDiallingCode != locationConfiguration.internationalCode)
         Some(country.internationalDiallingCode) else None
@@ -50,5 +50,10 @@ class NumberFormatterImpl(
         List(Some(s"0${phoneNumber.number}"))
       }
     }.filter(_.isDefined).map(_.get)
+  }
+
+  def formatAddress(phoneNumber: PhoneNumber): List[String] = {
+    val countryName = phoneNumber.countries.head.name
+    phoneNumber.city.map { city => List(city.name, countryName) }.getOrElse(List(countryName))
   }
 }

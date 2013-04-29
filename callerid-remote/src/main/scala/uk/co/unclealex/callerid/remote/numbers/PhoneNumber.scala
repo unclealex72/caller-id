@@ -38,7 +38,7 @@ case class PhoneNumber(
    * will be of length exactly one. Otherwise, the countries will be listed with the country with the most cities
    * first.
    */
-  countries: Iterable[Country],
+  countries: List[Country],
   /**
    * The city from which this phone number was made, if known.
    */

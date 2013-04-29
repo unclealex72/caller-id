@@ -41,38 +41,37 @@ class NumberFormatterImplTest extends FunSuite with ShouldMatchers {
   val france = List(Country("France", "33", "fr", List()))
   val paris = Some(City("Paris", "1"))
 
-  /**
-   * Format a telephone number as a list of strings (so any separator can be applied later).
-   * Numbers will be formatted as follows:
-   * <table>
-   *   <th><td>Number Type</td><td>Format</td></th>
-   *   <tr><td>International, Geographic</td><td>+xx yyy zzzzzz</td></tr>
-   *   <tr><td>International, Non-geographic</td><td>+xx yyyzzzzzz</td></tr>
-   *   <tr><td>National, Geographic</td><td>0yyy zzzzzz</td></tr>
-   *   <tr><td>National, Non-geographic</td><td>0yyyzzzzzz</td></tr>
-   *   <tr><td>Local</td><td>zzzzzz</td></tr>
-   * </table>
-   */
+  def formatNumber(country: List[Country], city: Option[City], number: String) =
+    numberFormatter.formatNumber(PhoneNumber("", country, city, number))
 
-  def format(phoneNumber: PhoneNumber): List[String] = numberFormatter.format(phoneNumber)
+  def formatAddress(country: List[Country], city: Option[City], number: String) =
+    numberFormatter.formatAddress(PhoneNumber("", country, city, number))
 
   test("International and geographic") {
-    format(PhoneNumber("", france, paris, "123456")) should equal(List("+33", "1", "123456"))
+    formatNumber(france, paris, "123456") should equal(List("+33", "1", "123456"))
   }
 
   test("International and non-geographic") {
-    format(PhoneNumber("", france, None, "123456789")) should equal(List("+33", "123456789"))
+    formatNumber(france, None, "123456789") should equal(List("+33", "123456789"))
   }
 
   test("National and geographic") {
-    format(PhoneNumber("", uk, guildford, "123456")) should equal(List("01483", "123456"))
+    formatNumber(uk, guildford, "123456") should equal(List("01483", "123456"))
   }
 
   test("National and non-geographic") {
-    format(PhoneNumber("", uk, None, "123456789")) should equal(List("0123456789"))
+    formatNumber(uk, None, "123456789") should equal(List("0123456789"))
   }
 
   test("local") {
-    format(PhoneNumber("", uk, basingstoke, "123456")) should equal(List("123456"))
+    formatNumber(uk, basingstoke, "123456") should equal(List("123456"))
+  }
+
+  test("Non-geographic address") {
+    formatAddress(uk, None, "123456") should equal(List("United Kingdom"))
+  }
+
+  test("Geographic address") {
+    formatAddress(uk, basingstoke, "123456") should equal(List("Basingstoke", "United Kingdom"))
   }
 }

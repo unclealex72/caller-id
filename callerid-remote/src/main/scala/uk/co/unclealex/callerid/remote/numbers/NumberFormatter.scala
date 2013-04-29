@@ -43,5 +43,11 @@ trait NumberFormatter {
    *   <tr><td>Local</td><td>zzzzzz</td></tr>
    * </table>
    */
-  def format(telephoneNumber: PhoneNumber): List[String]
+  def formatNumber(phoneNumber: PhoneNumber): List[String]
+
+  /**
+   * Format an address. Geographic numbers with always be of the form <code>city, country</code> whilst
+   * non-geographic numbers will only be formatted as the country with the most cities.
+   */
+  def formatAddress(phoneNumber: PhoneNumber): List[String]
 }
