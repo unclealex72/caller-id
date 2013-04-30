@@ -41,7 +41,7 @@ import scalaz.NonEmptyListFunctions
  * An implementation of {@link CityDao} that uses a JSON resource
  * to store countries and cities.
  */
-class JsonResourceCityDao extends CityDao with NonEmptyListFunctions {
+class JsonResourceCityDao extends CityDao {
 
   /**
    * A multimap of all countries keyed by their international dialling codes. The collection values of this map are ordered
@@ -88,13 +88,16 @@ class JsonResourceCityDao extends CityDao with NonEmptyListFunctions {
     }
   }
 
+  /**
+   * A small class to encapsulate a map whose values are non-empty, sorted lists.
+   */
   class OrderedNonEmptyMultimap[C](map: Map[String, NonEmptyList[C]], ordering: Ordering[C]) {
 
     def add(key: String, value: C): Unit = {
       val newList = map.get(key).map { values =>
         val (smallerValues, largerValues) =
           ((vs: List[C]) => (vs.filter(_ < value), vs.filter(value < _)))(values.list)
-        smallerValues <::: nel(value, largerValues)
+        smallerValues <::: NonEmptyList(value) :::> largerValues
       }.
         getOrElse { NonEmptyList(value) }
       map.put(key, newList)
