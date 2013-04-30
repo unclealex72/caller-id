@@ -50,7 +50,7 @@ class JdoCallRecordDaoTest extends AbstractDaoTest {
       cr.setCallDate(df.parse("05/09/1972 09:13:00"))
       cr.setTelephoneNumber("0148322114114")
     }
-    callRecordDao.store(firstCallRecord, secondCallRecord)
+    callRecordDao.storeAll(firstCallRecord, secondCallRecord)
     val persistedCallRecords = callRecordDao.getAll()
     assertThat("The wrong call records were returned.", persistedCallRecords,
       containsInAnyOrder(firstCallRecord, secondCallRecord))
