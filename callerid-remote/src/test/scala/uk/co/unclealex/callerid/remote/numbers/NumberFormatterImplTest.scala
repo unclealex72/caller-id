@@ -26,6 +26,7 @@ package uk.co.unclealex.callerid.remote.numbers
 
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
+import scalaz.NonEmptyList
 
 /**
  * @author alex
@@ -35,16 +36,16 @@ class NumberFormatterImplTest extends FunSuite with ShouldMatchers {
 
   val numberFormatter = new NumberFormatterImpl(new LocationConfiguration("44", "1256"))
 
-  val uk = List(Country("United Kingdom", "44", "uk", List()))
+  val uk = NonEmptyList(Country("United Kingdom", "44", "uk", List()))
   val basingstoke = Some(City("Basingstoke", "1256"))
   val guildford = Some(City("Guildford", "1483"))
-  val france = List(Country("France", "33", "fr", List()))
+  val france = NonEmptyList(Country("France", "33", "fr", List()))
   val paris = Some(City("Paris", "1"))
 
-  def formatNumber(country: List[Country], city: Option[City], number: String) =
+  def formatNumber(country: NonEmptyList[Country], city: Option[City], number: String) =
     numberFormatter.formatNumber(PhoneNumber("", country, city, number))
 
-  def formatAddress(country: List[Country], city: Option[City], number: String) =
+  def formatAddress(country: NonEmptyList[Country], city: Option[City], number: String) =
     numberFormatter.formatAddress(PhoneNumber("", country, city, number))
 
   test("International and geographic") {

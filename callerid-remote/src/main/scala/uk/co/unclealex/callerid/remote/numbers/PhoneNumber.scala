@@ -23,6 +23,8 @@
  */
 package uk.co.unclealex.callerid.remote.numbers
 
+import scalaz.NonEmptyList
+
 /**
  * The representation of a telephone number that called.
  */
@@ -38,7 +40,7 @@ case class PhoneNumber(
    * will be of length exactly one. Otherwise, the countries will be listed with the country with the most cities
    * first.
    */
-  countries: List[Country],
+  countries: NonEmptyList[Country],
   /**
    * The city from which this phone number was made, if known.
    */

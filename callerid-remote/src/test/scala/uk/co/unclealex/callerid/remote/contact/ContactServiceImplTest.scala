@@ -35,15 +35,19 @@ import uk.co.unclealex.callerid.remote.model.User
 import uk.co.unclealex.callerid.remote.numbers.NumberLocationService
 import uk.co.unclealex.callerid.remote.numbers.PhoneNumber
 import uk.co.unclealex.callerid.remote.dao.UserDao
+import scalaz.NonEmptyList
+import uk.co.unclealex.callerid.remote.numbers.Country
 /**
  * @author alex
  *
  */
 class ContactServiceImplTest extends FunSuite with ShouldMatchers with GivenWhenThen with MockFactory {
 
+  val countries = NonEmptyList(Country("UK", "44", "uk", List()))
+
   test("Get all contacts") {
     val numberLocationService = new NumberLocationService {
-      override def decompose(number: String) = PhoneNumber("+" + number, List(), None, number)
+      override def decompose(number: String) = PhoneNumber("+" + number, countries, None, number)
     }
     val freddie = "freddie" asUser Set(GoogleContact("John", Some("Heathrow"), Set("1", "2")))
     val brian = "brian" asUser Set(

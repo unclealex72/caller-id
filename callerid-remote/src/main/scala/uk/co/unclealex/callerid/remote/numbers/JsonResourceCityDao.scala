@@ -34,18 +34,20 @@ import scala.collection.mutable.Set
 import javax.annotation.PostConstruct
 import com.fasterxml.jackson.core.`type`.TypeReference
 import scala.collection.mutable.HashSet
+import scalaz.NonEmptyList
+import scalaz.NonEmptyListFunctions
 
 /**
  * An implementation of {@link CityDao} that uses a JSON resource
  * to store countries and cities.
  */
-class JsonResourceCityDao extends CityDao {
+class JsonResourceCityDao extends CityDao with NonEmptyListFunctions {
 
   /**
    * A multimap of all countries keyed by their international dialling codes. The collection values of this map are ordered
    * such that countries with more cities are listed first.
    */
-  val countriesByInternationalDiallingCode = new OrderedMultimap[Country](
+  val countriesByInternationalDiallingCode = new OrderedNonEmptyMultimap[Country](
     new HashMap,
     Ordering.by((c: Country) => (-c.cities.length, c.name)))
 
@@ -53,7 +55,7 @@ class JsonResourceCityDao extends CityDao {
    * A multimap of all cities keyed by their international dialling codes. The collection values of this map are ordered
    * such that cities with longer std codes are listed first.
    */
-  val citiesByInternationalDiallingCode = new OrderedMultimap[City](
+  val citiesByInternationalDiallingCode = new OrderedNonEmptyMultimap[City](
     new HashMap,
     Ordering.by((c: City) => (-c.stdCode.length, c.stdCode, c.name)))
 
@@ -86,28 +88,39 @@ class JsonResourceCityDao extends CityDao {
     }
   }
 
-  class OrderedMultimap[C](map: Map[String, Set[C]], ordering: Ordering[C]) {
+  class OrderedNonEmptyMultimap[C](map: Map[String, NonEmptyList[C]], ordering: Ordering[C]) {
 
     def add(key: String, value: C): Unit = {
-      val values = map.getOrElseUpdate(key, { new TreeSet[C]()(ordering) })
-      values += value
+      val newList = map.get(key).map { values =>
+        val (smallerValues, largerValues) =
+          ((vs: List[C]) => (vs.filter(_ < value), vs.filter(value < _)))(values.list)
+        smallerValues <::: nel(value, largerValues)
+      }.
+        getOrElse { NonEmptyList(value) }
+      map.put(key, newList)
     }
 
     def get(key: String) = map.get(key)
+
+    implicit class OrderingImplicit(c1: C) {
+      def <(c2: C) = ordering.lt(c1, c2)
+    }
   }
 
   override def extractInternationalDiallingCode(number: String) = internationalDiallingCodes.find(number.startsWith(_)).get
 
   override def extractCity(number: String, internationalDiallingCode: String): Option[City] = {
     val cities = citiesByInternationalDiallingCode.get(internationalDiallingCode)
-    cities.getOrElse(new HashSet[City]).find((c: City) => number.startsWith(c.stdCode))
+    cities.map { _.list.find((c: City) => number.startsWith(c.stdCode)) }.getOrElse(None)
   }
 
   override def countryOf(city: City): Country = {
     countriesByCity.get(city).get
   }
 
-  override def countries(internationalDiallingCode: String): List[Country] = {
-    countriesByInternationalDiallingCode.get(internationalDiallingCode).map(_.toList).getOrElse(List())
+  override def countries(internationalDiallingCode: String): NonEmptyList[Country] = {
+    countriesByInternationalDiallingCode.get(internationalDiallingCode).getOrElse {
+      throw new IllegalArgumentException(s"${internationalDiallingCode} is not a valid dialling code.")
+    }
   }
 }

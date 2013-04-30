@@ -27,6 +27,7 @@ import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.GivenWhenThen
 import org.scalatest.BeforeAndAfterAll
+import scalaz.NonEmptyList
 
 class JsonResourceCityDaoTest extends FunSuite with ShouldMatchers with GivenWhenThen with BeforeAndAfterAll {
 
@@ -55,6 +56,7 @@ class JsonResourceCityDaoTest extends FunSuite with ShouldMatchers with GivenWhe
   }
 
   test("Get countries") {
-    jsonResourceCityDao.countries("44").map(_.name) should equal(List("United Kingdom", "Guernsey", "Isle of Man", "Jersey"))
+    jsonResourceCityDao.countries("44").map(_.name) should equal(
+      NonEmptyList("United Kingdom", "Guernsey", "Isle of Man", "Jersey"))
   }
 }

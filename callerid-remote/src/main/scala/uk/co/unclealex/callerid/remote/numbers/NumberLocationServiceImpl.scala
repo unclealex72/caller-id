@@ -23,6 +23,8 @@
  */
 package uk.co.unclealex.callerid.remote.numbers;
 
+import scalaz.NonEmptyList
+
 /**
  * The default implementation of {@link NumberLocationService}.
  */
@@ -85,11 +87,11 @@ class NumberLocationServiceImpl(
     city.map {
       (c: City) =>
         val country = cityDao.countryOf(c)
-        PhoneNumber(normalisedNumber, List(country), city, nationalNumber.substring(c.stdCode.length()))
+        PhoneNumber(normalisedNumber, NonEmptyList(country), city, nationalNumber.substring(c.stdCode.length()))
     }
       .getOrElse {
         val countries = cityDao.countries(internationalDiallingCode)
-        PhoneNumber(normalisedNumber, cityDao.countries(internationalDiallingCode), None, nationalNumber)
+        PhoneNumber(normalisedNumber, countries, None, nationalNumber)
       }
   }
 

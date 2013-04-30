@@ -36,12 +36,15 @@ import uk.co.unclealex.callerid.remote.google.NowService
 import uk.co.unclealex.callerid.remote.contact.ContactService
 import uk.co.unclealex.callerid.remote.numbers.NumberLocationService
 import uk.co.unclealex.callerid.remote.dao.CallRecordDao
+import scalaz.NonEmptyList
+import uk.co.unclealex.callerid.remote.numbers.Country
 /**
  * @author alex
  *
  */
 class CallReceivedServiceImplTest extends FunSuite with ShouldMatchers with GivenWhenThen with MockFactory {
 
+  val countries = NonEmptyList(Country("UK", "44", "uk", List()))
   test("Call received from a known contact") {
     execute("1", Some("Freddie Mercury"))
   }
@@ -56,8 +59,8 @@ class CallReceivedServiceImplTest extends FunSuite with ShouldMatchers with Give
     (nowService.now _).when().returns(now.getTime)
     val callRecordDao = stub[CallRecordDao]
     val numberLocationService = stub[NumberLocationService]
-    (numberLocationService.decompose _).when("1").returns(PhoneNumber("+1", List(), None, "1"))
-    (numberLocationService.decompose _).when("2").returns(PhoneNumber("+2", List(), None, "2"))
+    (numberLocationService.decompose _).when("1").returns(PhoneNumber("+1", countries, None, "1"))
+    (numberLocationService.decompose _).when("2").returns(PhoneNumber("+2", countries, None, "2"))
     val contactService = stub[ContactService]
     (contactService.getContactsByNormalisedPhoneNumber _).when().returns(Map("+1" -> Contact("Freddie Mercury", None)))
     When("a call has been received")
@@ -73,6 +76,6 @@ class CallReceivedServiceImplTest extends FunSuite with ShouldMatchers with Give
     (callRecordDao.store _).verify(expectedCallRecord)
     Then("the correct phone number information should be returned.")
     actualReceivedCall should equal(
-      ReceivedCall(PhoneNumber("+" + phoneNumber, List(), None, phoneNumber), contactName))
+      ReceivedCall(PhoneNumber("+" + phoneNumber, countries, None, phoneNumber), contactName))
   }
 }

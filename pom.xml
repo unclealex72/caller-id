@@ -31,6 +31,12 @@
       <version>${scala-version}</version>
     </dependency>
 
+    <dependency>
+        <groupId>org.scalaz</groupId>
+        <artifactId>scalaz-core_2.10</artifactId>
+        <version>7.0.0</version>
+    </dependency>
+
     <!-- JSON -->
     
     <dependency>

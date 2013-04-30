@@ -25,6 +25,7 @@ package uk.co.unclealex.callerid.remote.numbers
 
 import java.util.Collection
 import com.google.common.base.Optional
+import scalaz.NonEmptyList
 
 /**
  * A data access interface used to find countries and cities from telephone numbers.
@@ -58,6 +59,6 @@ trait CityDao {
    * @return A list of countries with the given international dialling code sorted so that the country with the
    * most cities is first.
    */
-  def countries(internationalDiallingCode: String): List[Country]
+  def countries(internationalDiallingCode: String): NonEmptyList[Country]
 
 }

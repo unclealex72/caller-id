@@ -49,7 +49,7 @@ class NumberLocationServiceImplTest extends FunSuite with ShouldMatchers with Be
   implicit class TestCase(receivedNumber: String) {
     def decomposesTo(expectedCityName: Option[String], expectedNumber: String, expectedNormalisedNumber: String, expectedCountryNames: String*) = {
       val phoneNumber = numberLocationServiceImpl.decompose(receivedNumber)
-      phoneNumber.countries.map(_.name).toList should equal(expectedCountryNames.toList)
+      phoneNumber.countries.map(_.name).list should equal(expectedCountryNames.toList)
       phoneNumber.city.map(_.name) should equal(expectedCityName)
       phoneNumber.number should equal(expectedNumber)
       phoneNumber.normalisedNumber should equal(expectedNormalisedNumber)

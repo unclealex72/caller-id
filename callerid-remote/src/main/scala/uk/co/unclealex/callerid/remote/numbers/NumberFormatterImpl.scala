@@ -37,10 +37,10 @@ class NumberFormatterImpl(
   locationConfiguration: LocationConfiguration) extends NumberFormatter {
 
   def formatNumber(phoneNumber: PhoneNumber): List[String] = {
-    val internationalDiallingCode = phoneNumber.countries.headOption.map { country =>
+    val country = phoneNumber.countries.head
+    val internationalDiallingCode =
       if (country.internationalDiallingCode != locationConfiguration.internationalCode)
         Some(country.internationalDiallingCode) else None
-    }.getOrElse(None)
     internationalDiallingCode.map { internationalDiallingCode =>
       List(Some(s"+${internationalDiallingCode}"), phoneNumber.city.map(_.stdCode), Some(phoneNumber.number))
     }.getOrElse {
