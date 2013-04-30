@@ -25,7 +25,7 @@
 package uk.co.unclealex.callerid.remote.contact
 
 import scala.collection.immutable.Map
-import uk.co.unclealex.callerid.remote.numbers.PhoneNumber
+import uk.co.unclealex.callerid.remote.number.PhoneNumber
 import java.util.concurrent.atomic.AtomicReference
 import java.util.TimerTask
 import java.util.Timer

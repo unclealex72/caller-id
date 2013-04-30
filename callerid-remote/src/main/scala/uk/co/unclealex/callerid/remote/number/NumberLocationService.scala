@@ -1,4 +1,4 @@
-package uk.co.unclealex.callerid.remote.numbers
+package uk.co.unclealex.callerid.remote.number
 
 import com.google.common.base.Optional
 

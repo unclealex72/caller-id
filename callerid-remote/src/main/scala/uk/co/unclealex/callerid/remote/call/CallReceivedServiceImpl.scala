@@ -32,7 +32,7 @@ import uk.co.unclealex.callerid.remote.contact.ContactService
 import uk.co.unclealex.callerid.remote.dao.CallRecordDao
 import uk.co.unclealex.callerid.remote.google.NowService
 import uk.co.unclealex.callerid.remote.model.CallRecord
-import uk.co.unclealex.callerid.remote.numbers.NumberLocationService
+import uk.co.unclealex.callerid.remote.number.NumberLocationService
 
 /**
  * The default implementation of {@link CallReceivedService}

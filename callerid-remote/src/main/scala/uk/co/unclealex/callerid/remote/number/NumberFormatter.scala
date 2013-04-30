@@ -22,7 +22,7 @@
  *
  */
 
-package uk.co.unclealex.callerid.remote.numbers
+package uk.co.unclealex.callerid.remote.number
 
 /**
  * A trait for formatting telephone numbers.

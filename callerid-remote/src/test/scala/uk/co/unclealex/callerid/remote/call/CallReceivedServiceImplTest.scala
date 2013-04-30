@@ -31,13 +31,13 @@ import org.scalatest.GivenWhenThen
 import org.scalatest.matchers.ShouldMatchers
 import uk.co.unclealex.callerid.remote.contact.Contact
 import uk.co.unclealex.callerid.remote.model.CallRecord
-import uk.co.unclealex.callerid.remote.numbers.PhoneNumber
+import uk.co.unclealex.callerid.remote.number.PhoneNumber
 import uk.co.unclealex.callerid.remote.google.NowService
 import uk.co.unclealex.callerid.remote.contact.ContactService
-import uk.co.unclealex.callerid.remote.numbers.NumberLocationService
+import uk.co.unclealex.callerid.remote.number.NumberLocationService
 import uk.co.unclealex.callerid.remote.dao.CallRecordDao
 import scalaz.NonEmptyList
-import uk.co.unclealex.callerid.remote.numbers.Country
+import uk.co.unclealex.callerid.remote.number.Country
 /**
  * @author alex
  *

@@ -24,7 +24,7 @@
 package uk.co.unclealex.callerid.remote.contact
 
 import uk.co.unclealex.callerid.remote.google.GoogleContact
-import uk.co.unclealex.callerid.remote.numbers.PhoneNumber
+import uk.co.unclealex.callerid.remote.number.PhoneNumber
 
 /**
  * An interface for finding {@link Contact}s from {@link PhoneNumber}s.

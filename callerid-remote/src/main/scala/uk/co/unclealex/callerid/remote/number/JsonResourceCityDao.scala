@@ -21,7 +21,7 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.numbers
+package uk.co.unclealex.callerid.remote.number
 
 import scala.collection.mutable.HashMap
 import scala.math.Ordering

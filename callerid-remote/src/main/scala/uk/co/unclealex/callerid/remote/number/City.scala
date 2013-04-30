@@ -21,27 +21,17 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.numbers
+package uk.co.unclealex.callerid.remote.number
 
 /**
- * An immutable bean containing information about the country call came from.
+ * An immutable bean containing information about the city a geographic call came from.
  */
-case class Country(
+case class City(
   /**
-   * The country's name.
+   * The city's name.
    */
   name: String,
   /**
-   * The country's international dialling code.
+   * The city's STD dialling code.
    */
-  internationalDiallingCode: String,
-  /**
-   * They country's ISO 3166-1 alpha-2 code.
-   */
-  isoCode: String,
-  /**
-   * The known cities in this country, sorted by longest STD codes first.
-   */
-  cities: List[City]) {
-
-}
+  stdCode: String)

@@ -29,7 +29,7 @@ import uk.co.unclealex.callerid.remote.call.CallReceivedService
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.ResponseBody
-import uk.co.unclealex.callerid.remote.numbers.NumberFormatter
+import uk.co.unclealex.callerid.remote.number.NumberFormatter
 
 /**
  * A Spring controller that receives a non-normalised telephone number, serialises it and returns a string

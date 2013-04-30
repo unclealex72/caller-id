@@ -29,7 +29,7 @@
     <bean id="googleContactsService" class="uk.co.unclealex.callerid.remote.google.GoogleContactsServiceImpl"/>
     
     <!-- Phone Numbers -->
-    <bean id="cityDao" class="uk.co.unclealex.callerid.remote.numbers.JsonResourceCityDao"/>
-    <bean id="numberLocationService" class="uk.co.unclealex.callerid.remote.numbers.NumberLocationServiceImpl"/>
+    <bean id="cityDao" class="uk.co.unclealex.callerid.remote.number.JsonResourceCityDao"/>
+    <bean id="numberLocationService" class="uk.co.unclealex.callerid.remote.number.NumberLocationServiceImpl"/>
     <bean id="locationConfiguration"/>
 </beans>

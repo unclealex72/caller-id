@@ -1,8 +1,8 @@
-package uk.co.unclealex.callerid.remote.numbers
+package uk.co.unclealex.callerid.remote.number
 
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.FunSuite
 import org.scalatest.BeforeAndAfterAll
+import org.scalatest.FunSuite
+import org.scalatest.matchers.ShouldMatchers
 
 class NumberLocationServiceImplTest extends FunSuite with ShouldMatchers with BeforeAndAfterAll {
 

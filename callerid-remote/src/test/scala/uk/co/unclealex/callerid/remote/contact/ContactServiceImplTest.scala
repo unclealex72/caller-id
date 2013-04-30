@@ -32,11 +32,11 @@ import org.scalatest.matchers.ShouldMatchers
 import uk.co.unclealex.callerid.remote.google.GoogleContact
 import uk.co.unclealex.callerid.remote.google.GoogleContactsService
 import uk.co.unclealex.callerid.remote.model.User
-import uk.co.unclealex.callerid.remote.numbers.NumberLocationService
-import uk.co.unclealex.callerid.remote.numbers.PhoneNumber
+import uk.co.unclealex.callerid.remote.number.NumberLocationService
+import uk.co.unclealex.callerid.remote.number.PhoneNumber
 import uk.co.unclealex.callerid.remote.dao.UserDao
 import scalaz.NonEmptyList
-import uk.co.unclealex.callerid.remote.numbers.Country
+import uk.co.unclealex.callerid.remote.number.Country
 /**
  * @author alex
  *

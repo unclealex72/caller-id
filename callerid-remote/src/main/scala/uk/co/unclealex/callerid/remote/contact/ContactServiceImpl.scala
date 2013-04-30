@@ -25,10 +25,10 @@ package uk.co.unclealex.callerid.remote.contact
 
 import scala.collection.JavaConversions._
 import uk.co.unclealex.callerid.remote.google.GoogleContactsService
-import uk.co.unclealex.callerid.remote.numbers.NumberLocationService
+import uk.co.unclealex.callerid.remote.number.NumberLocationService
 import uk.co.unclealex.callerid.remote.google.GoogleContact
 import uk.co.unclealex.callerid.remote.dao.UserDao
-import uk.co.unclealex.callerid.remote.numbers.PhoneNumber
+import uk.co.unclealex.callerid.remote.number.PhoneNumber
 import scala.collection.mutable.HashMap
 
 /**

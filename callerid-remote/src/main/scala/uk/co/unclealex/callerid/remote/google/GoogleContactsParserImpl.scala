@@ -31,7 +31,7 @@ import scala.xml.XML
 import scala.xml.Elem
 import scala.xml.NodeSeq
 import scala.xml.Node
-import uk.co.unclealex.callerid.remote.numbers.NumberLocationService
+import uk.co.unclealex.callerid.remote.number.NumberLocationService
 
 /**
  * @author alex

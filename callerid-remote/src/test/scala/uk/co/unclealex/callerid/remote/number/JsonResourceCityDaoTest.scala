@@ -21,13 +21,14 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.numbers
+package uk.co.unclealex.callerid.remote.number
 
-import org.scalatest.FunSuite
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.GivenWhenThen
 import org.scalatest.BeforeAndAfterAll
-import scalaz.NonEmptyList
+import org.scalatest.FunSuite
+import org.scalatest.GivenWhenThen
+import org.scalatest.matchers.ShouldMatchers
+
+import scalaz._
 
 class JsonResourceCityDaoTest extends FunSuite with ShouldMatchers with GivenWhenThen with BeforeAndAfterAll {
 

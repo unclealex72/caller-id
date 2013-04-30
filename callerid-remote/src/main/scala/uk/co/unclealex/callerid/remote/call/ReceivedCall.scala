@@ -24,7 +24,7 @@
 
 package uk.co.unclealex.callerid.remote.call
 
-import uk.co.unclealex.callerid.remote.numbers.PhoneNumber
+import uk.co.unclealex.callerid.remote.number.PhoneNumber
 
 /**
  * A class that encapsulates a received call.
