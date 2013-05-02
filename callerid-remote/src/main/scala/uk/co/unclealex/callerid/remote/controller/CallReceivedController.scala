@@ -41,6 +41,9 @@ class CallReceivedController(
    * The call received service used to actually received calls.
    */
   callReceivedService: CallReceivedService,
+  /**
+   * The number formatter used to format the string sent back to the client.
+   */
   numberFormatter: NumberFormatter) {
 
   @RequestMapping(value = Array("/callreceived/{number}"), produces = Array("text/string"))
