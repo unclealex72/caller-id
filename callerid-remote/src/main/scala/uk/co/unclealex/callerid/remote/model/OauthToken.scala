@@ -24,11 +24,6 @@
 package uk.co.unclealex.callerid.remote.model;
 
 import java.util.Date
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.validation.constraints.NotNull
-import javax.persistence.GenerationType
 
 /**
  * A persisted representation of an OAuth token that has been handed out by

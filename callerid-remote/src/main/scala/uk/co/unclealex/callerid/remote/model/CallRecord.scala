@@ -23,12 +23,7 @@
  */
 package uk.co.unclealex.callerid.remote.model;
 
-import javax.persistence.GeneratedValue
-import javax.persistence.Entity
 import java.util.Date
-import javax.persistence.Id
-import javax.persistence.GenerationType
-import javax.validation.constraints.NotNull
 
 /**
  * A persisted representation of a call that has been received.
