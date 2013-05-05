@@ -24,9 +24,8 @@
 package uk.co.unclealex.callerid.remote.google
 
 import scala.collection.JavaConversions._
-import org.springframework.transaction.annotation.Transactional
-import uk.co.unclealex.callerid.remote.model.User
 import uk.co.unclealex.callerid.remote.google.UrlWithParameters._
+import uk.co.unclealex.callerid.remote.model.User
 
 /**
  * The default implementation of {@link GoogleContactsService}.

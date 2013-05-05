@@ -50,7 +50,7 @@ class ContactServiceImpl(
 
   override def getContactsByNormalisedPhoneNumber = {
     val allContacts =
-      userDao.getAll().map(googleContactsService.getAllContacts _).flatten
+      userDao.getAll.map(googleContactsService.getAllContacts _).flatten
     val contactsByPhoneNumber = new HashMap[String, Contact]
     allContacts.foreach {
       contact =>

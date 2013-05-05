@@ -15,13 +15,6 @@
 
   <dependencies>
 
-    <!-- Persistence -->
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>callerid-remote-persistence</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
     <!-- Spring 3 dependencies -->
     <dependency>
       <groupId>org.springframework</groupId>
@@ -53,10 +46,16 @@
       <version>1.7R4</version>
     </dependency>
 
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-validator</artifactId>
+    <version>5.0.1.Final</version>
+</dependency>
+
     <dependency>
-      <groupId>org.apache.bval</groupId>
-      <artifactId>bval-jsr303</artifactId>
-      <version>0.4</version>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+      <version>4.2.1.Final</version>
     </dependency>
 
     <dependency>
@@ -83,6 +82,28 @@
       <version>3.1</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.hibernate.javax.persistence</groupId>
+      <artifactId>hibernate-jpa-2.0-api</artifactId>
+      <version>1.0.1.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>com.mysema.querydsl</groupId>
+      <artifactId>querydsl-scala</artifactId>
+      <version>3.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.mysema.querydsl</groupId>
+      <artifactId>querydsl-jpa</artifactId>
+      <version>3.1.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.hibernate.javax.persistence</groupId>
+          <artifactId>hibernate-jpa-2.0-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.springframework</groupId>
@@ -103,9 +124,50 @@
       <version>1.0.1-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
+    
+    <dependency>
+        <groupId>org.hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>2.2.8</version>
+        <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
+    <plugins>
+      <plugin>
+        <groupId>com.mysema.querydsl</groupId>
+        <artifactId>querydsl-maven-plugin</artifactId>
+        <version>3.1.1</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.mysema.querydsl</groupId>
+            <artifactId>querydsl-scala</artifactId>
+            <version>3.1.1</version>
+          </dependency>
+          <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>2.10.1</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jpa-export</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <targetFolder>target/generated-sources/scala</targetFolder>
+              <scala>true</scala>
+              <packages>
+                <package>uk.co.unclealex.callerid.remote.model</package>
+              </packages>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
     <finalName>whoscalling</finalName>
   </build>
 </project>

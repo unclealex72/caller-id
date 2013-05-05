@@ -22,38 +22,29 @@
  *
  */
 
-package uk.co.unclealex.callerid.remote.dao;
+package uk.co.unclealex.callerid.remote.dao
 
-import javax.inject.Inject;
-import javax.jdo.PersistenceManagerFactory;
+import scala.collection.JavaConversions.asScalaBuffer
 
-import uk.co.unclealex.callerid.remote.model.CallRecord;
-import uk.co.unclealex.callerid.remote.model.QCallRecord;
-import uk.co.unclealex.persistence.jdo.JdoBasicDao;
-import uk.co.unclealex.persistence.paging.PagingService;
-
+import javax.persistence.EntityManager
 /**
- * The JDO implementation of {@link CallRecordDao}
- * 
  * @author alex
- * 
+ *
  */
-public class JdoCallRecordDao extends JdoBasicDao<CallRecord, QCallRecord> implements CallRecordDao {
+class JpaBasicDao[M](mc: Class[M], em: EntityManager) extends BasicDao[M] {
 
-  /**
-   * @param persistenceManagerFactory
-   * @param pagingService
-   */
-  @Inject
-  public JdoCallRecordDao(final PersistenceManagerFactory persistenceManagerFactory, final PagingService pagingService) {
-    super(CallRecord.class, persistenceManagerFactory, pagingService);
+  def store(model: M): Unit = {
+    em persist model
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public QCallRecord candidate() {
-    return QCallRecord.candidate();
+  def storeAll(models: List[M]): Unit = {
+    models foreach store
+  }
+
+  def getAll: List[M] = {
+    val criteria = em.getCriteriaBuilder().createQuery(mc)
+    val root = criteria.from(mc)
+    criteria.select(root)
+    em.createQuery(criteria).getResultList().toList
   }
 }

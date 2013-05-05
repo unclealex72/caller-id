@@ -68,7 +68,7 @@ class GoogleTokenServiceImpl(
      * @return A token of the given type.
      */
     def findTokenByType(oauthTokenType: OauthTokenType): Option[OauthToken] =
-      user.getOauthTokens().find(token => token.getTokenType() == oauthTokenType)
+      user.oauthTokens.find(_.tokenType == oauthTokenType)
     /**
      * Find or create a user's token by it's token type.
      * @param user The user to interrogate.
@@ -77,9 +77,8 @@ class GoogleTokenServiceImpl(
      */
     def findTokenByTypeOrCreate(tokenType: OauthTokenType): OauthToken = {
       user.findTokenByType(tokenType).getOrElse({
-        val oauthToken = new OauthToken
-        oauthToken.setTokenType(tokenType)
-        user.getOauthTokens() += oauthToken
+        val oauthToken = new OauthToken(tokenType)
+        user.oauthTokens += oauthToken
         oauthToken
       })
     }
@@ -92,9 +91,9 @@ class GoogleTokenServiceImpl(
     def updateAccessToken(userAccessToken: OauthToken): Unit = {
       val refreshToken: Option[OauthToken] = user.findTokenByType(OauthTokenType.REFRESH)
       refreshToken.map { refreshToken =>
-        val newAccessToken = requestToken("refresh_token", refreshToken.getToken(), "refresh_token", false)
-        userAccessToken.setToken(newAccessToken.accessToken)
-        userAccessToken.setExpiryDate(expiryDate(newAccessToken).orNull)
+        val newAccessToken = requestToken("refresh_token", refreshToken.token.get, "refresh_token", false)
+        userAccessToken.token = Some(newAccessToken.accessToken)
+        userAccessToken.expiryDate = expiryDate(newAccessToken)
       }.getOrElse(throw new GoogleAuthenticationFailedException("No refresh token found."))
     }
   }
@@ -127,15 +126,14 @@ class GoogleTokenServiceImpl(
   def accessToken(user: User): String = {
     val optionalAccessToken: Option[OauthToken] = user.findTokenByType(OauthTokenType.ACCESS)
     val accessToken: OauthToken = optionalAccessToken.getOrElse({
-      val token = new OauthToken
-      token.setTokenType(OauthTokenType.ACCESS)
-      user.getOauthTokens().add(token)
+      val token = OauthToken(OauthTokenType.ACCESS)
+      user.oauthTokens += token
       token
     })
     if (expired(accessToken)) {
       user.updateAccessToken(accessToken)
     }
-    accessToken.getToken()
+    accessToken.token.get
   }
 
   /**
@@ -152,16 +150,15 @@ class GoogleTokenServiceImpl(
    * @return True if the token's expiry date is soon to expire, expired or non existent, false otherwise.
    */
   def expired(oauthToken: OauthToken): Boolean = {
-    val expiryDate = oauthToken.getExpiryDate()
-    expiryDate == null || (expiryDate.getTime() - googleConstants.tokenExpiryTimeout) < nowService.now
+    oauthToken.expiryDate.map { _.getTime() - googleConstants.tokenExpiryTimeout < nowService.now }.getOrElse(true)
   }
 
   override def installSuccessCode(user: User, successCode: String) {
     val userAccessToken = user.findTokenByTypeOrCreate(OauthTokenType.ACCESS)
     val userRefreshToken = user.findTokenByTypeOrCreate(OauthTokenType.REFRESH)
     val token = requestToken("code", successCode, "authorization_code", true)
-    userAccessToken.setToken(token.accessToken)
-    userAccessToken.setExpiryDate(expiryDate(token).orNull)
-    userRefreshToken.setToken(token.refreshToken.orNull)
+    userAccessToken.token = Some(token.accessToken)
+    userAccessToken.expiryDate = expiryDate(token)
+    userRefreshToken.token = token.refreshToken
   }
 }

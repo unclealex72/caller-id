@@ -22,38 +22,29 @@
  *
  */
 
-package uk.co.unclealex.callerid.remote.dao;
+package uk.co.unclealex.callerid.remote.dao
 
-import javax.inject.Inject;
-import javax.jdo.PersistenceManagerFactory;
-
-import uk.co.unclealex.callerid.remote.model.QUser;
-import uk.co.unclealex.callerid.remote.model.User;
-import uk.co.unclealex.persistence.jdo.JdoBasicDao;
-import uk.co.unclealex.persistence.paging.PagingService;
+import org.scalatest.FunSuite
+import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.GivenWhenThen
+import javax.persistence.Persistence
+import javax.persistence.EntityManager
+import org.scalatest.BeforeAndAfterEach
 
 /**
- * The JDO implementation of {@link UserDao}
- * 
  * @author alex
- * 
+ *
  */
-public class JdoUserDao extends JdoBasicDao<User, QUser> implements UserDao {
+class JpaDaoTest extends FunSuite with ShouldMatchers with GivenWhenThen with BeforeAndAfterEach {
 
-  /**
-   * @param persistenceManagerFactory
-   * @param pagingService
-   */
-  @Inject
-  public JdoUserDao(final PersistenceManagerFactory persistenceManagerFactory, final PagingService pagingService) {
-    super(User.class, persistenceManagerFactory, pagingService);
+  var em: EntityManager = _
+
+  override def beforeEach {
+    val emf = Persistence.createEntityManagerFactory("calls")
+    em = emf createEntityManager
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public QUser candidate() {
-    return QUser.candidate();
+  override def afterEach {
+    em close
   }
 }

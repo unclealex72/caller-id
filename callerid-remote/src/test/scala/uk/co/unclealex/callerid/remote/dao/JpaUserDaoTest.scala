@@ -25,57 +25,49 @@ package uk.co.unclealex.callerid.remote.dao
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import javax.jdo.PersistenceManager
-import javax.jdo.PersistenceManagerFactory
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
 import uk.co.unclealex.callerid.remote.model.OauthToken
 import uk.co.unclealex.callerid.remote.model.OauthTokenType
 import uk.co.unclealex.callerid.remote.model.User
-
 import org.junit.Assert._
 import org.junit.Test
 import scala.collection.JavaConversions._
 import org.hamcrest.Matchers._
+import java.util.ArrayList
+import scala.collection.mutable.ListBuffer
+import javax.persistence.EntityManagerFactory
 /**
  * @author alex
  *
  */
-class JdoUserDaoTest extends AbstractDaoTest {
+class JpaUserDaoTest extends JpaDaoTest {
 
-  @Autowired var userDao: UserDao = null
-
-  @Autowired var pmf: PersistenceManagerFactory = null
-
+  /*
   val df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
 
-  @Test
-  def testStoreAndUpdate: Unit = {
-    val refreshToken = new OauthToken() init { t =>
-      t.setToken("refresh")
-      t.setTokenType(OauthTokenType.REFRESH)
-    }
-    val accessToken = new OauthToken() init { t =>
-      t.setToken("access")
-      t.setTokenType(OauthTokenType.ACCESS)
-      t.setExpiryDate(df.parse("05/09/1972 09:12:00"))
-    }
-    val user = new User() init { u =>
-      u.setUsername("alex")
-      u.setOauthTokens(List(refreshToken))
-    }
+  test("store and update users") {
+    val userDao = new JpaUserDao(em)
+    val refreshToken = new OauthToken(token = "refresh",
+      tokenType = OauthTokenType.REFRESH)
+    val accessToken = new OauthToken(
+      token = "access",
+      tokenType = OauthTokenType.ACCESS,
+      expiryDate = df.parse("05/09/1972 09:12:00"))
+    val user = new User("alex")
+    user.oauthTokens += refreshToken
     userDao.store(user)
-    persistenceManager.flush
-    user.getOauthTokens += accessToken
+    user.oauthTokens += accessToken
     userDao.store(user)
-    val persistedUser = userDao.getAll()(0)
-    assertThat("The persisted user had the wrong tokens.", persistedUser.getOauthTokens,
-      containsInAnyOrder(refreshToken, accessToken))
-    persistedUser.getOauthTokens.find { _.getTokenType == OauthTokenType.ACCESS }.get.setToken("accessed")
+    When("storing tokens for a user")
+    val persistedUser = userDao.getAll(0)
+    Then("the returned tokens should be the same as those stored.")
+    persistedUser.oauthTokens.toSet should equal(Set(refreshToken, accessToken))
+    When("updating a user's token")
+    persistedUser.oauthTokens.find { _.tokenType == OauthTokenType.ACCESS }.get.token = "accessed"
     userDao.store(persistedUser)
-    assertEquals("The access token was not updated correctly.", "accessed",
-      userDao.getAll()(0).getOauthTokens.find { _.getTokenType == OauthTokenType.ACCESS }.get.getToken)
+    Then("it should be associated with the persisted user")
+    userDao.getAll(0).oauthTokens.find { _.tokenType == OauthTokenType.ACCESS }.get.token should equal("accessed")
   }
-
-  def persistenceManager = pmf.getPersistenceManager()
+  */
 }

@@ -70,9 +70,7 @@ class CallReceivedServiceImplTest extends FunSuite with ShouldMatchers with Give
       numberLocationService = numberLocationService,
       contactService = contactService,
       callRecordDao = callRecordDao).callReceived(phoneNumber)
-    val expectedCallRecord = new CallRecord
-    expectedCallRecord.setTelephoneNumber("+" + phoneNumber)
-    expectedCallRecord.setCallDate(now)
+    val expectedCallRecord = new CallRecord(now, "+" + phoneNumber)
     (callRecordDao.store _).verify(expectedCallRecord)
     Then("the correct phone number information should be returned.")
     actualReceivedCall should equal(

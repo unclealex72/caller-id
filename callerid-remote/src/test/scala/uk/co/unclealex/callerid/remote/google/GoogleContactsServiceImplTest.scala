@@ -43,9 +43,7 @@ class GoogleContactsServiceImplTest extends FunSuite with ShouldMatchers with Mo
     val googleContacts = Set(
       new GoogleContact("Brian May", Some("House"), Set("+44111222")),
       new GoogleContact("Freddie Mercury", None, Set("+44222333")))
-    val user = new User
-    user.setUsername("username")
-    user.setOauthTokens(new ArrayList)
+    val user = new User("username")
     (googleTokenService.accessToken _).when(user).returns("access")
     (googleContactsParser.parse _).when(
       new URL("https://www.google.com/m8/feeds/contacts/default/full?access_token=access&max-results=2147483647")).

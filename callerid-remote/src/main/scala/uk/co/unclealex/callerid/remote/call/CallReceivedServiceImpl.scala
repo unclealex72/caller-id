@@ -26,8 +26,6 @@ package uk.co.unclealex.callerid.remote.call
 
 import java.util.Date
 
-import org.springframework.transaction.annotation.Transactional
-
 import uk.co.unclealex.callerid.remote.contact.ContactService
 import uk.co.unclealex.callerid.remote.dao.CallRecordDao
 import uk.co.unclealex.callerid.remote.google.NowService
@@ -39,7 +37,6 @@ import uk.co.unclealex.callerid.remote.number.NumberLocationService
  * @author alex
  *
  */
-@Transactional
 class CallReceivedServiceImpl(
   /**
    * The contact service used to find who made a call.
@@ -60,10 +57,8 @@ class CallReceivedServiceImpl(
 
   override def callReceived(number: String): ReceivedCall = {
     val phoneNumber = numberLocationService.decompose(number)
-    val callRecord = new CallRecord
     val normalisedNumber = phoneNumber.normalisedNumber
-    callRecord.setTelephoneNumber(normalisedNumber)
-    callRecord.setCallDate(new Date(nowService.now))
+    val callRecord = new CallRecord(new Date(nowService.now), normalisedNumber)
     callRecordDao.store(callRecord)
     val contactName =
       contactService.getContactsByNormalisedPhoneNumber.get(normalisedNumber).map { _.name }

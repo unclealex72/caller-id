@@ -34,25 +34,28 @@ import org.hamcrest.Matchers._
  * @author alex
  *
  */
-class JdoCallRecordDaoTest extends AbstractDaoTest {
-
-  @Autowired var callRecordDao: CallRecordDao = null
+class JpaCallRecordDaoTest extends JpaDaoTest {
 
   val df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
 
-  @Test
-  def testStoreAndGet: Unit = {
-    val firstCallRecord = new CallRecord() init { cr =>
-      cr.setCallDate(df.parse("05/09/1972 09:12:00"))
-      cr.setTelephoneNumber("0125698113113")
-    }
-    val secondCallRecord = new CallRecord() init { cr =>
-      cr.setCallDate(df.parse("05/09/1972 09:13:00"))
-      cr.setTelephoneNumber("0148322114114")
-    }
-    callRecordDao.storeAll(firstCallRecord, secondCallRecord)
-    val persistedCallRecords = callRecordDao.getAll()
-    assertThat("The wrong call records were returned.", persistedCallRecords,
-      containsInAnyOrder(firstCallRecord, secondCallRecord))
+  /*
+  test("Storing and retrieving call records") {
+    val callRecordDao: CallRecordDao = new JpaCallRecordDao(em)
+
+    val firstCallRecord = new CallRecord(
+      callDate = df.parse("05/09/1972 09:12:00"),
+      telephoneNumber = "0125698113113")
+
+    val secondCallRecord = new CallRecord(
+      callDate = df.parse("05/09/1972 09:13:00"),
+      telephoneNumber = "0148322114114")
+
+    When("storing two call records")
+    callRecordDao.storeAll(List(firstCallRecord, secondCallRecord))
+    Then("they should be able to be returned, too")
+    val persistedCallRecords = callRecordDao.getAll
+    persistedCallRecords.toSet should equal(Set(firstCallRecord, secondCallRecord))
   }
+  * 
+  */
 }

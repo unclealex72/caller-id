@@ -73,9 +73,7 @@ class ContactServiceImplTest extends FunSuite with ShouldMatchers with GivenWhen
   implicit class StringImplicits(str: String) {
 
     def asUser(googleContacts: Set[GoogleContact]) = {
-      val user = new User
-      user.setUsername(str)
-      user -> googleContacts
+      new User(str) -> googleContacts
     }
   }
 }

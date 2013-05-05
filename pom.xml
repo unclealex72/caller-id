@@ -19,7 +19,6 @@
   <modules>
     <module>callerid-local</module>
     <module>callerid-remote</module>
-    <module>callerid-remote-persistence</module>
   </modules>
 
   <dependencies>
