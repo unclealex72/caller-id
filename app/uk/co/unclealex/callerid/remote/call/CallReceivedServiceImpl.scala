@@ -58,10 +58,11 @@ class CallReceivedServiceImpl(
   override def callReceived(number: String): ReceivedCall = {
     val phoneNumber = numberLocationService.decompose(number)
     val normalisedNumber = phoneNumber.normalisedNumber
-    val callRecord = new CallRecord(new Date(nowService.now), normalisedNumber)
+    val now = new Date(nowService.now)
+    val callRecord = new CallRecord(now, normalisedNumber)
     callRecordDao.store(callRecord)
-    val contactName =
-      contactService.getContactsByNormalisedPhoneNumber.get(normalisedNumber).map { _.name }
-    ReceivedCall(phoneNumber, contactName)
+    val contact =
+      contactService.getContactsByNormalisedPhoneNumber.get(normalisedNumber)
+    ReceivedCall(now, phoneNumber, contact)
   }
 }

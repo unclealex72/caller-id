@@ -46,27 +46,35 @@ class NumberFormatterImplTest extends FunSuite with ShouldMatchers {
   def formatNumber(country: NonEmptyList[Country], city: Option[City], number: String) =
     numberFormatter.formatNumber(PhoneNumber("", country, city, number))
 
+  def formatNumberAsInternational(country: NonEmptyList[Country], city: Option[City], number: String) =
+    numberFormatter.formatNumberAsInternational(PhoneNumber("", country, city, number))
+
   def formatAddress(country: NonEmptyList[Country], city: Option[City], number: String) =
     numberFormatter.formatAddress(PhoneNumber("", country, city, number))
 
   test("International and geographic") {
     formatNumber(france, paris, "123456") should equal(List("+33", "1", "123456"))
+    formatNumberAsInternational(france, paris, "123456") should equal(List("+33", "1", "123456"))
   }
 
   test("International and non-geographic") {
     formatNumber(france, None, "123456789") should equal(List("+33", "123456789"))
+    formatNumberAsInternational(france, None, "123456789") should equal(List("+33", "123456789"))
   }
 
   test("National and geographic") {
     formatNumber(uk, guildford, "123456") should equal(List("01483", "123456"))
+    formatNumberAsInternational(uk, guildford, "123456") should equal(List("+44", "1483", "123456"))
   }
 
   test("National and non-geographic") {
     formatNumber(uk, None, "123456789") should equal(List("0123456789"))
+    formatNumberAsInternational(uk, None, "123456789") should equal(List("+44", "123456789"))
   }
 
   test("local") {
     formatNumber(uk, basingstoke, "123456") should equal(List("123456"))
+    formatNumberAsInternational(uk, basingstoke, "123456") should equal(List("+44", "1256", "123456"))
   }
 
   test("Non-geographic address") {

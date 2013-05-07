@@ -46,6 +46,11 @@ trait NumberFormatter {
   def formatNumber(phoneNumber: PhoneNumber): List[String]
 
   /**
+   * Format a number as a fully international normalised number.
+   */
+  def formatNumberAsInternational(phoneNumber: PhoneNumber): List[String]
+
+  /**
    * Format an address. Geographic numbers with always be of the form <code>city, country</code> whilst
    * non-geographic numbers will only be formatted as the country with the most cities.
    */

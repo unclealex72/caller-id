@@ -46,14 +46,14 @@ class CallReceivedServiceImplTest extends FunSuite with ShouldMatchers with Give
 
   val countries = NonEmptyList(Country("UK", "44", "uk", List()))
   test("Call received from a known contact") {
-    execute("1", Some("Freddie Mercury"))
+    execute("1", Some(Contact("Freddie Mercury", None)))
   }
 
   test("Call received from an unknown number") {
     execute("2", None)
   }
 
-  def execute(phoneNumber: String, contactName: Option[String]) {
+  def execute(phoneNumber: String, contact: Option[Contact]) {
     val now = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse("28/04/2013 18:59:30")
     val nowService = stub[NowService]
     (nowService.now _).when().returns(now.getTime)
@@ -74,6 +74,6 @@ class CallReceivedServiceImplTest extends FunSuite with ShouldMatchers with Give
     (callRecordDao.store _).verify(expectedCallRecord)
     Then("the correct phone number information should be returned.")
     actualReceivedCall should equal(
-      ReceivedCall(PhoneNumber("+" + phoneNumber, countries, None, phoneNumber), contactName))
+      ReceivedCall(now, PhoneNumber("+" + phoneNumber, countries, None, phoneNumber), contact))
   }
 }

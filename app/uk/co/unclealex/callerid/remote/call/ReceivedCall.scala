@@ -25,6 +25,8 @@
 package uk.co.unclealex.callerid.remote.call
 
 import uk.co.unclealex.callerid.remote.number.PhoneNumber
+import java.util.Date
+import uk.co.unclealex.callerid.remote.contact.Contact
 
 /**
  * A class that encapsulates a received call.
@@ -33,12 +35,16 @@ import uk.co.unclealex.callerid.remote.number.PhoneNumber
  */
 case class ReceivedCall(
   /**
+   * The date and time the call was received.
+   */
+  dateReceived: Date,
+  /**
    * The number that made the call
    */
   phoneNumber: PhoneNumber,
   /**
    * The name of the contact associated with the phone number.
    */
-  contact: Option[String]) {
+  contact: Option[Contact]) {
 
 }

@@ -1,1 +1,0 @@
-<li id="{id}"><a href="#" data-page="{idx}">{@math key=idx method="add" operand="1"/}</a></li>

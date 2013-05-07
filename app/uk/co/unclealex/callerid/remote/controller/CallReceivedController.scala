@@ -50,7 +50,7 @@ class CallReceivedController(
   @ResponseBody
   def callReceived(@PathVariable("number") number: String): String = {
     val receivedCall = callReceivedService.callReceived(number)
-    receivedCall.contact.getOrElse {
+    receivedCall.contact.map(_.name).getOrElse {
       val phoneNumber = receivedCall.phoneNumber
       val formattedNumber = numberFormatter.formatNumber(phoneNumber).mkString(" ")
       val formattedAddress = numberFormatter.formatAddress(phoneNumber).mkString(", ")
