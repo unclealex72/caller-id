@@ -24,13 +24,13 @@
 package uk.co.unclealex.callerid.remote.google
 
 import java.util.Date
+
 import scala.collection.JavaConversions._
 import scala.collection.mutable.Map
+
 import uk.co.unclealex.callerid.remote.model.OauthToken
 import uk.co.unclealex.callerid.remote.model.OauthTokenType
 import uk.co.unclealex.callerid.remote.model.User
-import scala.collection.mutable.Buffer
-import java.util.ArrayList
 
 /**
  * The default implementation of {@link GoogleTokenService}.
@@ -68,7 +68,7 @@ class GoogleTokenServiceImpl(
      * @return A token of the given type.
      */
     def findTokenByType(oauthTokenType: OauthTokenType): Option[OauthToken] =
-      user.oauthTokens.find(_.tokenType == oauthTokenType)
+      user.getOauthTokens.find(_.getTokenType == oauthTokenType)
     /**
      * Find or create a user's token by it's token type.
      * @param user The user to interrogate.
@@ -78,7 +78,7 @@ class GoogleTokenServiceImpl(
     def findTokenByTypeOrCreate(tokenType: OauthTokenType): OauthToken = {
       user.findTokenByType(tokenType).getOrElse({
         val oauthToken = new OauthToken(tokenType)
-        user.oauthTokens += oauthToken
+        user.getOauthTokens += oauthToken
         oauthToken
       })
     }
@@ -91,9 +91,9 @@ class GoogleTokenServiceImpl(
     def updateAccessToken(userAccessToken: OauthToken): Unit = {
       val refreshToken: Option[OauthToken] = user.findTokenByType(OauthTokenType.REFRESH)
       refreshToken.map { refreshToken =>
-        val newAccessToken = requestToken("refresh_token", refreshToken.token.get, "refresh_token", false)
-        userAccessToken.token = Some(newAccessToken.accessToken)
-        userAccessToken.expiryDate = expiryDate(newAccessToken)
+        val newAccessToken = requestToken("refresh_token", refreshToken.getToken, "refresh_token", false)
+        userAccessToken.setToken(newAccessToken.accessToken)
+        userAccessToken.setExpiryDate(expiryDate(newAccessToken))
       }.getOrElse(throw new GoogleAuthenticationFailedException("No refresh token found."))
     }
   }
@@ -126,14 +126,14 @@ class GoogleTokenServiceImpl(
   def accessToken(user: User): String = {
     val optionalAccessToken: Option[OauthToken] = user.findTokenByType(OauthTokenType.ACCESS)
     val accessToken: OauthToken = optionalAccessToken.getOrElse({
-      val token = OauthToken(OauthTokenType.ACCESS)
-      user.oauthTokens += token
+      val token = new OauthToken(OauthTokenType.ACCESS)
+      user.getOauthTokens += token
       token
     })
     if (expired(accessToken)) {
       user.updateAccessToken(accessToken)
     }
-    accessToken.token.get
+    accessToken.getToken
   }
 
   /**
@@ -141,8 +141,8 @@ class GoogleTokenServiceImpl(
    * @param tokenResponse the token response from Google.
    * @return The date and time the token expires.
    */
-  def expiryDate(tokenResponse: TokenResponse): Option[Date] =
-    tokenResponse.expiresInSeconds.map(secs => new Date(secs * 1000L + nowService.now))
+  def expiryDate(tokenResponse: TokenResponse): Date =
+    tokenResponse.expiresInSeconds.map(secs => new Date(secs * 1000L + nowService.now)).orNull
 
   /**
    * Determine whether an access token has expired.
@@ -150,15 +150,16 @@ class GoogleTokenServiceImpl(
    * @return True if the token's expiry date is soon to expire, expired or non existent, false otherwise.
    */
   def expired(oauthToken: OauthToken): Boolean = {
-    oauthToken.expiryDate.map { _.getTime() - googleConstants.tokenExpiryTimeout < nowService.now }.getOrElse(true)
+    val expiryDate = oauthToken.getExpiryDate
+    expiryDate == null || expiryDate.getTime() - googleConstants.tokenExpiryTimeout < nowService.now
   }
 
   override def installSuccessCode(user: User, successCode: String) {
     val userAccessToken = user.findTokenByTypeOrCreate(OauthTokenType.ACCESS)
     val userRefreshToken = user.findTokenByTypeOrCreate(OauthTokenType.REFRESH)
     val token = requestToken("code", successCode, "authorization_code", true)
-    userAccessToken.token = Some(token.accessToken)
-    userAccessToken.expiryDate = expiryDate(token)
-    userRefreshToken.token = token.refreshToken
+    userAccessToken.setToken(token.accessToken)
+    userAccessToken.setExpiryDate(expiryDate(token))
+    userRefreshToken.setToken(token.refreshToken.get)
   }
 }

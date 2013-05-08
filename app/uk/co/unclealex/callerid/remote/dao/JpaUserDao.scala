@@ -18,14 +18,19 @@
  * specific language governing permissions and limitations
  * under the License.
  *
+ * @author unclealex72
+ *
+ */
+
+package uk.co.unclealex.callerid.remote.dao
+
+import uk.co.unclealex.callerid.remote.model.User
+import javax.inject.Inject
+
+/**
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.model;
+class JpaUserDao @Inject() (emp: EntityManagerProvider) extends JpaBasicDao[User](emp) with UserDao {
 
-import java.util.Date
-
-/**
- * A persisted representation of a call that has been received.
- */
-case class CallRecord(callDate: Date, telephoneNumber: String)
+}

@@ -24,18 +24,20 @@
 
 package uk.co.unclealex.callerid.remote.google
 
-import org.scalatest.FunSuite
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.GivenWhenThen
-import org.scalamock.scalatest.MockFactory
 import java.text.SimpleDateFormat
-import uk.co.unclealex.callerid.remote.model.User
-import java.util.ArrayList
+import java.util.Date
+
 import scala.collection.JavaConversions._
+
+import org.scalamock.scalatest.MockFactory
+import org.scalatest.FunSuite
+import org.scalatest.GivenWhenThen
+import org.scalatest.matchers.ShouldMatchers
+
+import uk.co.unclealex.callerid.remote.model.OauthToken
 import uk.co.unclealex.callerid.remote.model.OauthTokenType._
 import uk.co.unclealex.callerid.remote.model.OauthTokenType
-import uk.co.unclealex.callerid.remote.model.OauthToken
-import java.util.Date
+import uk.co.unclealex.callerid.remote.model.User
 /**
  * @author alex
  *
@@ -58,15 +60,15 @@ class GoogleTokenServiceImplTest extends FunSuite with ShouldMatchers with Given
         "redirect_uri" -> "urn:ietf:wg:oauth:2.0:oob")).returning(
         new TokenResponse("access", "Bearer", Some(3600), Some("refresh"), None))
     When("installing a success code")
-    val user = User("user")
+    val user = new User("user")
     googleTokenService.installSuccessCode(user, "success")
     Then("the user should have two tokens")
-    val oauthTokens = user.oauthTokens
+    val oauthTokens = user.getOauthTokens
     oauthTokens should have size (2)
     Then("one should be an expiring access token")
     def expectToken(tokenType: OauthTokenType, value: String, expiryDate: Option[Date]) = {
       val expectedToken = tokenType token value expires expiryDate
-      oauthTokens.find { tokenType == _.tokenType } should equal(Some(expectedToken))
+      oauthTokens.find { tokenType == _.getTokenType } should equal(Some(expectedToken))
     }
     expectToken(ACCESS, "access", Some("05/09/2014 10:12:00".toDate))
     Then("the other should be a non-expiring refresh token")
@@ -81,7 +83,7 @@ class GoogleTokenServiceImplTest extends FunSuite with ShouldMatchers with Given
     When("getting a user's non-expired access token")
     Then("the original access token should be returned")
     googleTokenService.accessToken(user) should equal("access")
-    user.oauthTokens.find(ACCESS == _.tokenType) should equal(Some(currentAccessToken))
+    user.getOauthTokens.find(ACCESS == _.getTokenType) should equal(Some(currentAccessToken))
   }
 
   test("Get a new access token as the user's current token has expired") {
@@ -102,14 +104,14 @@ class GoogleTokenServiceImplTest extends FunSuite with ShouldMatchers with Given
     Then("the access token should be the one returned from Google")
     googleTokenService.accessToken(user) should equal("new access")
     Then("the user should be updated to be associated with the new token")
-    val accessTokens = user.oauthTokens.filter(ACCESS == _.tokenType)
+    val accessTokens = user.getOauthTokens.filter(ACCESS == _.getTokenType)
     accessTokens should have size (1)
     accessTokens.iterator.next should equal(ACCESS token "new access" expires "05/09/2014 10:12:00".toDate)
 
   }
 
   def newUser(oauthTokens: OauthToken*) = {
-    new User("user", oauthTokens.toBuffer)
+    new User("user", oauthTokens)
   }
 
   def createServices = {
@@ -124,14 +126,14 @@ class GoogleTokenServiceImplTest extends FunSuite with ShouldMatchers with Given
   implicit class OauthTokenTypeImplicits(oauthTokenType: OauthTokenType) {
 
     def token(token: String) = {
-      new OauthToken(oauthTokenType, Some(token), None)
+      new OauthToken(oauthTokenType, token)
     }
   }
 
   implicit class OauthTokenImplicits(oauthToken: OauthToken) {
 
     def expires(expiryDate: Option[Date]): OauthToken = {
-      oauthToken.expiryDate = expiryDate
+      oauthToken.setExpiryDate(expiryDate.orNull)
       oauthToken
     }
 

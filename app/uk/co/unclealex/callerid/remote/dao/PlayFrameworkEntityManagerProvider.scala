@@ -18,15 +18,20 @@
  * specific language governing permissions and limitations
  * under the License.
  *
+ * @author unclealex72
+ *
+ */
+
+package uk.co.unclealex.callerid.remote.dao
+
+import play.db.jpa.JPA
+
+/**
+ * An entity manager provider that facades the Play framework's JPA helper.
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.model;
+class PlayFrameworkEntityManagerProvider extends EntityManagerProvider {
 
-import scala.collection.mutable.Buffer
-import scala.collection.mutable.ListBuffer
-
-/**
- * A persitable person who can use the system.
- */
-case class User(username: String, oauthTokens: Buffer[OauthToken] = new ListBuffer)
+  def em = JPA.em()
+}

@@ -18,15 +18,36 @@
  * specific language governing permissions and limitations
  * under the License.
  *
+ * @author unclealex72
+ *
+ */
+
+package uk.co.unclealex.callerid.remote.dao
+
+import scala.collection.JavaConversions._
+import javax.persistence.criteria.CriteriaBuilder
+import javax.persistence.criteria.CriteriaQuery
+
+/**
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.model;
+class JpaBasicDao[M](emp: EntityManagerProvider)(implicit m: Manifest[M]) extends BasicDao[M] {
 
-import java.util.Date
+  val clazz = m.runtimeClass.asInstanceOf[Class[M]]
 
-/**
- * A persisted representation of an OAuth token that has been handed out by
- * Google for single sign on.
- */
-case class OauthToken(tokenType: OauthTokenType, var token: Option[String] = None, var expiryDate: Option[Date] = None)
+  def store(model: M): Unit = {
+    emp.em persist model
+  }
+
+  def storeAll(models: List[M]): Unit = {
+    models foreach { store }
+  }
+
+  def getAll: List[M] = {
+    val em = emp.em
+    val cq = em.getCriteriaBuilder().createQuery(clazz);
+    cq.select(cq.from(clazz))
+    em.createQuery(cq).getResultList().toList
+  }
+}

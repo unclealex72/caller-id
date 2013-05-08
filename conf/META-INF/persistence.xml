@@ -5,18 +5,11 @@
   version="2.0">
 
   <!-- Online Store -->
-  <persistence-unit name="calls" transaction-type="RESOURCE_LOCAL">
+  <persistence-unit name="defaultPersistenceUnit" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
     <class>uk.co.unclealex.callerid.remote.model.User</class>
     <class>uk.co.unclealex.callerid.remote.model.CallRecord</class>
     <class>uk.co.unclealex.callerid.remote.model.OauthToken</class>
     <exclude-unlisted-classes />
-    <properties>
-      <property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver" />
-      <property name="javax.persistence.jdbc.url" value="jdbc:hsqldb:mem:testdb" />
-      <property name="javax.persistence.jdbc.user" value="sa" />
-      <property name="javax.persistence.jdbc.password" value="" />
-      <property name="hibernate.hbm2ddl.auto" value="update" />
-    </properties>
   </persistence-unit>
 </persistence>
