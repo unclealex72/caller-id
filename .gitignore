@@ -1,3 +1,5 @@
+# General ignores
+
 logs
 project/project
 project/target
@@ -16,3 +18,7 @@ dist
 .cache
 .target
 bin
+
+# Specific ignores so that sensitive information is not stored remotely
+conf/google.conf
+conf/security.conf
