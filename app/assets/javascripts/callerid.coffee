@@ -23,7 +23,7 @@ jQuery ->
   $("#nav a").click (e) ->
     page = parseInt($(this).attr("data-page"))
     $("#carousel").carousel "pause"
-    $("#carousel").carousel page;
+    $("#carousel").carousel page
 
   # Add functionality to the buttons
   $("#calls button.contact").click (e) ->
