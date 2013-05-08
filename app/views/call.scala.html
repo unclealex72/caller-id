@@ -29,7 +29,7 @@
         @button(
           contact.isDefined, 
           "search", 
-          "icon-serach",
+          "icon-search",
           "search-term" -> ("0" + phoneNumber.city.map(_.stdCode).getOrElse("") + phoneNumber.number))
         @button(
           false, 

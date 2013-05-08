@@ -106,19 +106,6 @@ class CallViewTest extends FunSuite with GivenWhenThen with ShouldMatchers {
         mapLocation = "United Kingdom")
   }
 
-  /**
-   * {
-   * "time" : "2012-11-05T15:10Z",
-   * "number" : {
-   * "internationalPrefix" : "33",
-   * "number" : "800162362"
-   * },
-   * "location" : {
-   * "country" : "France",
-   * "countryCode" : "FR"
-   * }
-   * }
-   */
   test("non geographic without contact") {
     ReceivedCall(
       at("2012-11-05T15:10Z"),
