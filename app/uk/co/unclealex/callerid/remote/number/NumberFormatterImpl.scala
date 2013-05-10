@@ -25,12 +25,13 @@
 package uk.co.unclealex.callerid.remote.number
 
 import scala.collection.immutable.List
+import javax.inject.Inject
 
 /**
  * @author alex
  *
  */
-class NumberFormatterImpl(
+class NumberFormatterImpl @Inject() (
   /**
    * The location configuration object that can be used to decide whether a number is local or not.
    */

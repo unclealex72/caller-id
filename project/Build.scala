@@ -5,7 +5,7 @@ import play.Project._
 object ApplicationBuild extends Build {
 
   val appName = "callerid-play"
-  val appVersion = "1.0-SNAPSHOT"
+  val appVersion = "2.0-SNAPSHOT"
 
   val appDependencies = Seq(
     "org.scalaz" %% "scalaz-core" % "7.0.0",
@@ -24,6 +24,7 @@ object ApplicationBuild extends Build {
     "com.google.inject" % "guice" % "3.0",
     "com.tzavellas" % "sse-guice" % "0.7.1",
     "org.hibernate" % "hibernate-entitymanager" % "4.2.1.Final",
+    "postgresql" % "postgresql" % "9.1-901-1.jdbc4",
     javaJpa,
     /** Test */
     "org.hsqldb" % "hsqldb" % "2.2.9" % "test",
@@ -32,9 +33,7 @@ object ApplicationBuild extends Build {
 
   val main = play.Project(appName, appVersion, appDependencies).settings(defaultScalaSettings: _*).settings{
     scalaVersion := "2.10.1"
-    resolvers ++=
-      Seq(
-      "cloudbees-private-release-repository" at "https://repository-unclealex.forge.cloudbees.com/release",
-      "cloudbees-private-snapshot-repository" at "https://repository-unclealex.forge.cloudbees.com/snapshot")
+    resolvers += "cloudbees-private-release-repository" at "https://repository-unclealex.forge.cloudbees.com/release"
+    resolvers += "cloudbees-private-snapshot-repository" at "https://repository-unclealex.forge.cloudbees.com/snapshot"
   }
 }

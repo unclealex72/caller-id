@@ -25,19 +25,19 @@
 package uk.co.unclealex.callerid.remote.call
 
 import java.util.Date
-
 import uk.co.unclealex.callerid.remote.contact.ContactService
 import uk.co.unclealex.callerid.remote.dao.CallRecordDao
 import uk.co.unclealex.callerid.remote.google.NowService
 import uk.co.unclealex.callerid.remote.model.CallRecord
 import uk.co.unclealex.callerid.remote.number.NumberLocationService
+import javax.inject.Inject
 
 /**
  * The default implementation of {@link CallReceivedService}
  * @author alex
  *
  */
-class CallReceivedServiceImpl(
+class CallReceivedServiceImpl @Inject() (
   /**
    * The contact service used to find who made a call.
    */

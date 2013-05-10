@@ -22,19 +22,22 @@
  *
  */
 
-package uk.co.unclealex.callerid.remote.dao
+package module
 
-import play.db.jpa.JPA
+import org.scalatest.GivenWhenThen
+import org.scalatest.FunSuite
+import com.google.inject.Injector
+import com.google.inject.Guice
 
 /**
- * An entity manager provider that facades the Play framework's JPA helper.
  * @author alex
  *
  */
-class PlayFrameworkEntityManagerProvider extends EntityManagerProvider {
+class DefaultModuleTest extends FunSuite with GivenWhenThen {
 
-  /**
-   * Get the entity manager direct from the Play framework.
-   */
-  def em = JPA.em()
+  test("Application initialisation") {
+    When("starting the application")
+    Then("the guice module should not have any errors.")
+    Guice.createInjector(new DefaultModule)
+  }
 }

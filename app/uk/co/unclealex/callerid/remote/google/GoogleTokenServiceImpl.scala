@@ -24,18 +24,17 @@
 package uk.co.unclealex.callerid.remote.google
 
 import java.util.Date
-
 import scala.collection.JavaConversions._
 import scala.collection.mutable.Map
-
 import uk.co.unclealex.callerid.remote.model.OauthToken
 import uk.co.unclealex.callerid.remote.model.OauthTokenType
 import uk.co.unclealex.callerid.remote.model.User
+import javax.inject.Inject
 
 /**
  * The default implementation of {@link GoogleTokenService}.
  */
-class GoogleTokenServiceImpl(
+class GoogleTokenServiceImpl @Inject() (
 
   /**
    * The Google configuration object used to configure how to get contacts from Google.

@@ -13,8 +13,9 @@ import uk.co.unclealex.callerid.remote.number.LocationConfiguration
 import uk.co.unclealex.callerid.remote.number.NumberFormatter
 import uk.co.unclealex.callerid.remote.number.NumberFormatterImpl
 import model.CallModel
+import javax.inject.Inject
 
-object Application extends Controller {
+class Application @Inject() () extends Controller {
 
   val uk = NonEmptyList(Country("United Kingdom", "44", "gb", List()))
   val us = NonEmptyList(Country("United States of America", "1", "us", List()))

@@ -44,3 +44,8 @@ case class GoogleConstants(
    * The amount of time (in milliseconds) before expiry that an access token should be rerequested.
    */
   tokenExpiryTimeout: Long = 600000)
+
+object GoogleConstants {
+
+  def default = new GoogleConstants
+}

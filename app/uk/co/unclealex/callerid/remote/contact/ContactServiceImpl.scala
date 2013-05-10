@@ -30,11 +30,12 @@ import uk.co.unclealex.callerid.remote.google.GoogleContact
 import uk.co.unclealex.callerid.remote.dao.UserDao
 import uk.co.unclealex.callerid.remote.number.PhoneNumber
 import scala.collection.mutable.HashMap
+import javax.inject.Inject
 
 /**
  * The default implementation of {@link ContactsService}.
  */
-class ContactServiceImpl(
+class ContactServiceImpl @Inject() (
   /**
    * The {@link GoogleContactsService} used to query Google for user contacts.
    */

@@ -22,19 +22,18 @@
  *
  */
 
-package uk.co.unclealex.callerid.remote.dao
-
-import play.db.jpa.JPA
-
 /**
- * An entity manager provider that facades the Play framework's JPA helper.
  * @author alex
  *
  */
-class PlayFrameworkEntityManagerProvider extends EntityManagerProvider {
+import play.api.GlobalSettings
+import module.DefaultModule
+import com.google.inject.Guice
 
-  /**
-   * Get the entity manager direct from the Play framework.
-   */
-  def em = JPA.em()
+object Global extends GlobalSettings {
+  private lazy val injector = Guice.createInjector(new DefaultModule)
+
+  override def getControllerInstance[A](clazz: Class[A]) = {
+    injector.getInstance(clazz)
+  }
 }

@@ -24,11 +24,12 @@
 package uk.co.unclealex.callerid.remote.number;
 
 import scalaz.NonEmptyList
+import javax.inject.Inject
 
 /**
  * The default implementation of {@link NumberLocationService}.
  */
-class NumberLocationServiceImpl(
+class NumberLocationServiceImpl @Inject() (
   /**
    * The {@link CityDao} used to find cities and countries from telephone numbers.
    */

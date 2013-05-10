@@ -26,11 +26,12 @@ package uk.co.unclealex.callerid.remote.google
 import scala.collection.JavaConversions._
 import uk.co.unclealex.callerid.remote.google.UrlWithParameters._
 import uk.co.unclealex.callerid.remote.model.User
+import javax.inject.Inject
 
 /**
  * The default implementation of {@link GoogleContactsService}.
  */
-class GoogleContactsServiceImpl(
+class GoogleContactsServiceImpl @Inject() (
   /**
    * The service used to parse Google contacts.
    */
