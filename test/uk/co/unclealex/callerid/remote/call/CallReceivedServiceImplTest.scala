@@ -62,7 +62,7 @@ class CallReceivedServiceImplTest extends FunSuite with ShouldMatchers with Give
     (numberLocationService.decompose _).when("1").returns(PhoneNumber("+1", countries, None, "1"))
     (numberLocationService.decompose _).when("2").returns(PhoneNumber("+2", countries, None, "2"))
     val contactService = stub[ContactService]
-    (contactService.getContactsByNormalisedPhoneNumber _).when().returns(Map("+1" -> Contact("Freddie Mercury", None)))
+    (contactService.contactsByNormalisedPhoneNumber _).when().returns(Map("+1" -> Contact("Freddie Mercury", None)))
     When("a call has been received")
     Then("it should be persisted")
     val actualReceivedCall = new CallReceivedServiceImpl(

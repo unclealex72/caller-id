@@ -1,4 +1,4 @@
-@(id : String, callModels : List[model.CallModel])
+@(id : String, callModels : Iterable[model.CallModel])
 <div id="@id" class="item">
   @callModels.map { cm =>
     @call(cm.receivedCall.phoneNumber, cm.formattedNumber, cm.formattedAddress, cm.receivedCall.contact)

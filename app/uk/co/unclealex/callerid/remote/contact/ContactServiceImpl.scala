@@ -49,7 +49,7 @@ class ContactServiceImpl @Inject() (
    */
   userDao: UserDao) extends ContactService {
 
-  override def getContactsByNormalisedPhoneNumber = {
+  override def contactsByNormalisedPhoneNumber = {
     val allContacts =
       userDao.getAll.map(googleContactsService.getAllContacts _).flatten
     val contactsByPhoneNumber = new HashMap[String, Contact]

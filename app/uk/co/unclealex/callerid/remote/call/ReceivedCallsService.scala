@@ -18,22 +18,24 @@
  * specific language governing permissions and limitations
  * under the License.
  *
+ * @author unclealex72
+ *
+ */
+
+package uk.co.unclealex.callerid.remote.call
+
+import scala.collection.SortedSet
+
+/**
+ * A trait which can list all received calls.
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.contact
-
-import uk.co.unclealex.callerid.remote.google.GoogleContact
-import uk.co.unclealex.callerid.remote.number.PhoneNumber
-
-/**
- * An interface for finding {@link Contact}s from {@link PhoneNumber}s.
- */
-trait ContactService {
+trait ReceivedCallsService {
 
   /**
-   * Get all contacts by their normalised phone number.
+   * Get all calls.
+   * @return a list of all calls that have been received, the most recent first.
    */
-  def contactsByNormalisedPhoneNumber: Map[String, Contact]
-
+  def calls: SortedSet[ReceivedCall]
 }

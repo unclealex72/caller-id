@@ -60,7 +60,7 @@ class ContactServiceImplTest extends FunSuite with ShouldMatchers with GivenWhen
     val userDao = stub[UserDao]
     (userDao.getAll _).when().returns(users.map { case (u, cs) => u })
     val contactService = new ContactServiceImpl(googleContactsService, numberLocationService, userDao)
-    val actualContactsByPhoneNumber = contactService.getContactsByNormalisedPhoneNumber
+    val actualContactsByPhoneNumber = contactService.contactsByNormalisedPhoneNumber
     val expectedContactsByPhoneNumber = Map(
       "+1" -> Contact("John", Some("Heathrow")),
       "+2" -> Contact("John", Some("Heathrow")),

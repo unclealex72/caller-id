@@ -62,7 +62,7 @@ class CallReceivedServiceImpl @Inject() (
     val callRecord = new CallRecord(now, normalisedNumber)
     callRecordDao.store(callRecord)
     val contact =
-      contactService.getContactsByNormalisedPhoneNumber.get(normalisedNumber)
+      contactService.contactsByNormalisedPhoneNumber.get(normalisedNumber)
     ReceivedCall(now, phoneNumber, contact)
   }
 }

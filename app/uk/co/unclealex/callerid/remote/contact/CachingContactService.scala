@@ -64,11 +64,11 @@ class CachingContactService(contactService: ContactService, updateFrequency: Lon
    * Populate the cache
    */
   def populateCache {
-    val contactsByPhoneNumber = contactService.getContactsByNormalisedPhoneNumber
+    val contactsByPhoneNumber = contactService.contactsByNormalisedPhoneNumber
     cache.set(contactsByPhoneNumber)
   }
 
-  def getContactsByNormalisedPhoneNumber: Map[String, Contact] = {
+  def contactsByNormalisedPhoneNumber: Map[String, Contact] = {
     cache.get
   }
 
