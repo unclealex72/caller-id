@@ -54,7 +54,7 @@ class ReceivedCallsServiceImplTest extends FunSuite with ShouldMatchers with Giv
     val callRecordDao = stub[CallRecordDao]
     val callRecords =
       List(0 -> "+441256769123", 5 -> "+441256769124", 10 -> "+441256769125").map {
-        case (minutes, number) => new CallRecord(minutes later, number)
+        case (minutes, number) => CallRecord(minutes later, number)
       }
     (callRecordDao.getAll _).when().returns(callRecords)
 

@@ -21,16 +21,34 @@
  * @author unclealex72
  *
  */
-
 package uk.co.unclealex.callerid.remote.dao
 
-import uk.co.unclealex.callerid.remote.model.User
-import javax.inject.Inject
+import java.text.SimpleDateFormat
+import org.springframework.beans.factory.annotation.Autowired
+import org.junit.Test
+import uk.co.unclealex.callerid.remote.model.CallRecord
+import org.junit.Assert._
+import org.hamcrest.Matchers._
 
 /**
  * @author alex
  *
  */
-class JpaUserDao @Inject() (emp: EntityManagerProvider) extends JpaBasicDao[User](emp) with UserDao {
+class SquerylCallRecordDaoTest extends SquerylDaoTest {
 
+  val df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+
+  test("Storing and retrieving call records") {
+    val callRecordDao: CallRecordDao = new SquerylCallRecordDao
+
+    val firstCallRecord = CallRecord(df.parse("05/09/1972 09:12:00"), "0125698113113")
+
+    val secondCallRecord = CallRecord(df.parse("05/09/1972 09:13:00"), "0148322114114")
+
+    When("storing two call records")
+    callRecordDao.storeAll(List(firstCallRecord, secondCallRecord))
+    Then("they should be able to be returned, too")
+    val persistedCallRecords = callRecordDao.getAll
+    persistedCallRecords.toSet should equal(Set(firstCallRecord, secondCallRecord))
+  }
 }

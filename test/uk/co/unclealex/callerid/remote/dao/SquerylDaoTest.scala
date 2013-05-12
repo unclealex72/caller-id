@@ -21,34 +21,38 @@
  * @author unclealex72
  *
  */
+
 package uk.co.unclealex.callerid.remote.dao
 
-import java.text.SimpleDateFormat
-import org.springframework.beans.factory.annotation.Autowired
-import org.junit.Test
-import uk.co.unclealex.callerid.remote.model.CallRecord
-import org.junit.Assert._
-import org.hamcrest.Matchers._
+import org.scalatest.Args
+import org.scalatest.Finders
+import org.scalatest.FunSuite
+import org.scalatest.GivenWhenThen
+import org.scalatest.Status
+import org.scalatest.matchers.ShouldMatchers
+import org.squeryl.Session
+import org.squeryl.SessionFactory
+import org.squeryl.adapters.H2Adapter
+import org.squeryl.dsl.QueryDsl
+import uk.co.unclealex.callerid.remote.model.CallerIdSchema._
+import uk.co.unclealex.callerid.remote.model.CallerIdSchema
 
 /**
  * @author alex
  *
  */
-class JpaCallRecordDaoTest extends JpaDaoTest {
+abstract class SquerylDaoTest extends FunSuite with ShouldMatchers with GivenWhenThen {
 
-  val df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+  Class forName "org.h2.Driver"
 
-  test("Storing and retrieving call records") {
-    val callRecordDao: CallRecordDao = new JpaCallRecordDao(this)
-
-    val firstCallRecord = new CallRecord(df.parse("05/09/1972 09:12:00"), "0125698113113")
-
-    val secondCallRecord = new CallRecord(df.parse("05/09/1972 09:13:00"), "0148322114114")
-
-    When("storing two call records")
-    callRecordDao.storeAll(List(firstCallRecord, secondCallRecord))
-    Then("they should be able to be returned, too")
-    val persistedCallRecords = callRecordDao.getAll
-    persistedCallRecords.toSet should equal(Set(firstCallRecord, secondCallRecord))
+  protected override def runTest(testName: String, args: Args): Status = {
+    SessionFactory.concreteFactory = Some(() =>
+      Session.create(
+        java.sql.DriverManager.getConnection("jdbc:h2:mem:", "", ""),
+        new H2Adapter))
+    inTransaction {
+      CallerIdSchema.create
+      super.runTest(testName, args)
+    }
   }
 }

@@ -24,13 +24,28 @@
 
 package uk.co.unclealex.callerid.remote.dao
 
-import uk.co.unclealex.callerid.remote.model.CallRecord
-import javax.inject.Inject
+import org.squeryl.Table
+import org.squeryl.KeyedEntity
+import org.squeryl.dsl.boilerplate.FromSignatures
+import org.squeryl.dsl.QueryDsl
+
+import uk.co.unclealex.callerid.remote.model.CallerIdSchema._
 
 /**
  * @author alex
  *
  */
-class JpaCallRecordDao @Inject() (emp: EntityManagerProvider) extends JpaBasicDao[CallRecord](emp) with CallRecordDao {
+class SquerylBasicDao[M <: KeyedEntity[_]](table: Table[M]) extends BasicDao[M] {
 
+  def store(model: M): Unit = {
+    table.insertOrUpdate(model)
+  }
+
+  def storeAll(models: List[M]): Unit = {
+    models foreach { store }
+  }
+
+  def getAll: List[M] = {
+    from(table)(select(_)).foldRight(List[M]())(_ :: _)
+  }
 }

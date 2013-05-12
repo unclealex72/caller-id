@@ -30,6 +30,7 @@ import org.scalatest.matchers.ShouldMatchers
 import uk.co.unclealex.callerid.remote.model.User
 import java.util.ArrayList
 import java.net.URL
+import java.util.Date
 
 /**
  * Test that, given a predefined set of contacts, they are correctly read by the Google Contacts Service.
@@ -43,7 +44,7 @@ class GoogleContactsServiceImplTest extends FunSuite with ShouldMatchers with Mo
     val googleContacts = Set(
       new GoogleContact("Brian May", Some("House"), Set("+44111222")),
       new GoogleContact("Freddie Mercury", None, Set("+44222333")))
-    val user = new User("username")
+    val user = User("username", "access", new Date(), "refresh")
     (googleTokenService.accessToken _).when(user).returns("access")
     (googleContactsParser.parse _).when(
       new URL("https://www.google.com/m8/feeds/contacts/default/full?access_token=access&max-results=2147483647")).

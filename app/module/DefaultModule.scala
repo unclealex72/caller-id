@@ -49,16 +49,16 @@ import uk.co.unclealex.callerid.remote.number.LocationConfiguration
 import uk.co.unclealex.callerid.remote.number.LocationConfiguration
 import uk.co.unclealex.callerid.remote.google.GoogleConfiguration
 import uk.co.unclealex.callerid.remote.number.LocationConfiguration
-import uk.co.unclealex.callerid.remote.dao.EntityManagerProvider
-import uk.co.unclealex.callerid.remote.dao.PlayFrameworkEntityManagerProvider
 import uk.co.unclealex.callerid.remote.dao.UserDao
-import uk.co.unclealex.callerid.remote.dao.JpaUserDao
-import uk.co.unclealex.callerid.remote.dao.JpaCallRecordDao
 import uk.co.unclealex.callerid.remote.dao.CallRecordDao
 import uk.co.unclealex.callerid.remote.contact.ContactService
 import uk.co.unclealex.callerid.remote.contact.ContactServiceImpl
 import uk.co.unclealex.callerid.remote.google.GoogleConstants
 import uk.co.unclealex.callerid.remote.google.GoogleConstants
+import uk.co.unclealex.callerid.remote.call.ReceivedCallsService
+import uk.co.unclealex.callerid.remote.call.ReceivedCallsServiceImpl
+import uk.co.unclealex.callerid.remote.dao.SquerylCallRecordDao
+import uk.co.unclealex.callerid.remote.dao.SquerylUserDao
 
 /**
  * @author alex
@@ -78,6 +78,7 @@ class DefaultModule extends ScalaModule {
     bind[NumberFormatter].to[NumberFormatterImpl]
     bind[NumberLocationService].to[NumberLocationServiceImpl]
     bind[ContactService].to[ContactServiceImpl]
+    bind[ReceivedCallsService].to[ReceivedCallsServiceImpl]
 
     // Google
     bind[GoogleContactsParser].to[GoogleContactsParserImpl]
@@ -96,9 +97,8 @@ class DefaultModule extends ScalaModule {
     bind[GoogleConstants].toInstance(GoogleConstants.default)
 
     // Persistence
-    bind[EntityManagerProvider].toInstance(new PlayFrameworkEntityManagerProvider)
-    bind[UserDao].to[JpaUserDao]
-    bind[CallRecordDao].to[JpaCallRecordDao]
+    bind[UserDao].to[SquerylUserDao]
+    bind[CallRecordDao].to[SquerylCallRecordDao]
   }
 
   def bindConfiguration[T](root: String)(block: Config => T)(implicit m: Manifest[T]) = {

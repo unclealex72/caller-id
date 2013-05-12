@@ -23,11 +23,10 @@ object ApplicationBuild extends Build {
     "org.mozilla" % "rhino" % "1.7R4",
     "com.google.inject" % "guice" % "3.0",
     "com.tzavellas" % "sse-guice" % "0.7.1",
-    "org.hibernate" % "hibernate-entitymanager" % "4.2.1.Final",
+    "org.squeryl" % "squeryl_2.10.0-RC5" % "0.9.5-5",
     "postgresql" % "postgresql" % "9.1-901-1.jdbc4",
-    javaJpa,
     /** Test */
-    "org.hsqldb" % "hsqldb" % "2.2.9" % "test",
+    "com.h2database" % "h2" % "1.3.171" % "test",
     "org.scalamock" %% "scalamock-scalatest-support" % "3.0.1" % "test",
     "uk.co.unclealex" % "test-server-utilities" % "1.0.1-SNAPSHOT" % "test")
 

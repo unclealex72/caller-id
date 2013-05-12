@@ -24,17 +24,12 @@
 
 package uk.co.unclealex.callerid.remote.dao
 
-import javax.persistence.EntityManager
+import uk.co.unclealex.callerid.remote.model.User
+import javax.inject.Inject
+import uk.co.unclealex.callerid.remote.model.CallerIdSchema
 
 /**
- * A trait to be used by JPA DAOs to get an entity manager
  * @author alex
  *
  */
-trait EntityManagerProvider {
-
-  /**
-   * Get the entity manager to use.
-   */
-  def em(): EntityManager
-}
+class SquerylUserDao extends SquerylBasicDao[User](CallerIdSchema.users) with UserDao

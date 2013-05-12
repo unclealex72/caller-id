@@ -37,6 +37,7 @@ import uk.co.unclealex.callerid.remote.number.PhoneNumber
 import uk.co.unclealex.callerid.remote.dao.UserDao
 import scalaz.NonEmptyList
 import uk.co.unclealex.callerid.remote.number.Country
+import java.util.Date
 /**
  * @author alex
  *
@@ -73,7 +74,7 @@ class ContactServiceImplTest extends FunSuite with ShouldMatchers with GivenWhen
   implicit class StringImplicits(str: String) {
 
     def asUser(googleContacts: Set[GoogleContact]) = {
-      new User(str) -> googleContacts
+      User(str, "access", new Date(), "refresh") -> googleContacts
     }
   }
 }

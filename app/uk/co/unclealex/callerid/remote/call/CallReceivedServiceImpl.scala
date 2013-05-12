@@ -59,7 +59,7 @@ class CallReceivedServiceImpl @Inject() (
     val phoneNumber = numberLocationService.decompose(number)
     val normalisedNumber = phoneNumber.normalisedNumber
     val now = new Date(nowService.now)
-    val callRecord = new CallRecord(now, normalisedNumber)
+    val callRecord = CallRecord(now, normalisedNumber)
     callRecordDao.store(callRecord)
     val contact =
       contactService.contactsByNormalisedPhoneNumber.get(normalisedNumber)

@@ -26,16 +26,19 @@ package uk.co.unclealex.callerid.remote.google
 import java.util.Date
 import scala.collection.JavaConversions._
 import scala.collection.mutable.Map
-import uk.co.unclealex.callerid.remote.model.OauthToken
-import uk.co.unclealex.callerid.remote.model.OauthTokenType
 import uk.co.unclealex.callerid.remote.model.User
 import javax.inject.Inject
+import uk.co.unclealex.callerid.remote.dao.UserDao
+import java.sql.Timestamp
 
 /**
  * The default implementation of {@link GoogleTokenService}.
  */
 class GoogleTokenServiceImpl @Inject() (
-
+  /**
+   * The user DAO used to store an updated or new user.
+   */
+  userDao: UserDao,
   /**
    * The Google configuration object used to configure how to get contacts from Google.
    */
@@ -57,44 +60,16 @@ class GoogleTokenServiceImpl @Inject() (
   googleRequestService: GoogleRequestService) extends GoogleTokenService {
 
   /**
-   * Implicits for Users and their tokens.
+   * Update a user's access token.
+   * @param user The user whose access token needs updating.
+   * @param accessToken The user's current access token.
    */
-  implicit class UserTokenImplicits(user: User) {
-    /**
-     * Find a user's token by it's token type.
-     * @param user The user to interrogate.
-     * @param oauthTokenType the token type to search for.
-     * @return A token of the given type.
-     */
-    def findTokenByType(oauthTokenType: OauthTokenType): Option[OauthToken] =
-      user.getOauthTokens.find(_.getTokenType == oauthTokenType)
-    /**
-     * Find or create a user's token by it's token type.
-     * @param user The user to interrogate.
-     * @param oauthTokenType the token type to search for.
-     * @return A token of the given type or a new token with the given type if none such exists.
-     */
-    def findTokenByTypeOrCreate(tokenType: OauthTokenType): OauthToken = {
-      user.findTokenByType(tokenType).getOrElse({
-        val oauthToken = new OauthToken(tokenType)
-        user.getOauthTokens += oauthToken
-        oauthToken
-      })
-    }
-
-    /**
-     * Update a user's access token.
-     * @param user The user whose access token needs updating.
-     * @param accessToken The user's current access token.
-     */
-    def updateAccessToken(userAccessToken: OauthToken): Unit = {
-      val refreshToken: Option[OauthToken] = user.findTokenByType(OauthTokenType.REFRESH)
-      refreshToken.map { refreshToken =>
-        val newAccessToken = requestToken("refresh_token", refreshToken.getToken, "refresh_token", false)
-        userAccessToken.setToken(newAccessToken.accessToken)
-        userAccessToken.setExpiryDate(expiryDate(newAccessToken))
-      }.getOrElse(throw new GoogleAuthenticationFailedException("No refresh token found."))
-    }
+  def updateAccessToken(user: User): Unit = {
+    val newAccessToken = requestToken("refresh_token", user.refreshToken, "refresh_token", false)
+    user.accessToken = newAccessToken.accessToken
+    user.expiryDate = expiryDate(newAccessToken).getOrElse(
+      throw new IllegalStateException("No expiry date was found for an access token."))
+    userDao store user
   }
 
   /**
@@ -123,16 +98,10 @@ class GoogleTokenServiceImpl @Inject() (
    * @param A valid access token.
    */
   def accessToken(user: User): String = {
-    val optionalAccessToken: Option[OauthToken] = user.findTokenByType(OauthTokenType.ACCESS)
-    val accessToken: OauthToken = optionalAccessToken.getOrElse({
-      val token = new OauthToken(OauthTokenType.ACCESS)
-      user.getOauthTokens += token
-      token
-    })
-    if (expired(accessToken)) {
-      user.updateAccessToken(accessToken)
+    if (expired(user)) {
+      updateAccessToken(user)
     }
-    accessToken.getToken
+    user.accessToken
   }
 
   /**
@@ -140,25 +109,28 @@ class GoogleTokenServiceImpl @Inject() (
    * @param tokenResponse the token response from Google.
    * @return The date and time the token expires.
    */
-  def expiryDate(tokenResponse: TokenResponse): Date =
-    tokenResponse.expiresInSeconds.map(secs => new Date(secs * 1000L + nowService.now)).orNull
+  def expiryDate(tokenResponse: TokenResponse): Option[Timestamp] =
+    tokenResponse.expiresInSeconds.map(secs => new Timestamp(secs * 1000L + nowService.now))
 
   /**
    * Determine whether an access token has expired.
    * @param oauthToken The token to check.
    * @return True if the token's expiry date is soon to expire, expired or non existent, false otherwise.
    */
-  def expired(oauthToken: OauthToken): Boolean = {
-    val expiryDate = oauthToken.getExpiryDate
-    expiryDate == null || expiryDate.getTime() - googleConstants.tokenExpiryTimeout < nowService.now
+  def expired(user: User): Boolean = {
+    user.expiryDate.getTime - googleConstants.tokenExpiryTimeout < nowService.now
   }
 
-  override def installSuccessCode(user: User, successCode: String) {
-    val userAccessToken = user.findTokenByTypeOrCreate(OauthTokenType.ACCESS)
-    val userRefreshToken = user.findTokenByTypeOrCreate(OauthTokenType.REFRESH)
+  override def installSuccessCode(username: String, successCode: String) = {
     val token = requestToken("code", successCode, "authorization_code", true)
-    userAccessToken.setToken(token.accessToken)
-    userAccessToken.setExpiryDate(expiryDate(token))
-    userRefreshToken.setToken(token.refreshToken.get)
+    val user = User(
+      username,
+      token.accessToken,
+      expiryDate(token).getOrElse(
+        throw new IllegalStateException("No expiry date was supplied by Google.")),
+      token.refreshToken.getOrElse(
+        throw new IllegalStateException("No refresh token was supplied by Google.")))
+    userDao store user
+    user
   }
 }

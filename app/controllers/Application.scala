@@ -1,13 +1,11 @@
 package controllers
 
-import java.util.Date
 import javax.inject.Inject
 import model.CallModel
 import play.api.mvc.Action
 import play.api.mvc.Controller
-import uk.co.unclealex.callerid.remote.call.ReceivedCall
-import uk.co.unclealex.callerid.remote.number.LocationConfiguration
-import uk.co.unclealex.callerid.remote.number.NumberFormatterImpl
+import play.api.mvc.Request
+import play.api.mvc.Result
 import uk.co.unclealex.callerid.remote.call.ReceivedCallsService
 import uk.co.unclealex.callerid.remote.number.NumberFormatter
 
@@ -21,17 +19,24 @@ class Application @Inject() (
    */
   receivedCallsService: ReceivedCallsService) extends Controller {
 
-  def index = Action {
-    val allCallModels = receivedCallsService.calls.map(
-      rc => {
-        val pn = rc.phoneNumber
-        CallModel(rc, numberFormatter.formatNumberAsInternational(pn), numberFormatter.formatAddress(pn))
-      })
-    Ok(views.html.index(allCallModels))
+  def index = Transactional {
+    Action {
+      val allCallModels = receivedCallsService.calls.map(
+        rc => {
+          val pn = rc.phoneNumber
+          CallModel(rc, numberFormatter.formatNumberAsInternational(pn), numberFormatter.formatAddress(pn))
+        })
+      Ok(views.html.index(allCallModels))
+    }
   }
 
-  def at(formattedDate: String): Date = {
-    null
-  }
+  case class Transactional[A](action: Action[A]) extends Action[A] {
 
+    def apply(request: Request[A]): Result = {
+      action(request)
+    }
+
+    lazy val parser = action.parser
+  }
 }
+

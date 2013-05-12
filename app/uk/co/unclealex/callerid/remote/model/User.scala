@@ -21,27 +21,41 @@
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.remote.google
+package uk.co.unclealex.callerid.remote.model;
 
-import uk.co.unclealex.callerid.remote.model.User
+import org.squeryl.KeyedEntity
+import org.squeryl.dsl.OneToMany
+import org.squeryl.dsl.StatefulOneToMany
+import java.util.Date
+import java.sql.Timestamp
 
 /**
- * An interface for retrieving OAuth access tokens from Google.
+ * A persitable person who can use the system.
  */
-trait GoogleTokenService {
-
+case class User(
   /**
-   * Get the access token for a user, refreshing it if neccessary.
-   * @param user The user who is requesting an access token.
-   * @return An OAuth access token that will allow a user to access their Google contacts.
+   * The ID of the user
    */
-  def accessToken(user: User): String
-
+  var id: Long,
   /**
-   * Install a Google success code for a user.
-   * @param The user who made the request for a success code.
-   * @param The success code supplied by Google.
-   * @return A new user with refresh and access tokens installed.
+   * The username of the user.
    */
-  def installSuccessCode(username: String, successCode: String): User
+  var username: String,
+  /**
+   * The short lived oauth access token from Google.
+   */
+  var accessToken: String,
+  /**
+   * The expiry date of the oauth accesss token.
+   */
+  var expiryDate: Timestamp,
+  /**
+   * The long lived oauth refresh token from Google.
+   */
+  var refreshToken: String) extends KeyedEntity[Long]
+
+object User {
+
+  def apply(username: String, accessToken: String, expiryDate: Date, refreshToken: String): User =
+    new User(0, username, accessToken, new Timestamp(expiryDate.getTime()), refreshToken)
 }

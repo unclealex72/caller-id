@@ -18,23 +18,33 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * @author unclealex72
- *
- */
-
-package uk.co.unclealex.callerid.remote.dao
-
-import play.db.jpa.JPA
-
-/**
- * An entity manager provider that facades the Play framework's JPA helper.
  * @author alex
  *
  */
-class PlayFrameworkEntityManagerProvider extends EntityManagerProvider {
+package uk.co.unclealex.callerid.remote.model;
 
+import java.util.Date
+import org.squeryl.KeyedEntity
+import java.sql.Timestamp
+
+/**
+ * A persisted representation of a call that has been received.
+ */
+case class CallRecord(
   /**
-   * Get the entity manager direct from the Play framework.
+   * The ID of the call record
    */
-  def em = JPA.em()
+  var id: Long,
+  /**
+   * The date and time at which this call was received.
+   */
+  var callDate: Timestamp,
+  /**
+   * The phone number that called.
+   */
+  var telephoneNumber: String) extends KeyedEntity[Long]
+
+object CallRecord {
+
+  def apply(callDate: Date, telephoneNumber: String) = new CallRecord(0, new Timestamp(callDate.getTime()), telephoneNumber)
 }

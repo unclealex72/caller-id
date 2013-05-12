@@ -24,12 +24,14 @@
 
 package uk.co.unclealex.callerid.remote.dao
 
+import org.squeryl.KeyedEntity
+
 /**
  * A basic trait for storing and retrieving model classes from a persitence store
  * @author alex
  *
  */
-trait BasicDao[M] {
+trait BasicDao[M <: KeyedEntity[_]] {
 
   /**
    * Store a model.

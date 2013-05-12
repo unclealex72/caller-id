@@ -24,30 +24,12 @@
 
 package uk.co.unclealex.callerid.remote.dao
 
-import scala.collection.JavaConversions._
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
+import uk.co.unclealex.callerid.remote.model.CallRecord
+import javax.inject.Inject
+import uk.co.unclealex.callerid.remote.model.CallerIdSchema
 
 /**
  * @author alex
  *
  */
-class JpaBasicDao[M](emp: EntityManagerProvider)(implicit m: Manifest[M]) extends BasicDao[M] {
-
-  val clazz = m.runtimeClass.asInstanceOf[Class[M]]
-
-  def store(model: M): Unit = {
-    emp.em persist model
-  }
-
-  def storeAll(models: List[M]): Unit = {
-    models foreach { store }
-  }
-
-  def getAll: List[M] = {
-    val em = emp.em
-    val cq = em.getCriteriaBuilder().createQuery(clazz);
-    cq.select(cq.from(clazz))
-    em.createQuery(cq).getResultList().toList
-  }
-}
+class SquerylCallRecordDao extends SquerylBasicDao[CallRecord](CallerIdSchema.callRecords) with CallRecordDao

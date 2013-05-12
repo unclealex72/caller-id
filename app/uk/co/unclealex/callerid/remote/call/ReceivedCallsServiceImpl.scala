@@ -33,6 +33,7 @@ import scala.collection.JavaConversions._
 import uk.co.unclealex.callerid.remote.model.CallRecord
 import scala.collection.immutable.TreeSet
 import uk.co.unclealex.callerid.remote.number.NumberLocationService
+import java.util.Date
 
 /**
  * The default implementation of {@link ReceivedCallsService}.
@@ -57,11 +58,10 @@ class ReceivedCallsServiceImpl @Inject() (
     val contactsByNormalisedPhoneNumber = contactService.contactsByNormalisedPhoneNumber
     val ordering = Ordering.by((rc: ReceivedCall) => rc.dateReceived).reverse
     val receivedCallFactory: CallRecord => ReceivedCall = { cr =>
-      val telephoneNumber = cr.getTelephoneNumber
       ReceivedCall(
-        cr.getCallDate(),
-        numberLocationService.decompose(telephoneNumber),
-        contactsByNormalisedPhoneNumber.get(cr.getTelephoneNumber()))
+        new Date(cr.callDate.getTime()),
+        numberLocationService.decompose(cr.telephoneNumber),
+        contactsByNormalisedPhoneNumber.get(cr.telephoneNumber))
     }
     SortedSet(callRecordDao.getAll.map(receivedCallFactory): _*)(ordering)
   }

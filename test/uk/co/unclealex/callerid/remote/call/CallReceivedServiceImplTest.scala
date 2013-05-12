@@ -38,6 +38,9 @@ import uk.co.unclealex.callerid.remote.number.NumberLocationService
 import uk.co.unclealex.callerid.remote.dao.CallRecordDao
 import scalaz.NonEmptyList
 import uk.co.unclealex.callerid.remote.number.Country
+import org.scalamock.FunctionAdapter1
+import java.sql.Timestamp
+import java.util.Date
 /**
  * @author alex
  *
@@ -54,13 +57,13 @@ class CallReceivedServiceImplTest extends FunSuite with ShouldMatchers with Give
   }
 
   def execute(phoneNumber: String, contact: Option[Contact]) {
-    val now = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse("28/04/2013 18:59:30")
+    val now = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse("28/04/2013 18:59:30").getTime
     val nowService = stub[NowService]
-    (nowService.now _).when().returns(now.getTime)
+    (nowService.now _).when().returns(now)
     val callRecordDao = stub[CallRecordDao]
     val numberLocationService = stub[NumberLocationService]
-    (numberLocationService.decompose _).when("1").returns(PhoneNumber("+1", countries, None, "1"))
-    (numberLocationService.decompose _).when("2").returns(PhoneNumber("+2", countries, None, "2"))
+    (numberLocationService.decompose _).when(phoneNumber).returns(
+      PhoneNumber(s"+$phoneNumber", countries, None, phoneNumber))
     val contactService = stub[ContactService]
     (contactService.contactsByNormalisedPhoneNumber _).when().returns(Map("+1" -> Contact("Freddie Mercury", None)))
     When("a call has been received")
@@ -70,10 +73,10 @@ class CallReceivedServiceImplTest extends FunSuite with ShouldMatchers with Give
       numberLocationService = numberLocationService,
       contactService = contactService,
       callRecordDao = callRecordDao).callReceived(phoneNumber)
-    val expectedCallRecord = new CallRecord(now, "+" + phoneNumber)
-    (callRecordDao.store _).verify(expectedCallRecord)
+    (callRecordDao store _).verify(
+      new FunctionAdapter1((cr: CallRecord) => cr.callDate == new Timestamp(now) && cr.telephoneNumber == s"+$phoneNumber"))
     Then("the correct phone number information should be returned.")
     actualReceivedCall should equal(
-      ReceivedCall(now, PhoneNumber("+" + phoneNumber, countries, None, phoneNumber), contact))
+      ReceivedCall(new Date(now), PhoneNumber("+" + phoneNumber, countries, None, phoneNumber), contact))
   }
 }
