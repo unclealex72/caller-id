@@ -38,9 +38,8 @@ public class Google extends Controller {
 
   public Result callback() {
     final Result result = CallbackController.callback();
-    
-    final String successCode = Context.current().request().getQueryString("code"));
-    // return CallbackController.callback();
+    final String successCode = Context.current().request().getQueryString("code");
+    return result;
   }
 
   public Result logout() {
