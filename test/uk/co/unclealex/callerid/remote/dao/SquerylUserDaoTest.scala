@@ -54,6 +54,34 @@ class SquerylUserDaoTest extends SquerylDaoTest {
     persistedUser.refreshToken should equal("refreshed")
   }
 
+  test("Find valid user by email address") {
+    val userDao = new SquerylUserDao
+    userDao store User("alex", "access", "05/09/1972 09:12:00".toDate, "refresh")
+    When("finding an existing user")
+    val persistedUser = userDao.findByEmailAddress("alex")
+    Then("they should first be found")
+    persistedUser should be('defined)
+    persistedUser.map { user =>
+      Then("they should have the correct username")
+      user.username should equal("alex")
+      Then("they should have the correct access token")
+      user.accessToken should equal("access")
+      Then("they should have the correct expiry date")
+      user.expiryDate should equal("05/09/1972 09:12:00".toDate)
+      Then("they should have the correct refresh token")
+      user.refreshToken should equal("refresh")
+    }
+  }
+
+  test("Fail to find invalid user by email address") {
+    val userDao = new SquerylUserDao
+    userDao store User("brian", "access", "05/09/1972 09:12:00".toDate, "refresh")
+    When("looking for a non-existing user")
+    val persistedUser = userDao.findByEmailAddress("alex")
+    Then("they should not be found")
+    persistedUser should be('empty)
+  }
+
   implicit class StringImplicits(str: String) {
 
     val df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
