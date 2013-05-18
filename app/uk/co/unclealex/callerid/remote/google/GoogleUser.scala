@@ -21,21 +21,47 @@
  * @author unclealex72
  *
  */
+
 package uk.co.unclealex.callerid.remote.google
 
-import com.fasterxml.jackson.annotation.JsonProperty
+/**
+ * A class that encapsulates a logged in user from Google.
+ * @author alex
+ *
+ */
+case class GoogleUser(
+  /**
+   * The user's Google email.
+   */
+  email: String,
+  /**
+   * The name of the user taken from their user profile.
+   */
+  name: String) {
+
+  def serialise: String = s"$email:$name"
+}
 
 /**
- * A JSON compatible class that encapsulate Google token responses.
+ * The companion object for a Google user.
  */
-case class TokenResponse(
-  /** The Access token issued by the authorization server. */
-  @JsonProperty("access_token") accessToken: String,
+object GoogleUser {
+
   /**
-   * Lifetime in seconds of the access token (for example 3600 for an hour).
+   * Decompose a string containing a user's email and name, separated by a colon. Both must be non-empty.
    */
-  @JsonProperty("expires_in") expiresInSeconds: Option[Int],
+  def unapply(user: String): Option[(String, String)] = {
+    val userParts = user.split(':')
+    if (userParts.size == 2 && !(userParts exists { _.isEmpty() })) Some(userParts(0), userParts(1)) else None
+  }
+
   /**
-   * Refresh token which can be used to obtain new access tokens using {@link RefreshTokenRequest}.
+   * Parse a string containing a user's email and name, separated by a colon.
    */
-  @JsonProperty("refresh_token") refreshToken: Option[String])
+  def parse(str: String): Option[GoogleUser] = {
+    str match {
+      case GoogleUser(email, name) => Some(GoogleUser(email, name))
+      case _ => None
+    }
+  }
+}

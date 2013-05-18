@@ -18,12 +18,13 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * @author alex
+ * @author unclealex72
  *
  */
 package uk.co.unclealex.callerid.remote.google
 
 import scala.collection.Map
+import scala.reflect.ClassTag
 
 /**
  * An interface allowing the abstraction of requesting receiving Google Json token objects.
@@ -31,10 +32,17 @@ import scala.collection.Map
 trait GoogleRequestService {
 
   /**
-   * Send a token request to Google.
+   * Send a form POST request to Google.
    * @param url The google URL to call
    * @param formParameters The form parameters to send.
-   * @return The token response object from Google.
+   * @return The response object from Google.
    */
-  def sendRequest(url: String, formParameters: Map[String, String]): TokenResponse
+  def sendTokenPostRequest(url: String, formParameters: Map[String, String]): TokenResponse
+
+  /**
+   * Send a form GET request to Google.
+   * @param urlWithParameters The google URL to call
+   * @return The response object from Google.
+   */
+  def sendProfileGetRequest(urlWithParameters: UrlWithParameters): UserInfo
 }

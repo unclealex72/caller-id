@@ -28,6 +28,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import javax.ws.rs.ext.ContextResolver
 import javax.ws.rs.ext.Provider
+import com.fasterxml.jackson.databind.DeserializationConfig
+import com.fasterxml.jackson.databind.DeserializationFeature
 
 /**
  * A class and object used to get the default object mapper with the scala modulre already registered.
@@ -37,9 +39,8 @@ import javax.ws.rs.ext.Provider
 @Provider
 class ScalaObjectMapperProvider extends ContextResolver[ObjectMapper] {
 
-  override def getContext(clazz: Class[_]): ObjectMapper = {
-    ScalaObjectMapper
-  }
+  override def getContext(clazz: Class[_]): ObjectMapper =
+    ScalaObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 }
 
 object ScalaObjectMapper extends ObjectMapper {

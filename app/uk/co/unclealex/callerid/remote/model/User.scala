@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * @author alex
+ * @author unclealex72
  *
  */
 package uk.co.unclealex.callerid.remote.model;

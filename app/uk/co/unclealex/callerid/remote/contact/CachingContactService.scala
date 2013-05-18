@@ -52,9 +52,9 @@ class CachingContactService(contactService: ContactService, updateFrequency: Lon
    * Prepopulate the cache and set off a task to update it periodically
    */
   @PostConstruct
-  def initialise {
+  def initialise: Unit = {
     val updateTimerTask = new TimerTask {
-      override def run = populateCache
+      override def run: Unit = populateCache
     }
     updateTimerTask.run
     updateTimer.scheduleAtFixedRate(updateTimerTask, updateFrequency, updateFrequency)

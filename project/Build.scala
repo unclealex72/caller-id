@@ -26,9 +26,6 @@ object ApplicationBuild extends Build {
     "org.squeryl" % "squeryl_2.10.0-RC5" % "0.9.5-5",
     "postgresql" % "postgresql" % "9.1-901-1.jdbc4",
     jdbc,
-    "org.pac4j" % "play-pac4j_scala2.10" % "1.1.0-SNAPSHOT",
-    "org.pac4j" % "pac4j-oauth" % "1.4.1-SNAPSHOT",
-    "org.pac4j" % "pac4j-http" % "1.4.1-SNAPSHOT",
     /** Test */
     "com.h2database" % "h2" % "1.3.171" % "test",
     "org.scalamock" %% "scalamock-scalatest-support" % "3.0.1" % "test",
@@ -37,7 +34,6 @@ object ApplicationBuild extends Build {
   val main = play.Project(appName, appVersion, appDependencies).settings(defaultScalaSettings: _*).settings{
     scalaVersion := "2.10.1"
     resolvers ++= Seq(
-      "Sonatype snapshots repository" at "https://oss.sonatype.org/content/repositories/snapshots/",
       "cloudbees-private-release-repository" at "https://repository-unclealex.forge.cloudbees.com/release",
       "cloudbees-private-snapshot-repository" at "https://repository-unclealex.forge.cloudbees.com/snapshot")
   }

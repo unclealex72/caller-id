@@ -21,21 +21,17 @@
  * @author unclealex72
  *
  */
+
 package uk.co.unclealex.callerid.remote.google
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
 /**
- * A JSON compatible class that encapsulate Google token responses.
+ * A google authorisation service that gets valid email addresses from a list.
+ * @author alex
+ *
  */
-case class TokenResponse(
-  /** The Access token issued by the authorization server. */
-  @JsonProperty("access_token") accessToken: String,
-  /**
-   * Lifetime in seconds of the access token (for example 3600 for an hour).
-   */
-  @JsonProperty("expires_in") expiresInSeconds: Option[Int],
-  /**
-   * Refresh token which can be used to obtain new access tokens using {@link RefreshTokenRequest}.
-   */
-  @JsonProperty("refresh_token") refreshToken: Option[String])
+case class StaticGoogleAuthorisationService(validEmailAddresses: List[String]) extends GoogleAuthorisationService {
+
+  override def authorised(googleUser: GoogleUser): Boolean = {
+    validEmailAddresses contains googleUser.email
+  }
+}

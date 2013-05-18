@@ -1,18 +1,15 @@
 package controllers
 
+import scala.annotation.implicitNotFound
+
 import javax.inject.Inject
 import model.CallModel
-import play.api.mvc.Action
 import play.api.mvc.Controller
-import play.api.mvc.Request
-import play.api.mvc.Result
+import play.api.mvc.EssentialAction
+import play.api.mvc.RequestHeader
 import uk.co.unclealex.callerid.remote.call.ReceivedCallsService
 import uk.co.unclealex.callerid.remote.number.NumberFormatter
-import uk.co.unclealex.callerid.remote.model.CallerIdSchema._
-import uk.co.unclealex.callerid.remote.model.CallerIdSchema
-import org.pac4j.play.scala.ScalaController
-import org.pac4j.play.CallbackController
-import play.mvc.Http.Context
+import uk.co.unclealex.callerid.remote.model.CallerIdSchema.inTransaction
 
 class Application @Inject() (
   /**
@@ -22,29 +19,20 @@ class Application @Inject() (
   /**
    * The received calls service used to list all received calls.
    */
-  receivedCallsService: ReceivedCallsService) extends ScalaController {
+  receivedCallsService: ReceivedCallsService) extends Controller with Secured {
 
-  def index = RequiresAuthentication("Google2Client") {
-    profile =>
-      Transactional {
-        Action {
-          val allCallModels = receivedCallsService.calls.map(
-            rc => {
+  def index =
+    isAuthenticated { googleUser =>
+      implicit request => {
+        val allCallModels = inTransaction {
+          receivedCallsService.calls.map {
+            rc =>
               val pn = rc.phoneNumber
               CallModel(rc, numberFormatter.formatNumberAsInternational(pn), numberFormatter.formatAddress(pn))
-            })
-          Ok(views.html.index(allCallModels, profile.getDisplayName()))
+          }
         }
+        Ok(views.html.index(allCallModels, googleUser.name))
       }
-  }
-
-  case class Transactional[A](action: Action[A]) extends Action[A] {
-
-    def apply(request: Request[A]): Result = inTransaction {
-      action(request)
     }
-
-    lazy val parser = action.parser
-  }
 }
 

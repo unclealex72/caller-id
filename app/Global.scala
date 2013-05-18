@@ -26,24 +26,24 @@
  * @author alex
  *
  */
-import play.api.GlobalSettings
-import module.DefaultModule
-import com.google.inject.Guice
-import org.squeryl.adapters.{ H2Adapter, PostgreSqlAdapter }
+import org.squeryl.Session
+import org.squeryl.SessionFactory
+import org.squeryl.adapters.H2Adapter
+import org.squeryl.adapters.PostgreSqlAdapter
 import org.squeryl.internals.DatabaseAdapter
-import org.squeryl.{ Session, SessionFactory }
-import play.api.db.DB
-import play.api.GlobalSettings
-import uk.co.unclealex.callerid.remote.model.CallerIdSchema._
-import uk.co.unclealex.callerid.remote.model.CallerIdSchema
+
+import com.google.inject.Guice
+
+import module.DefaultModule
 import play.api.Application
-import org.pac4j.oauth.client.Google2Client
-import org.pac4j.http.client.BasicAuthClient
-import org.pac4j.http.credentials.UsernamePasswordAuthenticator
-import org.pac4j.http.credentials.UsernamePasswordCredentials
-import org.pac4j.core.exception.CredentialsException
-import org.pac4j.core.client.Clients
-import org.pac4j.play.Config
+import play.api.GlobalSettings
+import play.api.GlobalSettings
+import play.api.db.DB
+import uk.co.unclealex.callerid.remote.model.CallerIdSchema._
+
+/**
+ * The Play Framework global entry point.
+ */
 object Global extends GlobalSettings {
 
   // Guice
@@ -55,35 +55,6 @@ object Global extends GlobalSettings {
   }
 
   override def onStart(app: Application) {
-
-    def propertyExtractor: String => String => String =
-      prefix => key => {
-        val fullKey = s"$prefix.$key"
-        app.configuration.getString(fullKey).getOrElse(
-          throw new IllegalArgumentException(s"Cannot find configuration option $fullKey"))
-      }
-
-    // Security
-    val googleClient = {
-      def googleProperty = propertyExtractor("google")
-      new Google2Client(googleProperty("consumerId"), googleProperty("consumerSecret"))
-    }
-    val basicHttpClient = {
-      def basicHttpProperty = propertyExtractor("security")
-      val username = basicHttpProperty("username")
-      val password = basicHttpProperty("password")
-      val authenticator = new UsernamePasswordAuthenticator() {
-        def validate(credentials: UsernamePasswordCredentials) = {
-          if (credentials.getUsername() != username || credentials.getPassword() != password) {
-            throw new CredentialsException("Please go away.")
-          }
-        }
-      }
-      new BasicAuthClient(authenticator)
-    }
-    val clients = new Clients(propertyExtractor("google")("callback"), basicHttpClient, googleClient)
-    Config.setClients(clients)
-
     // Set up Squeryl database access
     SessionFactory.concreteFactory = app.configuration.getString("db.default.driver") match {
       case Some("org.h2.Driver") => Some(() => getSession(new H2Adapter, app))

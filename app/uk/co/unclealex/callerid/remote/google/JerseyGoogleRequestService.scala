@@ -18,38 +18,45 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * @author alex
+ * @author unclealex72
  *
  */
 package uk.co.unclealex.callerid.remote.google
 
 import scala.collection.JavaConversions._
 import scala.collection.Map
+import scala.reflect.ClassTag
 import com.sun.jersey.api.client.Client
-import com.sun.jersey.api.client.config.ClientConfig
 import com.sun.jersey.api.client.config.DefaultClientConfig
 import com.sun.jersey.core.util.MultivaluedMapImpl
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.MultivaluedMap
 import uk.co.unclealex.callerid.remote.json.ScalaObjectMapperProvider
-import com.sun.jersey.api.client.filter.LoggingFilter
+import com.fasterxml.jackson.databind.DeserializationConfig
 
 /**
  * An implementation of {@link GoogleRequestService} that uses Jersey to serialise and deserialise Google requests.
  */
 class JerseyGoogleRequestService extends GoogleRequestService {
 
+  class IgnoringScalaObjectMapperProvider {
+
+  }
   val client: Client = {
     val clientConfig = new DefaultClientConfig
     clientConfig.getClasses() += classOf[ScalaObjectMapperProvider]
     Client.create(clientConfig)
   }
 
-  override def sendRequest(url: String, formParameters: Map[String, String]): TokenResponse = {
+  override def sendTokenPostRequest(url: String, formParameters: Map[String, String]): TokenResponse = {
     val formParams: MultivaluedMap[String, String] = new MultivaluedMapImpl
     formParameters.foreach { case (k, v) => formParams.putSingle(k, v) }
     client.resource(url).`type`(MediaType.APPLICATION_FORM_URLENCODED_TYPE).accept(MediaType.APPLICATION_JSON_TYPE).
       post(classOf[TokenResponse], formParams)
   }
 
+  override def sendProfileGetRequest(urlWithParameters: UrlWithParameters): UserInfo = {
+    client.resource(urlWithParameters.toURL.toURI).
+      accept(MediaType.APPLICATION_JSON_TYPE).get(classOf[UserInfo])
+  }
 }

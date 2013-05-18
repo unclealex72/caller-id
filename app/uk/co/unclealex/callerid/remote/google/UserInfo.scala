@@ -21,21 +21,22 @@
  * @author unclealex72
  *
  */
+
 package uk.co.unclealex.callerid.remote.google
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
- * A JSON compatible class that encapsulate Google token responses.
+ * A class that represents the JSON return value from Google when getting a profile.
+ * @author alex
+ *
  */
-case class TokenResponse(
-  /** The Access token issued by the authorization server. */
-  @JsonProperty("access_token") accessToken: String,
+case class UserInfo(
   /**
-   * Lifetime in seconds of the access token (for example 3600 for an hour).
+   * The user's email.
    */
-  @JsonProperty("expires_in") expiresInSeconds: Option[Int],
+  @JsonProperty("email") email: String,
   /**
-   * Refresh token which can be used to obtain new access tokens using {@link RefreshTokenRequest}.
+   * The user's name
    */
-  @JsonProperty("refresh_token") refreshToken: Option[String])
+  @JsonProperty("name") name: String)

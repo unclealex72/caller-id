@@ -22,3 +22,4 @@ bin
 # Specific ignores so that sensitive information is not stored remotely
 conf/google.conf
 conf/security.conf
+conf/valid-users.conf

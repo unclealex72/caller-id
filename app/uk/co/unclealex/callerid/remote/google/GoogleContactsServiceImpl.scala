@@ -1,5 +1,5 @@
 /**
- * Copyright 2010 Alex Jones
+ * Copyright 2013 Alex Jones
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -23,10 +23,9 @@
  */
 package uk.co.unclealex.callerid.remote.google
 
-import scala.collection.JavaConversions._
-import uk.co.unclealex.callerid.remote.google.UrlWithParameters._
-import uk.co.unclealex.callerid.remote.model.User
 import javax.inject.Inject
+import uk.co.unclealex.callerid.remote.google.UrlWithParameters.UrlWithParametersStringImplicits
+import uk.co.unclealex.callerid.remote.model.User
 
 /**
  * The default implementation of {@link GoogleContactsService}.
@@ -46,8 +45,8 @@ class GoogleContactsServiceImpl @Inject() (
   googleConstants: GoogleConstants) extends GoogleContactsService {
 
   override def getAllContacts(user: User): Set[GoogleContact] = {
-    val parameters = Map("access_token" -> googleTokenService.accessToken(user), "max-results" -> Int.MaxValue)
-    val contactsUrl = googleConstants.contactFeedUrl withParameters (parameters)
+    val contactsUrl = googleConstants.contactFeedUrl withParameters (
+      "access_token" -> googleTokenService.accessToken(user), "max-results" -> Int.MaxValue)
     googleContactsParser.parse(contactsUrl.toURL)
   }
 }

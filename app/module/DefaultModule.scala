@@ -24,41 +24,43 @@
 
 package module
 
-import uk.co.unclealex.callerid.remote.number.NumberLocationService
-import uk.co.unclealex.callerid.remote.number.NumberLocationServiceImpl
+import scala.collection.JavaConversions.asScalaBuffer
+
+import com.typesafe.config.Config
+import com.typesafe.config.ConfigFactory
 import com.tzavellas.sse.guice.ScalaModule
+
 import uk.co.unclealex.callerid.remote.call.CallReceivedService
 import uk.co.unclealex.callerid.remote.call.CallReceivedServiceImpl
+import uk.co.unclealex.callerid.remote.call.ReceivedCallsService
+import uk.co.unclealex.callerid.remote.call.ReceivedCallsServiceImpl
+import uk.co.unclealex.callerid.remote.contact.ContactService
+import uk.co.unclealex.callerid.remote.contact.ContactServiceImpl
+import uk.co.unclealex.callerid.remote.dao.CallRecordDao
+import uk.co.unclealex.callerid.remote.dao.SquerylCallRecordDao
+import uk.co.unclealex.callerid.remote.dao.SquerylUserDao
+import uk.co.unclealex.callerid.remote.dao.UserDao
+import uk.co.unclealex.callerid.remote.google.GoogleAuthorisationService
+import uk.co.unclealex.callerid.remote.google.GoogleConfiguration
+import uk.co.unclealex.callerid.remote.google.GoogleConstants
 import uk.co.unclealex.callerid.remote.google.GoogleContactsParser
 import uk.co.unclealex.callerid.remote.google.GoogleContactsParserImpl
 import uk.co.unclealex.callerid.remote.google.GoogleContactsService
 import uk.co.unclealex.callerid.remote.google.GoogleContactsServiceImpl
-import uk.co.unclealex.callerid.remote.google.GoogleTokenServiceImpl
-import uk.co.unclealex.callerid.remote.google.GoogleTokenService
 import uk.co.unclealex.callerid.remote.google.GoogleRequestService
+import uk.co.unclealex.callerid.remote.google.GoogleTokenService
+import uk.co.unclealex.callerid.remote.google.GoogleTokenServiceImpl
 import uk.co.unclealex.callerid.remote.google.JerseyGoogleRequestService
 import uk.co.unclealex.callerid.remote.google.NowService
+import uk.co.unclealex.callerid.remote.google.StaticGoogleAuthorisationService
 import uk.co.unclealex.callerid.remote.google.SystemNowService
-import uk.co.unclealex.callerid.remote.number.JsonResourceCityDao
 import uk.co.unclealex.callerid.remote.number.CityDao
+import uk.co.unclealex.callerid.remote.number.JsonResourceCityDao
+import uk.co.unclealex.callerid.remote.number.LocationConfiguration
 import uk.co.unclealex.callerid.remote.number.NumberFormatter
 import uk.co.unclealex.callerid.remote.number.NumberFormatterImpl
-import com.typesafe.config.ConfigFactory
-import com.typesafe.config.Config
-import uk.co.unclealex.callerid.remote.number.LocationConfiguration
-import uk.co.unclealex.callerid.remote.number.LocationConfiguration
-import uk.co.unclealex.callerid.remote.google.GoogleConfiguration
-import uk.co.unclealex.callerid.remote.number.LocationConfiguration
-import uk.co.unclealex.callerid.remote.dao.UserDao
-import uk.co.unclealex.callerid.remote.dao.CallRecordDao
-import uk.co.unclealex.callerid.remote.contact.ContactService
-import uk.co.unclealex.callerid.remote.contact.ContactServiceImpl
-import uk.co.unclealex.callerid.remote.google.GoogleConstants
-import uk.co.unclealex.callerid.remote.google.GoogleConstants
-import uk.co.unclealex.callerid.remote.call.ReceivedCallsService
-import uk.co.unclealex.callerid.remote.call.ReceivedCallsServiceImpl
-import uk.co.unclealex.callerid.remote.dao.SquerylCallRecordDao
-import uk.co.unclealex.callerid.remote.dao.SquerylUserDao
+import uk.co.unclealex.callerid.remote.number.NumberLocationService
+import uk.co.unclealex.callerid.remote.number.NumberLocationServiceImpl
 
 /**
  * @author alex
@@ -80,6 +82,10 @@ class DefaultModule extends ScalaModule {
     bind[ContactService].to[ContactServiceImpl]
     bind[ReceivedCallsService].to[ReceivedCallsServiceImpl]
 
+    // Persistence
+    bind[UserDao].to[SquerylUserDao]
+    bind[CallRecordDao].to[SquerylCallRecordDao]
+
     // Google
     bind[GoogleContactsParser].to[GoogleContactsParserImpl]
     bind[GoogleContactsService].to[GoogleContactsServiceImpl]
@@ -88,20 +94,22 @@ class DefaultModule extends ScalaModule {
     bind[NowService].to[SystemNowService]
 
     // Configuration
+    bindConfiguration[GoogleAuthorisationService]("valid-users") { conf =>
+      StaticGoogleAuthorisationService(conf.getList("users").unwrapped().map((v: Any) => v.toString).toList)
+    }
     bindConfiguration[LocationConfiguration]("location") { conf =>
       LocationConfiguration(conf.getString("internationalCode"), conf.getString("stdCode"))
     }
     bindConfiguration[GoogleConfiguration]("google") { conf =>
-      GoogleConfiguration(conf.getString("consumerSecret"), conf.getString("consumerId"))
+      GoogleConfiguration(
+        consumerSecret = conf.getString("consumerSecret"),
+        consumerId = conf.getString("consumerId"),
+        callbackUrl = conf.getString("callbackUrl"))
     }
     bind[GoogleConstants].toInstance(GoogleConstants.default)
-
-    // Persistence
-    bind[UserDao].to[SquerylUserDao]
-    bind[CallRecordDao].to[SquerylCallRecordDao]
   }
 
-  def bindConfiguration[T](root: String)(block: Config => T)(implicit m: Manifest[T]) = {
+  def bindConfiguration[T](root: String)(block: Config => T)(implicit m: Manifest[T]): Unit = {
     bind(m.runtimeClass.asInstanceOf[Class[T]]).toInstance(block(config getConfig root))
   }
 }

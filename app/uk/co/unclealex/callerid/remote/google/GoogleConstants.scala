@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * @author alex
+ * @author unclealex72
  *
  */
 package uk.co.unclealex.callerid.remote.google
@@ -33,13 +33,24 @@ case class GoogleConstants(
    */
   oauthTokenUrl: String = "https://accounts.google.com/o/oauth2/token",
   /**
+   * The URL used to authenticate via Google.
+   */
+  loginUrl: String = "https://accounts.google.com/o/oauth2/auth",
+  /**
    * The URL used to get contacts from Google.
    */
   contactFeedUrl: String = "https://www.google.com/m8/feeds/contacts/default/full",
   /**
-   * The authorisation scope for contacts.
+   * The URL used to get profile information from Google.
    */
-  contactFeedScope: String = "https://www.google.com/m8/feeds",
+  userProfileUrl: String = "https://www.googleapis.com/oauth2/v1/userinfo",
+  /**
+   * The authorisation scopes required to use the application.
+   */
+  scopes: List[String] = List(
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+    "https://www.google.com/m8/feeds"),
   /**
    * The amount of time (in milliseconds) before expiry that an access token should be rerequested.
    */
@@ -47,5 +58,5 @@ case class GoogleConstants(
 
 object GoogleConstants {
 
-  def default = new GoogleConstants
+  def default: GoogleConstants = new GoogleConstants
 }

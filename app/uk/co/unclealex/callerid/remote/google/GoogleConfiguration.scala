@@ -29,6 +29,10 @@ package uk.co.unclealex.callerid.remote.google
  */
 case class GoogleConfiguration(
   /**
+   * The URL that Google should call upon authorisation.
+   */
+  callbackUrl: String,
+  /**
    * Get the private consumer secret for this application.
    */
   consumerSecret: String,

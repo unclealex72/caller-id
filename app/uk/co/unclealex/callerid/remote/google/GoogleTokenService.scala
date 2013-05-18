@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * @author alex
+ * @author unclealex72
  *
  */
 package uk.co.unclealex.callerid.remote.google
@@ -38,10 +38,15 @@ trait GoogleTokenService {
   def accessToken(user: User): String
 
   /**
-   * Install a Google success code for a user.
-   * @param The user who made the request for a success code.
-   * @param The success code supplied by Google.
-   * @return A new user with refresh and access tokens installed.
+   * Find who has logged in and store their access and refresh tokens
+   * @param successCode The success code supplied by Google.
+   * @return A user with refresh and access tokens installed if none were known or None if the user was not allowed
+   * to log in.
    */
-  def installSuccessCode(username: String, successCode: String): User
+  def userOf(successCode: String): Option[GoogleUser]
+
+  /**
+   * Get the Google OAuth page that should be redirected to for authorisation.
+   */
+  def loginPage: String
 }

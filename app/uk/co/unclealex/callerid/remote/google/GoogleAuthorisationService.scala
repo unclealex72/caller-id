@@ -21,21 +21,18 @@
  * @author unclealex72
  *
  */
+
 package uk.co.unclealex.callerid.remote.google
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
 /**
- * A JSON compatible class that encapsulate Google token responses.
+ * A trait that can be used to determine whether a google user is allowed to use this application.
+ * @author alex
+ *
  */
-case class TokenResponse(
-  /** The Access token issued by the authorization server. */
-  @JsonProperty("access_token") accessToken: String,
+trait GoogleAuthorisationService {
+
   /**
-   * Lifetime in seconds of the access token (for example 3600 for an hour).
+   * Return true is a google user is authorised to use this application, false otherwise.
    */
-  @JsonProperty("expires_in") expiresInSeconds: Option[Int],
-  /**
-   * Refresh token which can be used to obtain new access tokens using {@link RefreshTokenRequest}.
-   */
-  @JsonProperty("refresh_token") refreshToken: Option[String])
+  def authorised(googleUser: GoogleUser): Boolean
+}

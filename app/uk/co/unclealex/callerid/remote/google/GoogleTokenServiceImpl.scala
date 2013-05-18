@@ -18,19 +18,19 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * @author alex
+ * @author unclealex72
  *
  */
 package uk.co.unclealex.callerid.remote.google
 
-import java.util.Date
-import scala.collection.JavaConversions._
-import scala.collection.mutable.Map
-import uk.co.unclealex.callerid.remote.model.User
-import javax.inject.Inject
-import uk.co.unclealex.callerid.remote.dao.UserDao
 import java.sql.Timestamp
 
+import scala.collection.mutable.Map
+
+import javax.inject.Inject
+import uk.co.unclealex.callerid.remote.dao.UserDao
+import uk.co.unclealex.callerid.remote.google.UrlWithParameters.UrlWithParametersStringImplicits
+import uk.co.unclealex.callerid.remote.model.User
 /**
  * The default implementation of {@link GoogleTokenService}.
  */
@@ -43,21 +43,22 @@ class GoogleTokenServiceImpl @Inject() (
    * The Google configuration object used to configure how to get contacts from Google.
    */
   googleConfiguration: GoogleConfiguration,
-
   /**
    * The Google constants object used to configure how to get contacts from Google.
    */
   googleConstants: GoogleConstants,
-
   /**
    * The service used to get the current time.
    */
   nowService: NowService,
-
   /**
    * The service used to send requests to Google on the wire.
    */
-  googleRequestService: GoogleRequestService) extends GoogleTokenService {
+  googleRequestService: GoogleRequestService,
+  /**
+   * The service used to authorise Google users.
+   */
+  googleAuthorisationService: GoogleAuthorisationService) extends GoogleTokenService {
 
   /**
    * Update a user's access token.
@@ -87,9 +88,9 @@ class GoogleTokenServiceImpl @Inject() (
       tokenType -> token,
       "grant_type" -> grantType)
     if (includeRedirect) {
-      parameters += "redirect_uri" -> "urn:ietf:wg:oauth:2.0:oob"
+      parameters += "redirect_uri" -> googleConfiguration.callbackUrl
     }
-    googleRequestService.sendRequest(googleConstants.oauthTokenUrl, parameters)
+    googleRequestService.sendTokenPostRequest(googleConstants.oauthTokenUrl, parameters)
   }
 
   /**
@@ -121,16 +122,36 @@ class GoogleTokenServiceImpl @Inject() (
     user.expiryDate.getTime - googleConstants.tokenExpiryTimeout < nowService.now
   }
 
-  override def installSuccessCode(username: String, successCode: String) = {
+  override def userOf(successCode: String): Option[GoogleUser] = {
     val token = requestToken("code", successCode, "authorization_code", true)
-    val user = User(
-      username,
-      token.accessToken,
-      expiryDate(token).getOrElse(
-        throw new IllegalStateException("No expiry date was supplied by Google.")),
-      token.refreshToken.getOrElse(
-        throw new IllegalStateException("No refresh token was supplied by Google.")))
-    userDao store user
-    user
+    val userInfo =
+      googleRequestService.sendProfileGetRequest(googleConstants.userProfileUrl.withParameters("access_token" -> token.accessToken))
+    val googleUser = GoogleUser(userInfo.email, userInfo.name)
+    if (googleAuthorisationService authorised googleUser) {
+      val existingUser = userDao findByEmailAddress googleUser.email
+      if (existingUser.isEmpty) {
+        val user = User(
+          googleUser.email,
+          token.accessToken,
+          expiryDate(token).getOrElse(
+            throw new IllegalStateException("No expiry date was supplied by Google.")),
+          token.refreshToken.getOrElse(
+            throw new IllegalStateException("No refresh token was supplied by Google.")))
+        userDao store user
+      }
+      Some(googleUser)
+    } else {
+      None
+    }
   }
+
+  override def loginPage: String = {
+    googleConstants.loginUrl.withParameters(
+      "scope" -> googleConstants.scopes.mkString(" "),
+      "response_type" -> "code",
+      "access_type" -> "offline",
+      "client_id" -> googleConfiguration.consumerId,
+      "redirect_uri" -> googleConfiguration.callbackUrl).toURL.toString()
+  }
+
 }

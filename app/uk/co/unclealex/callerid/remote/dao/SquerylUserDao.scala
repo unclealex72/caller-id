@@ -24,12 +24,17 @@
 
 package uk.co.unclealex.callerid.remote.dao
 
+import uk.co.unclealex.callerid.remote.model.CallerIdSchema._
 import uk.co.unclealex.callerid.remote.model.User
-import javax.inject.Inject
-import uk.co.unclealex.callerid.remote.model.CallerIdSchema
 
 /**
  * @author alex
  *
  */
-class SquerylUserDao extends SquerylBasicDao[User](CallerIdSchema.users) with UserDao
+class SquerylUserDao extends SquerylBasicDao[User](users) with UserDao {
+
+  override def findByEmailAddress(emailAddress: String): Option[User] = {
+    users.where((u: User) => u.username === emailAddress).headOption
+  }
+
+}

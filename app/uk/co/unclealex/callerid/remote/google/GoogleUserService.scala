@@ -10,39 +10,29 @@
  * with the License.  You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  *
  * @author unclealex72
  *
  */
 
-package controllers;
-
-import org.pac4j.play.CallbackController;
-
-import play.mvc.Controller;
-import play.mvc.Http.Context;
-import play.mvc.Result;
+package uk.co.unclealex.callerid.remote.google
 
 /**
+ * A trait used to find which user has attempted to log in.
  * @author alex
- * 
+ *
  */
-public class Google extends Controller {
+trait GoogleUserService {
 
-  public Result callback() {
-    final Result result = CallbackController.callback();
-    final String successCode = Context.current().request().getQueryString("code");
-    return result;
-  }
-
-  public Result logout() {
-    return CallbackController.logoutAndOk();
-  }
+  /**
+   * Get the Google user for the given access token.
+   */
+  def googleUser(accesssToken: String): GoogleUser
 }
