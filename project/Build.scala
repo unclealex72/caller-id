@@ -32,7 +32,7 @@ object ApplicationBuild extends Build {
 
   val localProject = Project("callerid-local", file("local"))
 
-  val main = play.Project(appName, appVersion, appDependencies).dependsOn(localProject).settings(defaultScalaSettings: _*).settings{
+  val main = play.Project(appName, appVersion, appDependencies).dependsOn(localProject).aggregate(localProject).settings(defaultScalaSettings: _*).settings{
     scalaVersion := "2.10.1"
     resolvers ++= Seq(
       "cloudbees-private-release-repository" at "https://repository-unclealex.forge.cloudbees.com/release",
