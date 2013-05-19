@@ -23,10 +23,10 @@
  */
 package uk.co.unclealex.callerid.remote.dao
 
-import java.text.SimpleDateFormat
-import scala.collection.JavaConversions._
-import uk.co.unclealex.callerid.remote.model.User
 import java.sql.Timestamp
+import java.text.SimpleDateFormat
+
+import uk.co.unclealex.callerid.remote.model.User
 /**
  * @author alex
  *
@@ -60,7 +60,7 @@ class SquerylUserDaoTest extends SquerylDaoTest {
     When("finding an existing user")
     val persistedUser = userDao.findByEmailAddress("alex")
     Then("they should first be found")
-    persistedUser should be('defined)
+    persistedUser should not equal (None)
     persistedUser.map { user =>
       Then("they should have the correct username")
       user.username should equal("alex")
@@ -79,7 +79,7 @@ class SquerylUserDaoTest extends SquerylDaoTest {
     When("looking for a non-existing user")
     val persistedUser = userDao.findByEmailAddress("alex")
     Then("they should not be found")
-    persistedUser should be('empty)
+    persistedUser should equal(None)
   }
 
   implicit class StringImplicits(str: String) {
