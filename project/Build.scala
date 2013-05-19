@@ -15,7 +15,6 @@ object ApplicationBuild extends Build {
     "com.sun.jersey" % "jersey-client" % "1.17.1",
     "com.sun.jersey" % "jersey-core" % "1.17.1",
     "com.sun.jersey.contribs" % "jersey-apache-client4" % "1.17.1",
-    "org.slf4j" % "slf4j-api" % "1.6.6",
     "com.google.api-client" % "google-api-client" % "1.10.2-beta",
     "uk.co.unclealex" % "process-support" % "2.0.2",
     "ch.qos.logback" % "logback-classic" % "1.0.6",
@@ -31,7 +30,9 @@ object ApplicationBuild extends Build {
     "org.scalamock" %% "scalamock-scalatest-support" % "3.0.1" % "test",
     "uk.co.unclealex" % "test-server-utilities" % "1.0.1-SNAPSHOT" % "test")
 
-  val main = play.Project(appName, appVersion, appDependencies).settings(defaultScalaSettings: _*).settings{
+  val localProject = Project("callerid-local", file("local"))
+
+  val main = play.Project(appName, appVersion, appDependencies).dependsOn(localProject).settings(defaultScalaSettings: _*).settings{
     scalaVersion := "2.10.1"
     resolvers ++= Seq(
       "cloudbees-private-release-repository" at "https://repository-unclealex.forge.cloudbees.com/release",
