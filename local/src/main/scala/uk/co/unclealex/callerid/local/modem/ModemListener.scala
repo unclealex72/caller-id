@@ -25,10 +25,9 @@ package uk.co.unclealex.callerid.local.modem
 
 import uk.co.unclealex.callerid.local.call.CallController
 import uk.co.unclealex.callerid.local.device.Device
-import uk.co.unclealex.process.packages.PackagesRequired
 import scala.collection.immutable.Stream
 
-@PackagesRequired(Array("ser2net"))
+//@PackagesRequired(Array("ser2net"))
 class ModemListener(modemDevice: Device, callController: CallController) extends Runnable {
 
   /**

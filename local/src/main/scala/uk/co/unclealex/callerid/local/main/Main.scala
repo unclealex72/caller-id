@@ -22,28 +22,13 @@
  *
  */
 
-package uk.co.unclealex.callerid.local.device
-
-import java.nio.charset.Charset
-import java.io.InputStream
-import java.io.OutputStream
-import java.net.Socket
-import java.net.InetAddress
+package uk.co.unclealex.callerid.local.main
 
 /**
  * @author alex
  *
  */
-class NetworkDevice(socket: Socket, charset: Charset) extends AbstractStreamDevice(socket.getInputStream(), socket.getOutputStream(), charset) {
+object Main extends App {
 
-  def this(
-    address: InetAddress = InetAddress.getLoopbackAddress(),
-    port: Int,
-    charset: Charset = Charset.forName("UTF-8")) {
-    this(new Socket(address, port), charset)
-  }
-
-  override def close = {
-    socket.close()
-  }
+  // Do something
 }

@@ -28,7 +28,6 @@ import com.google.api.client.util.escape.Escaper
 import com.google.api.client.util.escape.PercentEscaper
 
 import uk.co.unclealex.callerid.local.device.Device
-import uk.co.unclealex.process.packages.PackagesRequired
 
 /**
  * The default implementation of Squeezbox that talks to squeezeboxes
@@ -37,7 +36,7 @@ import uk.co.unclealex.process.packages.PackagesRequired
  * @author alex
  *
  */
-@PackagesRequired(Array("logitechmediaserver"))
+//@PackagesRequired(Array("logitechmediaserver"))
 class SqueezeboxImpl(squeezeboxDevice: Device) extends Squeezebox {
 
   val percentEscaper: Escaper = new PercentEscaper(PercentEscaper.SAFECHARS_URLENCODER, false);

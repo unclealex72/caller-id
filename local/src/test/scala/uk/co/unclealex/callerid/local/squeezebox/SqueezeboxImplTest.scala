@@ -31,7 +31,6 @@ import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
 
 import uk.co.unclealex.callerid.local.device.Device
-import uk.co.unclealex.process.packages.PackagesRequired
 
 /**
  * @author alex
