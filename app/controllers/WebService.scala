@@ -24,31 +24,63 @@
 
 package controllers
 
-import play.api.mvc.Controller
 import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.Controller
 import play.api.mvc.Request
-import views.html.defaultpages.unauthorized
+import play.api.mvc.Response
 import play.api.mvc.Result
+import uk.co.unclealex.callerid.remote.call.CallReceivedService
+import views.html.defaultpages.badRequest
+import uk.co.unclealex.callerid.remote.number.NumberFormatter
+import javax.inject.Inject
+import uk.co.unclealex.callerid.remote.model.CallerIdSchema._
 
 /**
  * The controller for the received calls web service.
  * @author alex
  *
  */
-class WebService extends Controller {
+class WebService @Inject() (
+  /**
+   * The service used to register a received call.
+   */
+  callReceivedService: CallReceivedService,
+  /**
+   * The service used to pretty-print phone numbers.
+   */
+  numberFormatter: NumberFormatter,
+  /**
+   * The class that contains the username and password required to log in to this web service.
+   */
+  webServiceSecurityConfiguration: WebServiceSecurityConfiguration) extends Controller {
 
   val REALM = """Basic realm="Caller ID""""
 
-  def callReceived = Action { request =>
+  def callReceived = secure { request =>
+    request.body.asText match {
+      case Some(phonenumber) => {
+        val receivedCall = inTransaction { callReceivedService callReceived phonenumber }
+        val message = receivedCall contact match {
+          case Some(contact) => contact name
+          case None => numberFormatter formatNumber (receivedCall phoneNumber) mkString (" ")
+        }
+        Ok(message) as "text/plain"
+      }
+      case None => BadRequest
+    }
+  }
+
+  def secure(authorised: Request[AnyContent] => Result) = Action { request =>
     request.headers.get(AUTHORIZATION) match {
       case Some(authHeader) => {
         val auth = authHeader.substring(6)
         val decodedAuth = new sun.misc.BASE64Decoder().decodeBuffer(auth)
         val credStrings = new String(decodedAuth, "UTF-8").split(":").toList
-        if (credStrings.toList != List("username", "password"))
+        if (credStrings.toList != List(webServiceSecurityConfiguration.username, webServiceSecurityConfiguration.password))
           Forbidden
         else
-          Ok
+          authorised(request)
       }
       case None => Unauthorized.withHeaders(WWW_AUTHENTICATE -> REALM)
     }

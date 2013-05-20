@@ -25,11 +25,9 @@
 package module
 
 import scala.collection.JavaConversions.asScalaBuffer
-
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.tzavellas.sse.guice.ScalaModule
-
 import uk.co.unclealex.callerid.remote.call.CallReceivedService
 import uk.co.unclealex.callerid.remote.call.CallReceivedServiceImpl
 import uk.co.unclealex.callerid.remote.call.ReceivedCallsService
@@ -61,6 +59,7 @@ import uk.co.unclealex.callerid.remote.number.NumberFormatter
 import uk.co.unclealex.callerid.remote.number.NumberFormatterImpl
 import uk.co.unclealex.callerid.remote.number.NumberLocationService
 import uk.co.unclealex.callerid.remote.number.NumberLocationServiceImpl
+import controllers.WebServiceSecurityConfiguration
 
 /**
  * @author alex
@@ -99,6 +98,9 @@ class DefaultModule extends ScalaModule {
     }
     bindConfiguration[LocationConfiguration]("location") { conf =>
       LocationConfiguration(conf.getString("internationalCode"), conf.getString("stdCode"))
+    }
+    bindConfiguration[WebServiceSecurityConfiguration]("security") { conf =>
+      WebServiceSecurityConfiguration(conf.getString("username"), conf.getString("password"))
     }
     bindConfiguration[GoogleConfiguration]("google") { conf =>
       GoogleConfiguration(
