@@ -21,6 +21,10 @@ object ApplicationBuild extends Build {
       version := v,
       organization := organisation,
       scalaVersion := scala_version,
+      testOptions in Test += Tests.Argument("junitxml", """directory="test-reports""""),
+      testListeners <<= (target, streams).map((t, s) => Seq(new eu.henkelmann.sbt.JUnitXmlTestsListener(t.getAbsolutePath, s.log))),
+      testResultReporter <<= testResultReporterTask,
+      testResultReporterReset <<= testResultReporterResetTask,
       libraryDependencies ++= Seq(
         "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % "2.2.0",
         "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.2.0",
@@ -32,9 +36,23 @@ object ApplicationBuild extends Build {
         "ch.qos.logback" % "logback-classic" % "1.0.6",
         "com.google.inject" % "guice" % "3.0",
         /* Test */
-        "org.scalamock" %% "scalamock-scalatest-support" % "3.0.1" % "test",
+        "play" %% "play-test" % play.core.PlayVersion.current % "test",
+        "org.scalamock" %% "scalamock-specs2-support" % "3.0.1" % "test",
         "org.eclipse.jetty.aggregate" % "jetty-servlet" % "8.1.0.v20120127" % "test"),
-        resolvers ++= commonResolvers)
+      parallelExecution in Test := false,
+      testOptions in Test += Tests.Setup { loader =>
+        loader.loadClass("play.api.Logger").getMethod("init", classOf[java.io.File]).invoke(null, new java.io.File("."))
+      },
+      testOptions in Test += Tests.Cleanup { loader =>
+        loader.loadClass("play.api.Logger").getMethod("shutdown").invoke(null)
+      },
+      testOptions in Test += Tests.Argument("sequential", "true"),
+      testOptions in Test += Tests.Argument("-ujunitxml=console"),
+      //testOptions in Test += Tests.Argument("junitxml", "console"),
+      testListeners <<= (target, streams).map((t, s) => Seq(new eu.henkelmann.sbt.JUnitXmlTestsListener(t.getAbsolutePath, s.log))),
+      testResultReporter <<= testResultReporterTask,
+      testResultReporterReset <<= testResultReporterResetTask,
+      resolvers ++= commonResolvers)
 
   lazy val playProject  = play.Project(prefix("play"), v).
     aggregate(localProject).

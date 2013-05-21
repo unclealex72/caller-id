@@ -26,9 +26,8 @@ package uk.co.unclealex.callerid.local.squeezebox
 
 import scala.collection.mutable.ListBuffer
 
-import org.scalamock.scalatest.MockFactory
-import org.scalatest.FunSuite
-import org.scalatest.matchers.ShouldMatchers
+import org.scalamock.specs2.MockFactory
+import org.specs2.mutable.Specification
 
 import uk.co.unclealex.callerid.local.device.Device
 
@@ -36,21 +35,24 @@ import uk.co.unclealex.callerid.local.device.Device
  * @author alex
  *
  */
-class SqueezeboxImplTest extends FunSuite with ShouldMatchers with MockFactory {
+class SqueezeboxImplTest extends Specification with MockFactory {
 
-  test("query command") {
-    runCommandTest("player count ?", Some("player count 2"), Some("2"));
+  "a query command" should {
+    "should only return the query value" in
+      runCommandTest("player count ?", Some("player count 2"), Some("2"));
   }
 
-  test("non-query command") {
-    runCommandTest("xx display", Some("ok"), Some("ok"));
+  "a non-query command" should {
+    "should echo the whole response" in
+      runCommandTest("xx display", Some("ok"), Some("ok"));
   }
 
-  test("null command") {
-    runCommandTest("xx display", None, None);
+  "a null command" should {
+    "return nothing" in
+      runCommandTest("xx display", None, None);
   }
 
-  test("display to two squeezeboxes") {
+  "display to two squeezeboxes" should {
     val responses = Map(
       "player count ?" -> "player count 2",
       "player id 0 ?" -> "player id 0 00:11",
@@ -58,7 +60,7 @@ class SqueezeboxImplTest extends FunSuite with ShouldMatchers with MockFactory {
     val device = new MapDevice(responses)
     val squeezebox = new SqueezeboxImpl(device)
     squeezebox.displayText("Top Line", "Bottom Line!")
-    device.commands.toSeq should equal(List(
+    device.commands.toSeq must be equalTo (List(
       "player count ?",
       "player id 0 ?",
       "00:11 display Top%20Line Bottom%20Line%21 30",
@@ -73,7 +75,7 @@ class SqueezeboxImplTest extends FunSuite with ShouldMatchers with MockFactory {
     val actualResult = squeezebox.execute(command);
     (device.writeLine _).verify(command)
     (device.readLine _).verify()
-    actualResult should equal(expectedResult)
+    actualResult must be equalTo (expectedResult)
   }
 
 }

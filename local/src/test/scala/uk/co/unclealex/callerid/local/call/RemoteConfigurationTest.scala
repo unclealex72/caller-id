@@ -23,24 +23,24 @@
  */
 package uk.co.unclealex.callerid.local.call
 
-import org.scalatest.FunSpec
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.FunSuite
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.specs2.mutable.Specification
 
-class RemoteConfigurationTest extends FunSuite with ShouldMatchers {
+class RemoteConfigurationTest extends Specification {
 
-  test("A remote configuration object can be deserialised from JSON")({
-    var json = """{
-            "username" : "Brian",
-            "password" : "Br1an",
-            "url" : "https://www.somewhere.com/api"
-        }"""
-    val reader = new ObjectMapper().registerModule(DefaultScalaModule).reader(classOf[RemoteConfiguration])
-    val actualConfiguration: RemoteConfiguration = reader.readValue(json)
-    val expectedConfiguration = RemoteConfiguration("https://www.somewhere.com/api", username = "Brian", password = "Br1an")
-    actualConfiguration should equal(expectedConfiguration)
-  })
+  "A remote configuration object" should {
+    "be deserialisable from JSON" in {
+      var json = """{
+              "username" : "Brian",
+              "password" : "Br1an",
+              "url" : "https://www.somewhere.com/api"
+          }"""
+      val reader = new ObjectMapper().registerModule(DefaultScalaModule).reader(classOf[RemoteConfiguration])
+      val actualConfiguration: RemoteConfiguration = reader.readValue(json)
+      val expectedConfiguration = RemoteConfiguration("https://www.somewhere.com/api", username = "Brian", password = "Br1an")
+      actualConfiguration must be equalTo(expectedConfiguration)
+    }
+  }
 
 }

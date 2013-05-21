@@ -28,24 +28,22 @@ import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import java.net.ServerSocket
-
-import org.scalatest.FunSuite
-import org.scalatest.matchers.ShouldMatchers
-
 import com.google.common.base.Charsets
-
 import uk.co.unclealex.callerid.local.device.NetworkDevice
+import org.specs2.mutable.Specification
 
-class NetworkDeviceTest extends FunSuite with ShouldMatchers {
+class NetworkDeviceTest extends Specification {
 
-  test("A network device can read and write to a network") {
-    val echoServer = new EchoServer
-    new Thread(echoServer).start
-    val networkDevice = new NetworkDevice(port = echoServer.port);
-    networkDevice writeLine "Hello"
-    val response = networkDevice.readLine
-    response should equal(Some("Hello"))
-    networkDevice.close
+  "A network device " should {
+    "be writeable and readable" in {
+      val echoServer = new EchoServer
+      new Thread(echoServer).start
+      val networkDevice = new NetworkDevice(port = echoServer.port);
+      networkDevice writeLine "Hello"
+      val response = networkDevice.readLine
+      response must be equalTo (Some("Hello"))
+      networkDevice.close
+    }
   }
 }
 
