@@ -40,6 +40,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 
 import javax.inject.Inject
 import uk.co.unclealex.callerid.local.configuration.RemoteConfiguration
+import javax.inject.Inject
 
 /**
  * An implementation of {@link CallAlerter} that uses Jersey to communicate to a REST server.
