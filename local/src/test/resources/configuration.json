@@ -1,0 +1,9 @@
+{
+    "username" : "Brian",
+    "password" : "Br1an",
+    "url" : "https://www.somewhere.com/api",
+    "modemHost" : "localhost",
+    "modemPort" : 999,
+    "squeezeboxHost" : "nonlocalhost",
+    "squeezeboxPort" : 9990
+}

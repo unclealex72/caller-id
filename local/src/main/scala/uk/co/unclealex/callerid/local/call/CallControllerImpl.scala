@@ -24,11 +24,12 @@
 package uk.co.unclealex.callerid.local.call
 
 import uk.co.unclealex.callerid.local.squeezebox.Squeezebox
+import javax.inject.Inject
 
 /**
  * The default implementation of {@link CallController}
  */
-class CallControllerImpl(callAlerter: CallAlerter, squeezebox: Squeezebox) extends CallController {
+class CallControllerImpl @Inject() (callAlerter: CallAlerter, squeezebox: Squeezebox) extends CallController {
 
   override def onCall(number: String) {
     val message = callAlerter callMade number

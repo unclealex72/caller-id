@@ -22,26 +22,19 @@
  *
  */
 
-package uk.co.unclealex.callerid.local.call;
+package uk.co.unclealex.callerid.local.configuration
 
 /**
- * An interface for classes that provide the configuration required to connect
- * to the remote server via HTTPS.
- *
+ * The configuration class for finding the network mqueezebox.
  * @author alex
  *
  */
-case class RemoteConfiguration(
+case class SqueezeboxConfiguration(
   /**
-   * The URL of the remote REST server.
+   * The machine on the local network to which the mqueezebox is connected.
    */
-  url: String,
+  squeezeboxHost: String,
   /**
-   * The username used to authenticate against the remote REST server
+   * The port on which the mqueezebox is connected.
    */
-  username: String,
-  /**
-   * The password used to authenticate against the remote REST server
-   */
-  password: String) {
-}
+  squeezeboxPort: Int)

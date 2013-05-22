@@ -37,6 +37,7 @@ object ApplicationBuild extends Build {
         "ch.qos.logback" % "logback-classic" % "1.0.6",
         "com.typesafe" %% "scalalogging-slf4j" % "1.0.1",
         "com.google.inject" % "guice" % "3.0",
+        "com.tzavellas" % "sse-guice" % "0.7.1",
         "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.2",
         /* Test */
         "play" %% "play-test" % play.core.PlayVersion.current % "test",

@@ -24,23 +24,27 @@
 
 package uk.co.unclealex.callerid.local.call
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConversions.mapAsScalaMap
+
 import org.apache.http.auth.AuthScope
 import org.apache.http.auth.Credentials
 import org.apache.http.auth.UsernamePasswordCredentials
 import org.apache.http.client.CredentialsProvider
+
+import com.sun.jersey.api.client.config.ClientConfig
+import com.sun.jersey.client.apache4.ApacheHttpClient4
 import com.sun.jersey.client.apache4.config.ApacheHttpClient4Config.PROPERTY_CREDENTIALS_PROVIDER
 import com.sun.jersey.client.apache4.config.ApacheHttpClient4Config.PROPERTY_PREEMPTIVE_BASIC_AUTHENTICATION
 import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config
-import com.sun.jersey.client.apache4.ApacheHttpClient4
-import com.sun.jersey.api.client.config.ClientConfig
 import com.typesafe.scalalogging.slf4j.Logging
+
+import javax.inject.Inject
 import uk.co.unclealex.callerid.local.configuration.RemoteConfiguration
 
 /**
  * An implementation of {@link CallAlerter} that uses Jersey to communicate to a REST server.
  */
-class JerseyCallAlerter(remoteConfiguration: RemoteConfiguration) extends CallAlerter with Logging {
+class JerseyCallAlerter @Inject() (remoteConfiguration: RemoteConfiguration) extends CallAlerter with Logging {
 
   /**
    * The Jersey {@link Client} used to talk to the REST server.

@@ -33,8 +33,8 @@ case class ModemConfiguration(
   /**
    * The machine on the local network to which the modem is connected.
    */
-  host: String,
+  modemHost: String,
   /**
    * The port on which the modem is connected.
    */
-  port: Int)
+  modemPort: Int)

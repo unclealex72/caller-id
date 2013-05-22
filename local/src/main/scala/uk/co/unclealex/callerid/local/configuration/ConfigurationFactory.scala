@@ -54,7 +54,7 @@ class ConfigurationFactory(
   /**
    * Load a configuration class.
    */
-  def load[A](implicit a: ClassTag[A]): A = {
+  def apply[A](implicit a: ClassTag[A]): A = {
     val reader = mapper.reader(a.runtimeClass)
     Resource.fromURL(configurationUrl).acquireAndGet(is => reader.readValue[A](is))
   }

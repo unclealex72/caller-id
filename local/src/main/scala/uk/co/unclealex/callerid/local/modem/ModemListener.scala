@@ -28,9 +28,10 @@ import uk.co.unclealex.callerid.local.call.CallController
 import uk.co.unclealex.callerid.local.device.Device
 import javax.inject.Inject
 import com.typesafe.scalalogging.slf4j.Logging
+import javax.inject.Named
 
 //@PackagesRequired(Array("ser2net"))
-class ModemListener @Inject() (modemDevice: Device, callController: CallController) extends Runnable with Logging {
+class ModemListener @Inject() (@Named("modemDevice") modemDevice: Device, callController: CallController) extends Runnable with Logging {
 
   /**
    * Initialise the modem and then listen for calls.
