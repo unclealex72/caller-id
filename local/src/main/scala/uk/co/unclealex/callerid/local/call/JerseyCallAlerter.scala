@@ -36,11 +36,12 @@ import com.sun.jersey.client.apache4.ApacheHttpClient4
 import com.sun.jersey.api.client.config.ClientConfig
 import com.typesafe.scalalogging.slf4j.Logging
 import uk.co.unclealex.callerid.local.configuration.RemoteConfiguration
+import javax.inject.Inject
 
 /**
  * An implementation of {@link CallAlerter} that uses Jersey to communicate to a REST server.
  */
-class JerseyCallAlerter(remoteConfiguration: RemoteConfiguration) extends CallAlerter with Logging {
+class JerseyCallAlerter @Inject() (remoteConfiguration: RemoteConfiguration) extends CallAlerter with Logging {
 
   /**
    * The Jersey {@link Client} used to talk to the REST server.

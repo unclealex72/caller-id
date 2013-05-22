@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 Alex Jones
+ * Copyright 2013 Alex Jones
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,22 +18,23 @@
  * specific language governing permissions and limitations
  * under the License.
  *
+ * @author unclealex72
+ *
+ */
+
+package uk.co.unclealex.callerid.local.configuration
+
+/**
+ * The configuration class for finding the network mqueezebox.
  * @author alex
  *
  */
-package uk.co.unclealex.callerid.local.call
-
-import uk.co.unclealex.callerid.local.squeezebox.Squeezebox
-import javax.inject.Inject
-
-/**
- * The default implementation of {@link CallController}
- */
-class CallControllerImpl @Inject() (callAlerter: CallAlerter, squeezebox: Squeezebox) extends CallController {
-
-  override def onCall(number: String) {
-    val message = callAlerter callMade number
-    squeezebox displayText (message, "")
-  }
-
-}
+case class SqueezeboxConfiguration(
+  /**
+   * The machine on the local network to which the mqueezebox is connected.
+   */
+  squeezeboxHost: String,
+  /**
+   * The port on which the mqueezebox is connected.
+   */
+  squeezeboxPort: Int)

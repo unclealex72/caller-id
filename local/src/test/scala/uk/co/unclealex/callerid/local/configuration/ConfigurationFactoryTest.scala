@@ -28,14 +28,18 @@ import org.specs2.mutable.Specification
 class ConfigurationFactoryTest extends Specification {
 
   "A configuration factory" should {
-    val configurationFactory = new ConfigurationFactory(getClass().getClassLoader().getResource("test-configuration.json"))
+    val configurationFactory = new ConfigurationFactory(getClass().getClassLoader().getResource("configuration.json"))
     "be able to read a remote configuration" in {
-      configurationFactory.load[RemoteConfiguration] must be equalTo
+      configurationFactory[RemoteConfiguration] must be equalTo
         RemoteConfiguration("https://www.somewhere.com/api", username = "Brian", password = "Br1an")
     }
     "be able to read a modem configuration" in {
-      configurationFactory.load[ModemConfiguration] must be equalTo
+      configurationFactory[ModemConfiguration] must be equalTo
         ModemConfiguration("localhost", 999)
+    }
+    "be able to read a squeezebox configuration" in {
+      configurationFactory[SqueezeboxConfiguration] must be equalTo
+        SqueezeboxConfiguration("nonlocalhost", 9990)
     }
   }
 
