@@ -12,6 +12,7 @@ object ApplicationBuild extends Build {
   val organisation = "uk.co.unclealex.callerid"
   val scala_version = "2.10.1"
   val commonResolvers = Seq(
+    "scala-tools" at "https://oss.sonatype.org/content/groups/scala-tools/",
     "cloudbees-private-release-repository" at "https://repository-unclealex.forge.cloudbees.com/release",
     "cloudbees-private-snapshot-repository" at "https://repository-unclealex.forge.cloudbees.com/snapshot")
   
@@ -36,6 +37,7 @@ object ApplicationBuild extends Build {
         "ch.qos.logback" % "logback-classic" % "1.0.6",
         "com.typesafe" %% "scalalogging-slf4j" % "1.0.1",
         "com.google.inject" % "guice" % "3.0",
+        "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.2",
         /* Test */
         "play" %% "play-test" % play.core.PlayVersion.current % "test",
         "org.scalamock" %% "scalamock-specs2-support" % "3.0.1" % "test",
@@ -79,6 +81,7 @@ object ApplicationBuild extends Build {
     		"org.squeryl" % "squeryl_2.10.0-RC5" % "0.9.5-5",
     		"postgresql" % "postgresql" % "9.1-901-1.jdbc4",
     		jdbc,
+        "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.2",
         /* Javascript */
         "org.webjars" % "bootstrap" % "2.3.1-1",
         "org.webjars" % "jquery" % "1.9.1",

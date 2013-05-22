@@ -39,6 +39,8 @@ import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.core.MediaType
 import uk.co.unclealex.callerid.remote.google.UrlWithParameters._
 import java.net.ServerSocket
+import resource.managed
+
 /**
  * @author alex
  *
@@ -91,9 +93,7 @@ class JerseyGoogleRequestServiceTest extends FunSuite with ShouldMatchers with G
     def expect(expectedMethod: String, expectedParameters: Map[String, String], expectedContentType: Option[String], expectedResponse: M) = {
       val bodyContent = bf._1
       val expectedResponseGenerator = bf._2
-      val socket = new ServerSocket(0)
-      val port = socket.getLocalPort()
-      socket close
+      val port = managed(new ServerSocket(0)).acquireAndGet(_.getLocalPort())
       val server = new Server(port)
       val context = new ServletContextHandler(ServletContextHandler.SESSIONS)
       val servlet = new TestServlet(bodyContent)

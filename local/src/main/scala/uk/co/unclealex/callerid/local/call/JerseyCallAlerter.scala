@@ -35,6 +35,7 @@ import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config
 import com.sun.jersey.client.apache4.ApacheHttpClient4
 import com.sun.jersey.api.client.config.ClientConfig
 import com.typesafe.scalalogging.slf4j.Logging
+import uk.co.unclealex.callerid.local.configuration.RemoteConfiguration
 
 /**
  * An implementation of {@link CallAlerter} that uses Jersey to communicate to a REST server.

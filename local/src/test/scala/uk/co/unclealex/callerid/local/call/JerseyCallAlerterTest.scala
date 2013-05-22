@@ -34,6 +34,9 @@ import scala.collection.immutable.Stream
 import scala.io.Source
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
+import uk.co.unclealex.callerid.local.configuration.RemoteConfiguration
+import scalax.io.JavaConverters._
+import resource.managed
 
 /**
  * @author alex
@@ -42,9 +45,7 @@ import org.eclipse.jetty.servlet.ServletHolder
 class JerseyCallAlerterTest extends Specification {
 
   "The Jersey based call alerter" should {
-    val socket = new ServerSocket(0)
-    val port = socket.getLocalPort()
-    socket close
+    val port = managed(new ServerSocket(0)).acquireAndGet(_.getLocalPort())
     val server = new Server(port)
     val context = new ServletContextHandler(ServletContextHandler.SESSIONS)
     val servlet = new TestServlet("OK")
@@ -74,7 +75,6 @@ class JerseyCallAlerterTest extends Specification {
     server stop
   }
 }
-
 class TestServlet(response: String) extends HttpServlet {
 
   var method: String = _
