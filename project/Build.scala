@@ -77,6 +77,11 @@ object ApplicationBuild extends Build {
 		"org.squeryl" % "squeryl_2.10.0-RC5" % "0.9.5-5",
 		"postgresql" % "postgresql" % "9.1-901-1.jdbc4",
 		jdbc,
+    /* Javascript */
+    "org.webjars" % "bootstrap" % "2.3.1-1",
+    "org.webjars" % "jquery" % "1.9.1",
+    "org.webjars" % "webjars-play" % "2.1.0-1",
+    "org.webjars" % "font-awesome" % "3.1.1-1",
 		/** Test */
 		"com.h2database" % "h2" % "1.3.171" % "test",
 		"org.scalamock" %% "scalamock-scalatest-support" % "3.0.1" % "test",
