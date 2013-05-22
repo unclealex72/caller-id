@@ -87,7 +87,7 @@ object ApplicationBuild extends Build {
     		/** Test */
     		"com.h2database" % "h2" % "1.3.171" % "test",
     		"org.scalamock" %% "scalamock-scalatest-support" % "3.0.1" % "test",
-    		"uk.co.unclealex" % "test-server-utilities" % "1.0.1-SNAPSHOT" % "test"),
+    		"org.eclipse.jetty.aggregate" % "jetty-servlet" % "8.1.0.v20120127" % "test"),
       scalaVersion := scala_version,
       resolvers ++= commonResolvers)
 }

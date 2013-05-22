@@ -25,10 +25,7 @@ package uk.co.unclealex.callerid.remote.dao
 
 import java.text.SimpleDateFormat
 import org.springframework.beans.factory.annotation.Autowired
-import org.junit.Test
 import uk.co.unclealex.callerid.remote.model.CallRecord
-import org.junit.Assert._
-import org.hamcrest.Matchers._
 
 /**
  * @author alex

@@ -26,22 +26,19 @@ package uk.co.unclealex.callerid.remote.google
 
 import scala.collection.JavaConversions._
 import scala.reflect.ClassTag
-
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
 import org.scalatest.FunSuite
 import org.scalatest.GivenWhenThen
 import org.scalatest.matchers.ShouldMatchers
-
-import com.level3.uk.test.server.FreePortFinder
-
 import javax.servlet.Servlet
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.core.MediaType
 import uk.co.unclealex.callerid.remote.google.UrlWithParameters._
+import java.net.ServerSocket
 /**
  * @author alex
  *
@@ -94,7 +91,9 @@ class JerseyGoogleRequestServiceTest extends FunSuite with ShouldMatchers with G
     def expect(expectedMethod: String, expectedParameters: Map[String, String], expectedContentType: Option[String], expectedResponse: M) = {
       val bodyContent = bf._1
       val expectedResponseGenerator = bf._2
-      val port = FreePortFinder.findFreePort()
+      val socket = new ServerSocket(0)
+      val port = socket.getLocalPort()
+      socket close
       val server = new Server(port)
       val context = new ServletContextHandler(ServletContextHandler.SESSIONS)
       val servlet = new TestServlet(bodyContent)
