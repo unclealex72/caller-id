@@ -31,7 +31,7 @@ import uk.co.unclealex.callerid.local.squeezebox.Squeezebox
 class CallControllerImpl(callAlerter: CallAlerter, squeezebox: Squeezebox) extends CallController {
 
   override def onCall(number: String) {
-    val message: String = callAlerter callMade number
+    val message = callAlerter callMade number
     squeezebox displayText (message, "")
   }
 

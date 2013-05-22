@@ -34,11 +34,12 @@ import com.sun.jersey.client.apache4.config.ApacheHttpClient4Config.PROPERTY_PRE
 import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config
 import com.sun.jersey.client.apache4.ApacheHttpClient4
 import com.sun.jersey.api.client.config.ClientConfig
+import com.typesafe.scalalogging.slf4j.Logging
 
 /**
  * An implementation of {@link CallAlerter} that uses Jersey to communicate to a REST server.
  */
-class JerseyCallAlerter(remoteConfiguration: RemoteConfiguration) extends CallAlerter {
+class JerseyCallAlerter(remoteConfiguration: RemoteConfiguration) extends CallAlerter with Logging {
 
   /**
    * The Jersey {@link Client} used to talk to the REST server.
@@ -61,7 +62,8 @@ class JerseyCallAlerter(remoteConfiguration: RemoteConfiguration) extends CallAl
   val url: String = remoteConfiguration.url
 
   override def callMade(number: String) = {
-    client.resource(url).post(classOf[String], number)
+    logger.info(s"Sending $number to $url")
+    client resource (url) post (classOf[String], number)
   }
 
 }
