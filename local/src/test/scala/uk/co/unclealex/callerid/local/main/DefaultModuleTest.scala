@@ -43,10 +43,10 @@ class DefaultModuleTest extends Specification with MockFactory {
     "be able to to be created" in {
       managed(new ServerSocket(0)).acquireAndGet { tempServerSocket =>
         val tempSocket = new Socket("localhost", tempServerSocket.getLocalPort())
-        val socketFactory = mockFunction[String, Int, Socket]
-        Map("localhost" -> 999, "nonlocalhost" -> 9990) map {
-          case (host, port) =>
-            socketFactory expects (host, port) returns tempSocket
+        val socketFactory = mockFunction[String, String, Int, Socket]
+        List(("modemDevice", "localhost", 999), ("squeezeboxDevice", "nonlocalhost", 9990)) map {
+          case (name, host, port) =>
+            socketFactory expects (name, host, port) returns tempSocket
         }
         Guice.createInjector(DefaultModule(socketFactory))
         success

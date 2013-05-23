@@ -52,9 +52,9 @@ import uk.co.unclealex.callerid.local.squeezebox.SqueezeboxImpl
  */
 class DefaultModule(
   /**
-   * The factory used to create a socket from a host and port.
+   * The factory used to create a socket from a name, a host and port.
    */
-  socketFactory: (String, Int) => Socket) extends ScalaModule {
+  socketFactory: (String, String, Int) => Socket) extends ScalaModule {
 
   val configurationFactory = new ConfigurationFactory(getClass.getClassLoader.getResource("configuration.json"))
 
@@ -76,7 +76,7 @@ class DefaultModule(
 
   def bindDevice[C](name: String, hostFactory: C => String, portFactory: C => Int)(implicit c: ClassTag[C]) {
     val configuration = configurationFactory[C]
-    val socket = socketFactory(hostFactory(configuration), portFactory(configuration))
+    val socket = socketFactory(name, hostFactory(configuration), portFactory(configuration))
     bind[Device].annotatedWithName(name).toInstance(new NetworkDevice(socket, Charset.forName("utf-8")))
   }
 }
@@ -89,10 +89,10 @@ object DefaultModule {
   /**
    * Create the default module with a hardcoded socket factory.
    */
-  def apply: DefaultModule = apply((host: String, port: Int) => new Socket(host, port))
+  def apply: DefaultModule = apply((name: String, host: String, port: Int) => new Socket(host, port))
 
   /**
    * Create the default module with a mockable socket factory.
    */
-  def apply(socketFactory: (String, Int) => Socket): DefaultModule = new DefaultModule(socketFactory)
+  def apply(socketFactory: (String, String, Int) => Socket): DefaultModule = new DefaultModule(socketFactory)
 }
