@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 Alex Jones
+ * Copyright 2013 Alex Jones
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,38 +18,36 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * @author alex
+ * @author unclealex72
  *
  */
 
-package uk.co.unclealex.callerid.local.device;
+package uk.co.unclealex.callerid.local.device
 
+import java.io.OutputStream
+import java.io.InputStream
 import java.io.Closeable
+import java.nio.charset.Charset
+import java.io.BufferedReader
+import java.io.BufferedWriter
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 
 /**
- * An interface for communicating with a device that listens for and responds to
- * lines of text.
- *
+ * A trait to allow the abstraction of getting an input stream and output stream to talk to a networked device.
  * @author alex
  *
  */
-trait Device extends Closeable {
+trait IoDevice extends Closeable {
 
   /**
-   * Read a line from the device. This method blocks until the modem has data to
-   * send.
-   *
-   * @return The line read from the streamer.
+   * Get the input stream for this IO device.
    */
   def readLine: Option[String]
 
   /**
-   * Write a line to the device. The command line must not be terminated with a
-   * newline character.
-   *
-   * @param command
-   *          The command to send.
+   * Get the output stream for this IO device.
    */
-  def writeLine(command: String): Unit
+  def writeLine(line: String): Unit
 
 }

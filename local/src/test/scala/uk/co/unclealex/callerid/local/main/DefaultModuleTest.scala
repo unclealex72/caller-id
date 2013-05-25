@@ -33,6 +33,9 @@ import java.net.Socket
 import com.google.inject.Guice
 import java.net.ServerSocket
 import resource._
+import java.io.ByteArrayInputStream
+import uk.co.unclealex.callerid.local.device.IoDevice
+import java.io.ByteArrayOutputStream
 /**
  * @author alex
  *
@@ -41,16 +44,18 @@ class DefaultModuleTest extends Specification with MockFactory {
 
   "The Guice default module" should {
     "be able to to be created" in {
-      managed(new ServerSocket(0)).acquireAndGet { tempServerSocket =>
-        val tempSocket = new Socket("localhost", tempServerSocket.getLocalPort())
-        val socketFactory = mockFunction[String, String, Int, Socket]
-        List(("modemDevice", "localhost", 999), ("squeezeboxDevice", "nonlocalhost", 9990)) map {
-          case (name, host, port) =>
-            socketFactory expects (name, host, port) returns tempSocket
-        }
-        Guice.createInjector(DefaultModule(socketFactory))
-        success
+      val ioDevice = new IoDevice() {
+        def readLine = Some("")
+        def writeLine(line: String) = {}
+        def close = {}
       }
+      val ioDeviceFactory = mockFunction[String, String, Int, IoDevice]
+      List(("modem", "localhost", 999), ("squeezebox", "nonlocalhost", 9990)) map {
+        case (name, host, port) =>
+          ioDeviceFactory expects (name, host, port) returns ioDevice
+      }
+      Guice.createInjector(DefaultModule(ioDeviceFactory))
+      success
     }
   }
 }

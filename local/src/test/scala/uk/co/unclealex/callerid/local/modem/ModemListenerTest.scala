@@ -24,10 +24,12 @@
 
 package uk.co.unclealex.callerid.local.modem
 
-import org.specs2.mutable.Specification
 import org.scalamock.specs2.MockFactory
-import uk.co.unclealex.callerid.local.device.Device
+import org.specs2.mutable.Specification
+
+import javax.inject.Provider
 import uk.co.unclealex.callerid.local.call.CallController
+import uk.co.unclealex.callerid.local.device.IoDevice
 
 /**
  * @author alex
@@ -37,24 +39,24 @@ class ModemListenerTest extends Specification with MockFactory {
 
   "The modem listener" should {
     "initialise the modem" in {
-      val modemDevice = mock[Device]
+      val modemDevice = mock[IoDevice]
       List("ATZ", "AT+FCLASS=1.0", "AT+VCID=1") foreach {
         line => (modemDevice.writeLine _) expects line
       }
-      val modemListener = new ModemListener(modemDevice, mock[CallController])
-      modemListener initialiseModem
+      val modemListener = new ModemListenerImpl(new Provider[IoDevice]() { def get = modemDevice }, mock[CallController])
+      modemListener initialiseModem modemDevice
     }
     "read lines until the modem device is disconnected" in {
-      val modemDevice = mock[Device]
+      val modemDevice = mock[IoDevice]
       val callController = mock[CallController]
-      List("Line One", "Line Two", "Line Three") foreach {
+      List("OK", "NMBR = P", "NMBR = 444555") foreach {
         line =>
           (modemDevice.readLine _) expects () returning Some(line)
-          (callController.onCall _) expects line
       }
+      (callController.onCall _) expects "444555"
       (modemDevice.readLine _) expects () returning None
-      val modemListener = new ModemListener(modemDevice, callController)
-      modemListener listenForCalls
+      val modemListener = new ModemListenerImpl(new Provider[IoDevice]() { def get = modemDevice }, callController)
+      modemListener listenForCalls modemDevice
     }
   }
 }

@@ -24,26 +24,31 @@
 
 package uk.co.unclealex.callerid.local.device
 
-import java.nio.charset.Charset
-import java.io.InputStream
-import java.io.OutputStream
 import java.net.Socket
-import java.net.InetAddress
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
+import java.io.OutputStreamWriter
+import java.io.DataOutputStream
+import java.io.DataInputStream
 
 /**
+ * A IO device based on a socket.
  * @author alex
  *
  */
-class NetworkDevice(socket: Socket, charset: Charset) extends AbstractStreamDevice(socket.getInputStream(), socket.getOutputStream(), charset) {
+class SocketIoDevice(host: String, port: Int) extends IoDevice {
 
-  def this(
-    address: InetAddress = InetAddress.getLoopbackAddress(),
-    port: Int,
-    charset: Charset = Charset.forName("UTF-8")) {
-    this(new Socket(address, port), charset)
+  val socket = new Socket(host, port)
+  val in = new DataInputStream(socket.getInputStream())
+  val out = new DataOutputStream(socket.getOutputStream())
+
+  def readLine: Option[String] = Option(in.readLine())
+
+  def writeLine(line: String) = {
+    out.writeUTF(line)
+    out.write(13)
   }
 
-  override def close = {
-    socket.close()
-  }
+  def close = socket close
 }

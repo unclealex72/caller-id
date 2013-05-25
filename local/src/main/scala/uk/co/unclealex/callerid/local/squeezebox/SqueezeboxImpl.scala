@@ -24,11 +24,18 @@
 
 package uk.co.unclealex.callerid.local.squeezebox
 
+import java.io.BufferedReader
+import java.io.BufferedWriter
+import java.io.IOException
+import java.nio.charset.StandardCharsets
+
 import com.google.api.client.util.escape.Escaper
 import com.google.api.client.util.escape.PercentEscaper
-import uk.co.unclealex.callerid.local.device.Device
-import javax.inject.Named
+
 import javax.inject.Inject
+import javax.inject.Named
+import javax.inject.Provider
+import uk.co.unclealex.callerid.local.device.IoDevice
 
 /**
  * The default implementation of Squeezbox that talks to squeezeboxes
@@ -38,7 +45,7 @@ import javax.inject.Inject
  *
  */
 //@PackagesRequired(Array("logitechmediaserver"))
-class SqueezeboxImpl @Inject() (@Named("squeezeboxDevice") squeezeboxDevice: Device) extends Squeezebox {
+class SqueezeboxImpl @Inject() (@Named("squeezebox") squeezeboxProvider: Provider[IoDevice]) extends Squeezebox {
 
   val percentEscaper: Escaper = new PercentEscaper(PercentEscaper.SAFECHARS_URLENCODER, false);
 
@@ -46,7 +53,14 @@ class SqueezeboxImpl @Inject() (@Named("squeezeboxDevice") squeezeboxDevice: Dev
    * {@inheritDoc}
    */
   override def displayText(topLine: String, bottomLine: String) {
-    0 until countPlayers foreach (displayText(_, topLine, bottomLine))
+    def textDisplayer(implicit ioDevice: IoDevice) =
+      0 until countPlayers foreach (displayText(_, topLine, bottomLine))
+    val ioDevice = squeezeboxProvider.get
+    try {
+      textDisplayer(ioDevice)
+    } finally {
+      ioDevice close
+    }
   }
 
   /**
@@ -55,21 +69,26 @@ class SqueezeboxImpl @Inject() (@Named("squeezeboxDevice") squeezeboxDevice: Dev
    * @param topLine The top line of text to display.
    * @param bottomLine the bottom line of text to display.
    */
-  def displayText(player: Int, topLine: String, bottomLine: String) {
-    var playerId = execute(s"player id ${player} ?")
-    playerId.map { id =>
-      execute(
+  def displayText(player: Int, topLine: String, bottomLine: String)(implicit ioDevice: IoDevice) {
+    execute(s"player id ${player} ?") match {
+      case Some(id) => execute(
         s"${id} display ${percentEscaper.escape(topLine)} ${percentEscaper.escape(bottomLine)} 30")
-    }.getOrElse(
-      throw new IllegalStateException(s"Querying the ID of squeezebox player ${player} failed."))
+      case None => throw new IOException(s"Querying the ID of squeezebox player ${player} failed.")
+    }
   }
 
-  def countPlayers: Int =
-    Integer.parseInt(execute("player count ?").get)
+  def countPlayers(implicit ioDevice: IoDevice): Int = {
+    val numPattern = "[0-9]+".r
+    execute("player count ?") match {
+      case Some(numPattern(cnt)) => Integer.parseInt(cnt)
+      case _ => throw new IOException("Could not count the number of squeezebox players")
+    }
+  }
 
-  def execute(command: String, args: Any*): Option[String] = {
-    squeezeboxDevice.writeLine(command);
-    squeezeboxDevice.readLine.map(
-      response => if (command.endsWith("?")) response.substring(command.length - 1) else response)
+  def execute(command: String, args: Any*)(implicit ioDevice: IoDevice): Option[String] = {
+    ioDevice.writeLine(command)
+    ioDevice.readLine map { response =>
+      if (command.endsWith("?")) response.substring(command.length - 1) else response
+    }
   }
 }

@@ -24,11 +24,16 @@
 
 package uk.co.unclealex.callerid.local.main
 
+import com.google.inject.Guice
+import com.typesafe.scalalogging.slf4j.Logging
 /**
  * @author alex
  *
  */
-object Main extends App {
+object Main extends App with Logging {
 
-  // Do something
+  logger info "Configuring CallerID"
+  val app = Guice createInjector (DefaultModule()) getInstance (classOf[Runnable])
+  logger info "Starting CallerID"
+  app run ()
 }

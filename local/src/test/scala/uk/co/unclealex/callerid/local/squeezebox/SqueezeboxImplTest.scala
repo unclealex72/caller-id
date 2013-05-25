@@ -25,11 +25,11 @@
 package uk.co.unclealex.callerid.local.squeezebox
 
 import scala.collection.mutable.ListBuffer
-
 import org.scalamock.specs2.MockFactory
 import org.specs2.mutable.Specification
-
-import uk.co.unclealex.callerid.local.device.Device
+import uk.co.unclealex.callerid.local.device.IoDevice
+import javax.inject.Provider
+import uk.co.unclealex.callerid.local.device.IoDevice
 
 /**
  * @author alex
@@ -58,7 +58,8 @@ class SqueezeboxImplTest extends Specification with MockFactory {
       "player id 0 ?" -> "player id 0 00:11",
       "player id 1 ?" -> "player id 1 00:22")
     val device = new MapDevice(responses)
-    val squeezebox = new SqueezeboxImpl(device)
+    val provider = new Provider[IoDevice]() { def get = device }
+    val squeezebox = new SqueezeboxImpl(provider)
     squeezebox.displayText("Top Line", "Bottom Line!")
     device.commands.toSeq must be equalTo (List(
       "player count ?",
@@ -69,18 +70,17 @@ class SqueezeboxImplTest extends Specification with MockFactory {
   }
 
   def runCommandTest(command: String, response: Option[String], expectedResult: Option[String]) {
-    val device = stub[Device]
-    (device.readLine _).when().returning(response)
-    val squeezebox = new SqueezeboxImpl(device)
-    val actualResult = squeezebox.execute(command);
-    (device.writeLine _).verify(command)
-    (device.readLine _).verify()
+    val device = mock[IoDevice]
+    (device.readLine _).expects().returning(response)
+    (device.writeLine _).expects(command)
+    val squeezebox = new SqueezeboxImpl(new Provider[IoDevice]() { def get = device })
+    val actualResult = squeezebox.execute(command)(device)
     actualResult must be equalTo (expectedResult)
   }
 
 }
 
-class MapDevice(responses: Map[String, String]) extends Device {
+class MapDevice(responses: Map[String, String]) extends IoDevice {
 
   var nextResponse: Option[String] = None
   val commands: ListBuffer[String] = ListBuffer()

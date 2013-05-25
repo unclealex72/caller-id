@@ -24,13 +24,10 @@
 
 package uk.co.unclealex.callerid.local.main
 
+import java.net.ConnectException
 import java.net.Socket
-import java.nio.charset.Charset
-
 import scala.reflect.ClassTag
-
 import com.tzavellas.sse.guice.ScalaModule
-
 import uk.co.unclealex.callerid.local.call.CallAlerter
 import uk.co.unclealex.callerid.local.call.CallController
 import uk.co.unclealex.callerid.local.call.CallControllerImpl
@@ -39,11 +36,11 @@ import uk.co.unclealex.callerid.local.configuration.ConfigurationFactory
 import uk.co.unclealex.callerid.local.configuration.ModemConfiguration
 import uk.co.unclealex.callerid.local.configuration.RemoteConfiguration
 import uk.co.unclealex.callerid.local.configuration.SqueezeboxConfiguration
-import uk.co.unclealex.callerid.local.device.Device
-import uk.co.unclealex.callerid.local.device.NetworkDevice
-import uk.co.unclealex.callerid.local.modem.ModemListener
+import uk.co.unclealex.callerid.local.device.IoDevice
+import uk.co.unclealex.callerid.local.modem.ModemListenerImpl
 import uk.co.unclealex.callerid.local.squeezebox.Squeezebox
 import uk.co.unclealex.callerid.local.squeezebox.SqueezeboxImpl
+import uk.co.unclealex.callerid.local.device.SocketIoDevice
 
 /**
  * The main Guice module used to run the application
@@ -54,15 +51,23 @@ class DefaultModule(
   /**
    * The factory used to create a socket from a name, a host and port.
    */
-  socketFactory: (String, String, Int) => Socket) extends ScalaModule {
-
-  val configurationFactory = new ConfigurationFactory(getClass.getClassLoader.getResource("configuration.json"))
+  ioDeviceFactory: (String, String, Int) => IoDevice) extends ScalaModule {
 
   override def configure = {
+    val configurationResourceName = "configuration.json"
+    val configurationUrl = getClass.getClassLoader.getResource(configurationResourceName)
+    require(configurationUrl != null, s"Resource $configurationResourceName is missing.")
+    val configurationFactory = new ConfigurationFactory(configurationUrl)
+
+    def bindDevice[C](name: String, hostFactory: C => String, portFactory: C => Int)(implicit c: ClassTag[C]) {
+      val configuration = configurationFactory[C]
+      val ioDevice = ioDeviceFactory(name, hostFactory(configuration), portFactory(configuration))
+      bind[IoDevice].annotatedWithName(name).toInstance(ioDevice)
+    }
 
     // The modem
-    bindDevice[ModemConfiguration]("modemDevice", mc => mc.modemHost, mc => mc.modemPort)
-    bind[ModemListener]
+    bindDevice[ModemConfiguration]("modem", mc => mc.modemHost, mc => mc.modemPort)
+    bind[Runnable].to[ModemListenerImpl]
 
     // Calls
     bind[RemoteConfiguration].toInstance(configurationFactory[RemoteConfiguration])
@@ -70,15 +75,10 @@ class DefaultModule(
     bind[CallAlerter].to[JerseyCallAlerter]
 
     // The squeezebox
-    bindDevice[SqueezeboxConfiguration]("squeezeboxDevice", sc => sc.squeezeboxHost, sc => sc.squeezeboxPort)
+    bindDevice[SqueezeboxConfiguration]("squeezebox", sc => sc.squeezeboxHost, sc => sc.squeezeboxPort)
     bind[Squeezebox].to[SqueezeboxImpl]
   }
 
-  def bindDevice[C](name: String, hostFactory: C => String, portFactory: C => Int)(implicit c: ClassTag[C]) {
-    val configuration = configurationFactory[C]
-    val socket = socketFactory(name, hostFactory(configuration), portFactory(configuration))
-    bind[Device].annotatedWithName(name).toInstance(new NetworkDevice(socket, Charset.forName("utf-8")))
-  }
 }
 
 /**
@@ -89,10 +89,10 @@ object DefaultModule {
   /**
    * Create the default module with a hardcoded socket factory.
    */
-  def apply: DefaultModule = apply((name: String, host: String, port: Int) => new Socket(host, port))
+  def apply(): DefaultModule = apply((name: String, host: String, port: Int) => new SocketIoDevice(host, port))
 
   /**
    * Create the default module with a mockable socket factory.
    */
-  def apply(socketFactory: (String, String, Int) => Socket): DefaultModule = new DefaultModule(socketFactory)
+  def apply(ioDeviceFactory: (String, String, Int) => IoDevice): DefaultModule = new DefaultModule(ioDeviceFactory)
 }
