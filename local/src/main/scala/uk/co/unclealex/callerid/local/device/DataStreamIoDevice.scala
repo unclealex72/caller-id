@@ -22,30 +22,27 @@
  *
  */
 
-package uk.co.unclealex.callerid.local.main
+package uk.co.unclealex.callerid.local.device
 
-import scala.collection.GenTraversableOnce
-import org.scalamock.specs2.MockFactory
-import org.specs2.data.Sized
-import org.specs2.mutable.Specification
-import org.specs2.text.LinesContent
-import java.net.Socket
-import com.google.inject.Guice
-import java.net.ServerSocket
-import resource._
-import java.io.ByteArrayInputStream
-import uk.co.unclealex.callerid.local.device.IoDevice
-import java.io.ByteArrayOutputStream
+import java.io.DataInputStream
+import java.io.DataOutputStream
+
 /**
+ * An IO device that uses data streams to read and write to a device.
  * @author alex
  *
  */
-class DefaultModuleTest extends Specification with MockFactory {
+class DataStreamIoDevice(io: Io) extends IoDevice {
 
-  "The Guice default module" should {
-    "be able to to be created" in {
-      Guice.createInjector(new DefaultModule())
-      success
-    }
+  val in = new DataInputStream(io in)
+  val out = new DataOutputStream(io out)
+
+  override def readLine = Option(in readLine ())
+
+  override def writeLine(line: String) = {
+    out writeUTF line
+    out write 13
   }
+
+  override def close = io close
 }

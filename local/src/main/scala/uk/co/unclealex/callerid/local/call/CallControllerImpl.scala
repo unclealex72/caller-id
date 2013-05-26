@@ -33,7 +33,7 @@ class CallControllerImpl @Inject() (callAlerter: CallAlerter, squeezebox: Squeez
 
   override def onCall(number: String) {
     val message = callAlerter callMade number
-    squeezebox displayText (message, "")
+    squeezebox displayText (message, message)
   }
 
 }

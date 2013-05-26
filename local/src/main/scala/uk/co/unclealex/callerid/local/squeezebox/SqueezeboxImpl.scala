@@ -28,14 +28,15 @@ import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.IOException
 import java.nio.charset.StandardCharsets
-
 import com.google.api.client.util.escape.Escaper
 import com.google.api.client.util.escape.PercentEscaper
-
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Provider
 import uk.co.unclealex.callerid.local.device.IoDevice
+import com.typesafe.scalalogging.slf4j.Logging
+import uk.co.unclealex.callerid.local.device.BufferedIoDevice
+import uk.co.unclealex.callerid.local.device.SocketIo
 
 /**
  * The default implementation of Squeezbox that talks to squeezeboxes
@@ -45,7 +46,7 @@ import uk.co.unclealex.callerid.local.device.IoDevice
  *
  */
 //@PackagesRequired(Array("logitechmediaserver"))
-class SqueezeboxImpl @Inject() (@Named("squeezebox") squeezeboxProvider: Provider[IoDevice]) extends Squeezebox {
+class SqueezeboxImpl @Inject() (@Named("squeezebox") squeezeboxProvider: Provider[IoDevice]) extends Squeezebox with Logging {
 
   val percentEscaper: Escaper = new PercentEscaper(PercentEscaper.SAFECHARS_URLENCODER, false);
 
@@ -53,12 +54,11 @@ class SqueezeboxImpl @Inject() (@Named("squeezebox") squeezeboxProvider: Provide
    * {@inheritDoc}
    */
   override def displayText(topLine: String, bottomLine: String) {
-    def textDisplayer(implicit ioDevice: IoDevice) =
-      0 until countPlayers foreach (displayText(_, topLine, bottomLine))
-    val ioDevice = squeezeboxProvider.get
+    implicit val ioDevice = squeezeboxProvider.get
     try {
-      textDisplayer(ioDevice)
+      0 until countPlayers foreach (displayText(_, topLine, bottomLine))
     } finally {
+      ioDevice writeLine "exit"
       ioDevice close
     }
   }
@@ -78,16 +78,19 @@ class SqueezeboxImpl @Inject() (@Named("squeezebox") squeezeboxProvider: Provide
   }
 
   def countPlayers(implicit ioDevice: IoDevice): Int = {
-    val numPattern = "[0-9]+".r
+    val numPattern = "([0-9]+)".r
     execute("player count ?") match {
       case Some(numPattern(cnt)) => Integer.parseInt(cnt)
-      case _ => throw new IOException("Could not count the number of squeezebox players")
+      case Some(str) => throw new IOException(s"Could not parse the number of squeezbox players: $str")
+      case None => throw new IOException("No response was returned when counting the number of squeezebox players.")
     }
   }
 
-  def execute(command: String, args: Any*)(implicit ioDevice: IoDevice): Option[String] = {
-    ioDevice.writeLine(command)
+  def execute(command: String)(implicit ioDevice: IoDevice): Option[String] = {
+    logger info s"Writing command '$command' to the squeezebox server."
+    ioDevice writeLine command
     ioDevice.readLine map { response =>
+      logger info s"Got response '$response' from the squeezebox server."
       if (command.endsWith("?")) response.substring(command.length - 1) else response
     }
   }

@@ -24,10 +24,11 @@
 
 package uk.co.unclealex.callerid.local.main
 
-import java.net.ConnectException
-import java.net.Socket
 import scala.reflect.ClassTag
+
+import com.google.inject.Provider
 import com.tzavellas.sse.guice.ScalaModule
+
 import uk.co.unclealex.callerid.local.call.CallAlerter
 import uk.co.unclealex.callerid.local.call.CallController
 import uk.co.unclealex.callerid.local.call.CallControllerImpl
@@ -36,22 +37,21 @@ import uk.co.unclealex.callerid.local.configuration.ConfigurationFactory
 import uk.co.unclealex.callerid.local.configuration.ModemConfiguration
 import uk.co.unclealex.callerid.local.configuration.RemoteConfiguration
 import uk.co.unclealex.callerid.local.configuration.SqueezeboxConfiguration
+import uk.co.unclealex.callerid.local.device.BufferedIoDevice
+import uk.co.unclealex.callerid.local.device.DataStreamIoDevice
+import uk.co.unclealex.callerid.local.device.Io
 import uk.co.unclealex.callerid.local.device.IoDevice
+import uk.co.unclealex.callerid.local.device.SocketIo
 import uk.co.unclealex.callerid.local.modem.ModemListenerImpl
 import uk.co.unclealex.callerid.local.squeezebox.Squeezebox
 import uk.co.unclealex.callerid.local.squeezebox.SqueezeboxImpl
-import uk.co.unclealex.callerid.local.device.SocketIoDevice
 
 /**
  * The main Guice module used to run the application
  * @author alex
  *
  */
-class DefaultModule(
-  /**
-   * The factory used to create a socket from a name, a host and port.
-   */
-  ioDeviceFactory: (String, String, Int) => IoDevice) extends ScalaModule {
+class DefaultModule extends ScalaModule {
 
   override def configure = {
     val configurationResourceName = "configuration.json"
@@ -59,14 +59,18 @@ class DefaultModule(
     require(configurationUrl != null, s"Resource $configurationResourceName is missing.")
     val configurationFactory = new ConfigurationFactory(configurationUrl)
 
-    def bindDevice[C](name: String, hostFactory: C => String, portFactory: C => Int)(implicit c: ClassTag[C]) {
+    def bindDevice[C](
+      name: String, socketFactory: C => (String, Int), ioDeviceProvider: Io => IoDevice)(implicit c: ClassTag[C]) {
       val configuration = configurationFactory[C]
-      val ioDevice = ioDeviceFactory(name, hostFactory(configuration), portFactory(configuration))
-      bind[IoDevice].annotatedWithName(name).toInstance(ioDevice)
+      val socketInfo = socketFactory(configuration)
+      val provider = new Provider[IoDevice]() {
+        def get = ioDeviceProvider(new SocketIo(socketInfo._1, socketInfo._2))
+      }
+      bind[IoDevice].annotatedWithName(name).toProvider(provider)
     }
 
     // The modem
-    bindDevice[ModemConfiguration]("modem", mc => mc.modemHost, mc => mc.modemPort)
+    bindDevice[ModemConfiguration]("modem", mc => (mc.modemHost, mc.modemPort), io => new DataStreamIoDevice(io))
     bind[Runnable].to[ModemListenerImpl]
 
     // Calls
@@ -75,24 +79,8 @@ class DefaultModule(
     bind[CallAlerter].to[JerseyCallAlerter]
 
     // The squeezebox
-    bindDevice[SqueezeboxConfiguration]("squeezebox", sc => sc.squeezeboxHost, sc => sc.squeezeboxPort)
+    bindDevice[SqueezeboxConfiguration](
+      "squeezebox", sc => (sc.squeezeboxHost, sc.squeezeboxPort), io => new BufferedIoDevice(io))
     bind[Squeezebox].to[SqueezeboxImpl]
   }
-
-}
-
-/**
- * The default module's companion object.
- */
-object DefaultModule {
-
-  /**
-   * Create the default module with a hardcoded socket factory.
-   */
-  def apply(): DefaultModule = apply((name: String, host: String, port: Int) => new SocketIoDevice(host, port))
-
-  /**
-   * Create the default module with a mockable socket factory.
-   */
-  def apply(ioDeviceFactory: (String, String, Int) => IoDevice): DefaultModule = new DefaultModule(ioDeviceFactory)
 }

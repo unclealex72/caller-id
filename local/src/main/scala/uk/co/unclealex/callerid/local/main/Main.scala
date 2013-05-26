@@ -33,7 +33,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 object Main extends App with Logging {
 
   logger info "Configuring CallerID"
-  val app = Guice createInjector (DefaultModule()) getInstance (classOf[Runnable])
+  val app = Guice createInjector (new DefaultModule()) getInstance (classOf[Runnable])
   logger info "Starting CallerID"
   app run ()
 }

@@ -56,7 +56,8 @@ class SqueezeboxImplTest extends Specification with MockFactory {
     val responses = Map(
       "player count ?" -> "player count 2",
       "player id 0 ?" -> "player id 0 00:11",
-      "player id 1 ?" -> "player id 1 00:22")
+      "player id 1 ?" -> "player id 1 00:22",
+      "exit" -> "")
     val device = new MapDevice(responses)
     val provider = new Provider[IoDevice]() { def get = device }
     val squeezebox = new SqueezeboxImpl(provider)
@@ -66,7 +67,8 @@ class SqueezeboxImplTest extends Specification with MockFactory {
       "player id 0 ?",
       "00:11 display Top%20Line Bottom%20Line%21 30",
       "player id 1 ?",
-      "00:22 display Top%20Line Bottom%20Line%21 30").toSeq)
+      "00:22 display Top%20Line Bottom%20Line%21 30",
+      "exit").toSeq)
   }
 
   def runCommandTest(command: String, response: Option[String], expectedResult: Option[String]) {

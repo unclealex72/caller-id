@@ -22,30 +22,26 @@
  *
  */
 
-package uk.co.unclealex.callerid.local.main
+package uk.co.unclealex.callerid.local.device
 
-import scala.collection.GenTraversableOnce
-import org.scalamock.specs2.MockFactory
-import org.specs2.data.Sized
-import org.specs2.mutable.Specification
-import org.specs2.text.LinesContent
-import java.net.Socket
-import com.google.inject.Guice
-import java.net.ServerSocket
-import resource._
-import java.io.ByteArrayInputStream
-import uk.co.unclealex.callerid.local.device.IoDevice
-import java.io.ByteArrayOutputStream
+import java.io.Closeable
+import java.io.OutputStream
+import java.io.InputStream
+
 /**
+ * A trait for classes that provide an input stream and an output stream
  * @author alex
  *
  */
-class DefaultModuleTest extends Specification with MockFactory {
+trait Io extends Closeable {
 
-  "The Guice default module" should {
-    "be able to to be created" in {
-      Guice.createInjector(new DefaultModule())
-      success
-    }
-  }
+  /**
+   * Get this IO's input stream.
+   */
+  def in: InputStream
+
+  /**
+   * Get this IO's output stream.
+   */
+  def out: OutputStream
 }

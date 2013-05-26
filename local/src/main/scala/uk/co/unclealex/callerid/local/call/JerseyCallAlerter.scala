@@ -68,8 +68,10 @@ class JerseyCallAlerter @Inject() (remoteConfiguration: RemoteConfiguration) ext
   val url: String = remoteConfiguration.url
 
   override def callMade(number: String) = {
-    logger.info(s"Sending $number to $url")
-    client resource (url) post (classOf[String], number)
+    logger info s"Sending $number to $url"
+    val message = client resource (url) post (classOf[String], number)
+    logger info s"Received message '$message'"
+    message
   }
 
 }

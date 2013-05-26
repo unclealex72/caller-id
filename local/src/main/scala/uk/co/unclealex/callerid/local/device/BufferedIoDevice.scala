@@ -22,30 +22,29 @@
  *
  */
 
-package uk.co.unclealex.callerid.local.main
+package uk.co.unclealex.callerid.local.device
 
-import scala.collection.GenTraversableOnce
-import org.scalamock.specs2.MockFactory
-import org.specs2.data.Sized
-import org.specs2.mutable.Specification
-import org.specs2.text.LinesContent
-import java.net.Socket
-import com.google.inject.Guice
-import java.net.ServerSocket
-import resource._
-import java.io.ByteArrayInputStream
-import uk.co.unclealex.callerid.local.device.IoDevice
-import java.io.ByteArrayOutputStream
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.PrintWriter
+import java.io.OutputStreamWriter
+
 /**
+ * An IO device that uses buffered readers and writers to read and write to a device.
  * @author alex
  *
  */
-class DefaultModuleTest extends Specification with MockFactory {
+class BufferedIoDevice(io: Io) extends IoDevice {
 
-  "The Guice default module" should {
-    "be able to to be created" in {
-      Guice.createInjector(new DefaultModule())
-      success
-    }
+  val reader = new BufferedReader(new InputStreamReader(io in))
+  val writer = new PrintWriter(new OutputStreamWriter(io out))
+
+  override def readLine = Option(reader readLine ())
+
+  override def writeLine(line: String) = {
+    writer println line
+    writer flush
   }
+
+  override def close = io close
 }
