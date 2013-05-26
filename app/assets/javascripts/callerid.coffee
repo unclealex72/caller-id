@@ -8,12 +8,7 @@ jQuery ->
   $("#page0, #nav0").addClass "active"
 
   # Make sure that all carousel pages have the same height.
-  height = null
-  $("#calls>div").each (page) ->
-    if height
-      $(this).height height
-    else
-      height = $(this).height()
+  $("#calls").height($("#calls").css("height"))
 
   #Link the paging controls to the carousel.
   $("#carousel").bind 'slid', () ->

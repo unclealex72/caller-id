@@ -2,7 +2,12 @@
   formattedNumber: List[String],
   formattedAddress: List[String],
   contact: Option[uk.co.unclealex.callerid.remote.contact.Contact])
-<div class="clearfix">
+<tr>
+  <td>
+    <span class="date">
+      19:36 September 7, 2013
+    </span>
+    <br />
     <span class="number">
       @formattedNumber.mkString(" ")
     </span>
@@ -13,32 +18,33 @@
             @formattedAddress.mkString(", ")
         </span>
     }
-    <span class="pull-right">
-        @button(disabled : Boolean, clazz : String, icon : String, data : Pair[String,String]*) = {
-            <button @if(disabled) {
-                disabled='disabled'
-            }
-            class="btn @clazz"
-            @data.map { case(k,v) =>
-                data-@k="@v"    
-            }>
-                <i class="@icon"></i>
-            </button>
+  </td>
+  <td>
+    @button(disabled : Boolean, clazz : String, icon : String, data : Pair[String,String]*) = {
+        <button @if(disabled) {
+            disabled='disabled'
         }
-        @button(contact.isDefined, "contact", "icon-user", "number" -> formattedNumber.mkString)
-        @button(
-          contact.isDefined, 
-          "search", 
-          "icon-search",
-          "search-term" -> ("0" + phoneNumber.city.map(_.stdCode).getOrElse("") + phoneNumber.number))
-        @button(
-          false, 
-          "map-marker", 
-          "icon-map-marker",
-          "country-code" -> phoneNumber.countries.head.isoCode,
-          "location" -> {
-            val cityOrCountry : String = phoneNumber.city.map(_.name).getOrElse(phoneNumber.countries.head.name)
-            contact.map(_.address.getOrElse(cityOrCountry)).getOrElse(cityOrCountry)
-          })
-    </span>
-</div>
+        class="btn @clazz"
+        @data.map { case(k,v) =>
+            data-@k="@v"    
+        }>
+            <i class="@icon"></i>
+        </button>
+    }
+    @button(contact.isDefined, "contact", "icon-user", "number" -> formattedNumber.mkString)
+    @button(
+      contact.isDefined, 
+      "search", 
+      "icon-search",
+      "search-term" -> ("0" + phoneNumber.city.map(_.stdCode).getOrElse("") + phoneNumber.number))
+    @button(
+      false, 
+      "map-marker", 
+      "icon-map-marker",
+      "country-code" -> phoneNumber.countries.head.isoCode,
+      "location" -> {
+        val cityOrCountry : String = phoneNumber.city.map(_.name).getOrElse(phoneNumber.countries.head.name)
+        contact.map(_.address.getOrElse(cityOrCountry)).getOrElse(cityOrCountry)
+      })
+  </td>
+</tr>
