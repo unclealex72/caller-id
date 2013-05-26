@@ -71,8 +71,10 @@ class SqueezeboxImplTest extends Specification with MockFactory {
 
   def runCommandTest(command: String, response: Option[String], expectedResult: Option[String]) {
     val device = mock[IoDevice]
-    (device.readLine _).expects().returning(response)
-    (device.writeLine _).expects(command)
+    inSequence {
+      (device.writeLine _) expects command
+      (device.readLine _) expects () returning response
+    }
     val squeezebox = new SqueezeboxImpl(new Provider[IoDevice]() { def get = device })
     val actualResult = squeezebox.execute(command)(device)
     actualResult must be equalTo (expectedResult)
