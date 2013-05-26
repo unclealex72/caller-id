@@ -28,17 +28,15 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStream
 import java.nio.charset.StandardCharsets
-
 import scala.collection.immutable.Stream
 import scala.util.matching.Regex
-
 import com.typesafe.scalalogging.slf4j.Logging
-
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Provider
 import uk.co.unclealex.callerid.local.call.CallController
 import uk.co.unclealex.callerid.local.device.IoDevice
+import uk.co.unclealex.callerid.local.ExceptionSwallower._
 
 //@PackagesRequired(Array("ser2net"))
 class ModemListenerImpl @Inject() (
@@ -81,7 +79,9 @@ class ModemListenerImpl @Inject() (
           case Witheld() => logger info "Received a witheld number from the modem."
           case Number(number) => {
             logger info s"Received a call from $number via the modem."
-            callController onCall number
+            swallow(s"Could not successfully report that there was a call from $number") {
+              callController onCall number
+            }
           }
           case _ => {
             val bytes = line.getBytes.toList

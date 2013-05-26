@@ -26,10 +26,10 @@ package uk.co.unclealex.callerid.local.modem
 
 import org.scalamock.specs2.MockFactory
 import org.specs2.mutable.Specification
-
 import javax.inject.Provider
 import uk.co.unclealex.callerid.local.call.CallController
 import uk.co.unclealex.callerid.local.device.IoDevice
+import java.io.IOException
 
 /**
  * @author alex
@@ -49,12 +49,15 @@ class ModemListenerTest extends Specification with MockFactory {
     "read lines until the modem device is disconnected" in {
       val modemDevice = mock[IoDevice]
       val callController = mock[CallController]
-      List("OK", "NMBR = P", "NMBR = 444555") foreach {
+      List("OK", "NMBR = P", "NMBR = 999888", "NMBR = 444555") foreach {
         line =>
           (modemDevice.readLine _) expects () returning Some(line)
       }
-      (callController.onCall _) expects "444555"
-      (modemDevice.readLine _) expects () returning None
+      inSequence {
+        (callController.onCall _) expects "999888" throws new IOException("Oh boy!")
+        (callController.onCall _) expects "444555"
+        (modemDevice.readLine _) expects () returning None
+      }
       val modemListener = new ModemListenerImpl(new Provider[IoDevice]() { def get = modemDevice }, callController)
       modemListener listenForCalls modemDevice
     }
