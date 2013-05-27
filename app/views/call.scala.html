@@ -20,6 +20,7 @@
     }
   </td>
   <td>
+    <div class="call-buttons">
     @button(disabled : Boolean, clazz : String, icon : String, data : Pair[String,String]*) = {
         <button @if(disabled) {
             disabled='disabled'
@@ -46,5 +47,6 @@
         val cityOrCountry : String = phoneNumber.city.map(_.name).getOrElse(phoneNumber.countries.head.name)
         contact.map(_.address.getOrElse(cityOrCountry)).getOrElse(cityOrCountry)
       })
+  </div>
   </td>
 </tr>
