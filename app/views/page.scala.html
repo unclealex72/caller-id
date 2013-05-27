@@ -2,7 +2,12 @@
 <div id="@id" class="item calls-page">
   <table class="table">
     @callModels.map { cm =>
-      @call(cm.receivedCall.phoneNumber, cm.formattedNumber, cm.formattedAddress, cm.receivedCall.contact)
+      @call(
+        cm.receivedCall.phoneNumber,
+        cm.formattedNumber,
+        cm.formattedAddress,
+        cm.receivedCall.dateReceived,
+        cm.receivedCall.contact)
     }
   </table>
 </div>

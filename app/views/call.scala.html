@@ -1,11 +1,12 @@
 @(phoneNumber: uk.co.unclealex.callerid.remote.number.PhoneNumber,
   formattedNumber: List[String],
   formattedAddress: List[String],
+  callDate: java.util.Date,
   contact: Option[uk.co.unclealex.callerid.remote.contact.Contact])
 <tr>
   <td>
     <span class="date">
-      19:36 September 7, 2013
+      @callDate.format("HH:mm MMMM dd, YYYY")
     </span>
     <br />
     <span class="number">

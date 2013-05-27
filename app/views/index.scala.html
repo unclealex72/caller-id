@@ -9,9 +9,10 @@
 <meta name="author" content="Alex Jones">
 
 <!-- Le styles -->
-<link href='@routes.WebJarAssets.at(WebJarAssets.locate("css/bootstrap.min.css"))' rel="stylesheet" media="screen">
+<!-- link href='@routes.WebJarAssets.at(WebJarAssets.locate("css/bootstrap.min.css"))' rel="stylesheet" media="screen"-->
 <link href='@routes.WebJarAssets.at(WebJarAssets.locate("css/font-awesome.min.css"))' rel="stylesheet">
 <link href='@routes.Assets.at("stylesheets/callerid.min.css")' rel="stylesheet">
+<link href='@routes.Assets.at("stylesheets/bootstrap-superhero.min.css")' rel="stylesheet">
 
 <link href="http://fonts.googleapis.com/css?family=Corben:bold"
 	rel="stylesheet" type="text/css">
@@ -34,12 +35,12 @@
 <body>
 
 	<div class="container">
-		<header class="row">
-			<h1 id="banner" class="span10">Who's Calling?</h1>
-			<span class="span2">
-			 @displayName
-			</span>
-		</header>
+	  <div class="navbar navbar-inverse">
+        <div class="navbar-inner">
+          <a class="brand">Who's Calling?</a>
+          <p class="navbar-text pull-right">@displayName</p>
+        </div>
+      </div>
 		<section class="row">
 			<section class="span6" id="all-calls">
 				<div id="carousel" data-interval="false" class="carousel slide">
@@ -59,26 +60,6 @@
 				<div id="map_canvas"></div>
 			</section>
 		</section>
-		<footer class="row">
-			<div class="span12">Footer</div>
-		</footer>
-	</div>
-
-	<div id="contact-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="contact-modal-label" aria-hidden="true">
-	  <div class="modal-header">
-	    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-	    <h3 id="contact-modal-label">Modal header</h3>
-	  </div>
-	  <div class="modal-body">
-	    <p>Copy the text below and use the <i>Go</i> button below to go the Google Contacts page.</p>
-	    <textarea id="contact-text-area" rows="1" readonly="true"></textarea>
-	  </div>
-	  <div class="modal-footer">
-	    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-	    <button
-	       onclick="window.open('https://www.google.com/contacts', target='_blank'); return true;" 
-	       class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Go</button>
-	  </div>
 	</div>
 
 	<!-- Le javascript
@@ -86,9 +67,9 @@
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script type="text/javascript" src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
 	<script type="text/javascript" src='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.js"))'></script>
-	<script type="text/javascript"
-		src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBPMGnJoq56NXDaFb21WdN_kkb585Q-qt4&amp;sensor=true"></script>
-    <script type="text/javascript" src='@routes.Assets.at("javascripts/callerid.min.js")'></script>
+    <script type="text/javascript" src='@routes.Assets.at("javascripts/callerid.js")'></script>
+    <script type="text/javascript"
+        src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBPMGnJoq56NXDaFb21WdN_kkb585Q-qt4&sensor=false"></script>
     
 </body>
 </html>

@@ -25,10 +25,23 @@
 package model
 
 import uk.co.unclealex.callerid.remote.call.ReceivedCall
+import java.util.Date
 
 /**
  * A model of a recieved call that contains information about the call and also how to format it.
  * @author alex
  *
  */
-case class CallModel(receivedCall: ReceivedCall, formattedNumber: List[String], formattedAddress: List[String])
+case class CallModel(
+  /**
+   * The received call.
+   */
+  receivedCall: ReceivedCall,
+  /**
+   * The formatted version of the number that called.
+   */
+  formattedNumber: List[String],
+  /**
+   * The formatted version of where the call originated.
+   */
+  formattedAddress: List[String])

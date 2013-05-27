@@ -93,5 +93,6 @@ object ApplicationBuild extends Build {
     		"org.scalamock" %% "scalamock-scalatest-support" % "3.0.1" % "test",
     		"org.eclipse.jetty.aggregate" % "jetty-servlet" % "8.1.0.v20120127" % "test"),
       scalaVersion := scala_version,
-      resolvers ++= commonResolvers)
+      resolvers ++= commonResolvers,
+      coffeescriptOptions := Seq("bare"))
 }
