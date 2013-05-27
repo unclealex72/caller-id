@@ -2,6 +2,7 @@ import sbt._
 import sbt.Keys._
 import play.Project._
 import sbtassembly.Plugin._
+import com.github.play2war.plugin._
 
 object ApplicationBuild extends Build {
 
@@ -11,6 +12,7 @@ object ApplicationBuild extends Build {
   val v = "2.0-SNAPSHOT"
   val organisation = "uk.co.unclealex.callerid"
   val scala_version = "2.10.1"
+  val scalac_options = Seq("-deprecation", "-unchecked", "-feature", "-language:postfixOps")
   val commonResolvers = Seq(
     "scala-tools" at "https://oss.sonatype.org/content/groups/scala-tools/",
     "cloudbees-private-release-repository" at "https://repository-unclealex.forge.cloudbees.com/release",
@@ -22,6 +24,7 @@ object ApplicationBuild extends Build {
       version := v,
       organization := organisation,
       scalaVersion := scala_version,
+      scalacOptions := scalac_options,
       testOptions in Test += Tests.Argument("junitxml", """directory="test-reports""""),
       testListeners <<= (target, streams).map((t, s) => Seq(new eu.henkelmann.sbt.JUnitXmlTestsListener(t.getAbsolutePath, s.log))),
       testResultReporter <<= testResultReporterTask,
@@ -61,7 +64,9 @@ object ApplicationBuild extends Build {
   lazy val playProject  = play.Project(prefix("play"), v).
     aggregate(localProject).
     settings(defaultScalaSettings: _*).
+    settings(Play2WarPlugin.play2WarSettings: _*).
     settings (
+      scalacOptions := scalac_options,
       organization := organisation,
       libraryDependencies ++= Seq(
     		"org.scalaz" %% "scalaz-core" % "7.0.0",
@@ -94,5 +99,5 @@ object ApplicationBuild extends Build {
     		"org.eclipse.jetty.aggregate" % "jetty-servlet" % "8.1.0.v20120127" % "test"),
       scalaVersion := scala_version,
       resolvers ++= commonResolvers,
-      coffeescriptOptions := Seq("bare"))
+      Play2WarKeys.servletVersion := "3.0")
 }

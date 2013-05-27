@@ -106,25 +106,22 @@ object ModemResponse {
 /**
  * The OK response to a sent command
  */
-case class Ok extends ModemResponse
-object Ok {
-  def unapply(line: String) = ModemResponse("OK", line, Ok())
+case object Ok extends ModemResponse {
+  def unapply(line: String) = ModemResponse("OK", line, Ok)
 }
 
 /**
  * The RING command when the phone rings.
  */
-case class Ring extends ModemResponse
-object Ring {
-  def unapply(line: String) = ModemResponse("RING", line, Ring())
+case object Ring extends ModemResponse {
+  def unapply(line: String) = ModemResponse("RING", line, Ring)
 }
 
 /**
  * The response when a witheld number calls.
  */
-case class Witheld extends ModemResponse
-object Witheld {
-  def unapply(line: String) = ModemResponse("NMBR = P", line, Witheld())
+case object Witheld extends ModemResponse {
+  def unapply(line: String) = ModemResponse("NMBR = P", line, Witheld)
 }
 
 /**

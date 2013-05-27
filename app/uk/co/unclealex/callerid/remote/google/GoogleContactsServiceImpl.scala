@@ -26,6 +26,7 @@ package uk.co.unclealex.callerid.remote.google
 import javax.inject.Inject
 import uk.co.unclealex.callerid.remote.google.UrlWithParameters.UrlWithParametersStringImplicits
 import uk.co.unclealex.callerid.remote.model.User
+import com.typesafe.scalalogging.slf4j.Logging
 
 /**
  * The default implementation of {@link GoogleContactsService}.
