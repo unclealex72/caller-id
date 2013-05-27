@@ -16,6 +16,7 @@ import uk.co.unclealex.callerid.remote.number.LocationConfiguration
 import uk.co.unclealex.callerid.remote.number.NumberFormatterImpl
 import uk.co.unclealex.callerid.remote.number.PhoneNumber
 import uk.co.unclealex.callerid.remote.contact.Contact
+import org.joda.time.format.ISODateTimeFormat
 
 /**
  * Test the call.dust template.
@@ -30,11 +31,11 @@ class CallViewTest extends FunSuite with GivenWhenThen with ShouldMatchers {
 
   test("geographic with contact and address") {
     ReceivedCall(
-      at("2012-09-05T09:12T+01:00"),
+      at("2012-09-05T09:12+01:00"),
       PhoneNumber("+441256362362", uk, basingstoke, "362362"),
       Some(Contact("Beechdown Health Club", Some("Beechdown Park  Winchester Rd, Basingstoke, RG22 4ES")))) expecting
       Expectations(
-        time = "2012-09-05T09:12T+01:00",
+        time = "2012-09-05T09:12+01:00",
         phoneNumber = "+44 1256 362362",
         contact = Some("Beechdown Health Club"),
         location = None,
@@ -46,10 +47,10 @@ class CallViewTest extends FunSuite with GivenWhenThen with ShouldMatchers {
 
   test("geographic with contact but no address") {
     ReceivedCall(
-      at("2012-09-05T09:12T+01:00"),
+      at("2012-09-05T09:12+01:00"),
       PhoneNumber("+441483550550", uk, guildford, "550550"),
       Some(Contact("University of Surrey", None))) expecting Expectations(
-        time = "2012-09-05T09:12T+01:00",
+        time = "2012-09-05T09:12+01:00",
         phoneNumber = "+44 1483 550550",
         contact = Some("University of Surrey"),
         location = None,
@@ -76,12 +77,12 @@ class CallViewTest extends FunSuite with GivenWhenThen with ShouldMatchers {
 
   test("non geographic with contact and address") {
     ReceivedCall(
-      at("2012-09-05T09:12T+01:00"),
+      at("2012-09-05T09:12+01:00"),
       PhoneNumber("+1800362362", us, None, "800362362"),
       Some(Contact(
         "American Airlines",
         Some("Los Angeles International Airport, 400 World Way, Los Angeles, CA 90045")))) expecting Expectations(
-        time = "2012-09-05T09:12T+01:00",
+        time = "2012-09-05T09:12+01:00",
         phoneNumber = "+1 800362362",
         contact = Some("American Airlines"),
         location = None,
@@ -93,10 +94,10 @@ class CallViewTest extends FunSuite with GivenWhenThen with ShouldMatchers {
 
   test("non geographic with contact but no address") {
     ReceivedCall(
-      at("2012-09-05T09:12T+01:00"),
+      at("2012-09-05T09:12+01:00"),
       PhoneNumber("+447012550550", uk, None, "7012550550"),
       Some(Contact("University of Surrey", None))) expecting Expectations(
-        time = "2012-09-05T09:12T+01:00",
+        time = "2012-09-05T09:12+01:00",
         phoneNumber = "+44 7012550550",
         contact = Some("University of Surrey"),
         location = None,
@@ -121,8 +122,11 @@ class CallViewTest extends FunSuite with GivenWhenThen with ShouldMatchers {
         mapLocation = "France")
   }
 
+  /**
+   * There is no date checking so just return "now"
+   */
   def at(formattedDate: String): Date = {
-    null
+    new Date()
   }
 
   implicit class TestCase(receivedCall: ReceivedCall) {
@@ -133,6 +137,7 @@ class CallViewTest extends FunSuite with GivenWhenThen with ShouldMatchers {
         phoneNumber,
         numberFormatter.formatNumberAsInternational(phoneNumber),
         numberFormatter.formatAddress(phoneNumber),
+        receivedCall.dateReceived,
         receivedCall.contact).toString
       val root = XML.loadString(template)
       expect(
