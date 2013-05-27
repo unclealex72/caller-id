@@ -9,7 +9,7 @@ object ApplicationBuild extends Build {
   import AssemblyKeys._
 
   def prefix = (name : String) => "callerid-" + name
-  val v = "2.0-SNAPSHOT"
+  val v = "2.0.0"
   val organisation = "uk.co.unclealex.callerid"
   val scala_version = "2.10.1"
   val scalac_options = Seq("-deprecation", "-unchecked", "-feature", "-language:postfixOps")
