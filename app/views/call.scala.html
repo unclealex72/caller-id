@@ -5,13 +5,13 @@
   contact: Option[uk.co.unclealex.callerid.remote.contact.Contact])
 <tr>
   <td>
-    <span class="date">
+    <h5 class="date">
       @callDate.format("HH:mm MMMM dd, YYYY")
-    </span>
-    <br />
+    </h5>
     <span class="number">
       @formattedNumber.mkString(" ")
     </span>
+    <br />
     @contact.map { contact =>
         <span class="contact">@contact.name</span>
     }.getOrElse {
