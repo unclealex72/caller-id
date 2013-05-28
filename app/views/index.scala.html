@@ -62,6 +62,23 @@
 		</section>
 	</div>
 
+	<div id="contact-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="contact-modal-label" aria-hidden="true">
+	  <div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 id="contact-modal-label">Add contact</h3>
+	  </div>
+	  <div class="modal-body">
+		<p>Copy the text below and use the <span class="btn btn-small btn-primary">Go</span> button below to go the Google Contacts page.</p>
+		<textarea id="contact-text-area" rows="1" readonly="true"></textarea>
+	  </div>
+	  <div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		<button
+		   onclick="window.open('https://www.google.com/contacts', target='_blank'); return true;" 
+		   class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Go</button>
+	  </div>
+	</div>
+
 	<!-- Le javascript
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
