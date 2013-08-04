@@ -24,19 +24,16 @@
 
 package uk.co.unclealex.callerid.local.squeezebox
 
-import java.io.BufferedReader
-import java.io.BufferedWriter
 import java.io.IOException
-import java.nio.charset.StandardCharsets
+
 import com.google.api.client.util.escape.Escaper
 import com.google.api.client.util.escape.PercentEscaper
+import com.typesafe.scalalogging.slf4j.Logging
+
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Provider
 import uk.co.unclealex.callerid.local.device.IoDevice
-import com.typesafe.scalalogging.slf4j.Logging
-import uk.co.unclealex.callerid.local.device.BufferedIoDevice
-import uk.co.unclealex.callerid.local.device.SocketIo
 
 /**
  * The default implementation of Squeezbox that talks to squeezeboxes

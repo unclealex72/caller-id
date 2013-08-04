@@ -27,7 +27,6 @@ import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStream
-import java.nio.charset.StandardCharsets
 import scala.collection.immutable.Stream
 import scala.util.matching.Regex
 import com.typesafe.scalalogging.slf4j.Logging
