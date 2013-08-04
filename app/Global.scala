@@ -31,15 +31,13 @@ import org.squeryl.SessionFactory
 import org.squeryl.adapters.H2Adapter
 import org.squeryl.adapters.PostgreSqlAdapter
 import org.squeryl.internals.DatabaseAdapter
-
 import com.google.inject.Guice
-
-import module.DefaultModule
 import play.api.Application
 import play.api.GlobalSettings
 import play.api.GlobalSettings
 import play.api.db.DB
 import uk.co.unclealex.callerid.remote.model.CallerIdSchema._
+import module.CallerIdModule
 
 /**
  * The Play Framework global entry point.
@@ -47,7 +45,7 @@ import uk.co.unclealex.callerid.remote.model.CallerIdSchema._
 object Global extends GlobalSettings {
 
   // Guice
-  private lazy val injector = Guice.createInjector(new DefaultModule)
+  private lazy val injector = Guice.createInjector(new CallerIdModule)
 
   // Guice
   override def getControllerInstance[A](clazz: Class[A]) = {

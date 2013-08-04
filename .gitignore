@@ -20,7 +20,5 @@ dist
 bin
 .scalastyle
 # Specific ignores so that sensitive information is not stored remotely
-conf/google.conf
-conf/security.conf
-conf/valid-users.conf
+conf/secure
 local/src/main/resources/configuration.json

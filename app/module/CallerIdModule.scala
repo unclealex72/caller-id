@@ -65,7 +65,7 @@ import controllers.WebServiceSecurityConfiguration
  * @author alex
  *
  */
-class DefaultModule extends ScalaModule {
+class CallerIdModule extends ScalaModule {
 
   /**
    * The configuration object supplied with this application.
@@ -94,7 +94,7 @@ class DefaultModule extends ScalaModule {
 
     // Configuration
     bindConfiguration[GoogleAuthorisationService]("valid-users") { conf =>
-      StaticGoogleAuthorisationService(conf.getList("users").unwrapped().map((v: Any) => v.toString).toList)
+      StaticGoogleAuthorisationService(conf.getString("users").split(",").toList)
     }
     bindConfiguration[LocationConfiguration]("location") { conf =>
       LocationConfiguration(conf.getString("internationalCode"), conf.getString("stdCode"))
