@@ -33,11 +33,11 @@ import com.google.inject.Guice
  * @author alex
  *
  */
-class DefaultModuleTest extends FunSuite with GivenWhenThen {
+class CallerIdModuleTest extends FunSuite with GivenWhenThen {
 
   test("Application initialisation") {
     When("starting the application")
     Then("the guice module should not have any errors.")
-    Guice.createInjector(new DefaultModule)
+    Guice.createInjector(new CallerIdModule)
   }
 }
