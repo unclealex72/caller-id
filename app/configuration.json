@@ -1,9 +1,0 @@
-{
-    "username" : "makethecall",
-    "password" : "m@k3th3c@11",
-    "url" : "http://callerid.unclealex.org.uk/call",
-    "modemHost" : "localhost",
-    "modemPort" : 3002,
-    "squeezeboxHost" : "localhost",
-    "squeezeboxPort" : 9090
-}
