@@ -1,0 +1,16 @@
+{
+  "time" : "2012-09-05T09:12T+01:00",
+  "number" : {
+    "internationalPrefix" : "44",
+    "stdCode" : "1483",
+    "number" : "550550"
+  },
+  "location" : {
+    "country" : "United Kingdom",
+    "countryCode" : "GB",
+    "city" : "Guildford"
+  },
+  "contact" : {
+    "name" : "University of Surrey"
+  }
+}
