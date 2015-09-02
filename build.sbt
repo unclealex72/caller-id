@@ -1,22 +1,24 @@
 name := """Caller ID"""
 
-version := "1.0-SNAPSHOT"
+version := "2.0-SNAPSHOT"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
-
-scalaVersion := "2.11.1"
-
-/* DAO */
-libraryDependencies += "org.squeryl" %% "squeryl" % "0.9.5-7"
+scalaVersion := "2.11.7"
 
 /* Dependency Injection */
-libraryDependencies ++= Seq("", "-play", "-akka").map(suffix => "org.scaldi" %% s"scaldi${suffix}" % "0.5.4")
-
-// Authentication
-libraryDependencies += "ws.securesocial" %% "securesocial" % "3.0-M3"
+libraryDependencies ++= Seq(/*"play" -> "0.5.8",*/ "akka" -> "0.5.6").map(kv => "org.scaldi" %% s"scaldi-${kv._1}" % kv._2)
 
 /* Testing */
-libraryDependencies ++= Seq("core", "mock", "matcher-extra", "analysis", "junit").map(suffix => "org.specs2" %% s"specs2-${suffix}" % "3.5" % "test")
+libraryDependencies ++= Seq("core", "mock", "matcher-extra", "analysis", "junit").map(
+  suffix => "org.specs2" %% s"specs2-$suffix" % "3.6.4" % "test")
+
+/* Logging */
+libraryDependencies ++= Seq("com.typesafe.scala-logging" %% "scala-logging" % "3.1.0", "ch.qos.logback" % "logback-classic" % "1.1.3")
+
+/* Squeezebox */
+libraryDependencies += "com.google.http-client" % "google-http-client" % "1.20.0"
+
+/* Akka */
+libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.12"
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 

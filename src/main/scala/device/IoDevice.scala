@@ -22,24 +22,30 @@
  *
  */
 
-package legacy.local.squeezebox
+package device
+
+import java.io.Closeable
+
+import scala.collection.immutable.Stream
 
 /**
- * An interface for classes that can display text on a Logitech Squeezebox
- * device.
- *
+ * A trait to allow the abstraction of getting an input stream and output stream to talk to a networked device.
  * @author alex
  *
  */
-trait Squeezebox {
+trait IoDevice extends Closeable {
 
   /**
-   * Display some text on a squeezebox.
-   *
-   * @param topLine
-   *          The text to display on the top line.
-   * @param bottomLine
-   *          The text to display on the bottom line.
+   * Get the input stream for this IO device.
    */
-  def displayText(topLine: String, bottomLine: String): Unit
+  def readLine: Option[String]
+
+  /**
+   * Get the output stream for this IO device.
+   */
+  def writeLine(line: String): Unit
+
+  def readLines: Stream[String] =
+    Stream continually readLine takeWhile (_.isDefined) map (_.get.trim)
+
 }

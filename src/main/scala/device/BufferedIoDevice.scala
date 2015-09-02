@@ -22,27 +22,28 @@
  *
  */
 
-package legacy.local.device
+package device
 
-import java.io.DataInputStream
-import java.io.DataOutputStream
+import java.io.{BufferedReader, InputStreamReader, OutputStreamWriter, PrintWriter}
+
+import com.typesafe.scalalogging.StrictLogging
 
 /**
- * An IO device that uses data streams to read and write to a device.
+ * An IO device that uses buffered readers and writers to read and write to a device.
  * @author alex
  *
  */
-class DataStreamIoDevice(io: Io) extends IoDevice {
+class BufferedIoDevice(io: Io) extends IoDevice with StrictLogging {
 
-  val in = new DataInputStream(io in)
-  val out = new DataOutputStream(io out)
+  val reader = new BufferedReader(new InputStreamReader(io.in))
+  val writer = new PrintWriter(new OutputStreamWriter(io.out))
 
-  override def readLine = Option(in readLine ())
+  override def readLine = Option(reader.readLine())
 
   override def writeLine(line: String) = {
-    out writeUTF line
-    out write 13
+    writer println line
+    writer flush
   }
 
-  override def close = io close
+  override def close() = io.close()
 }

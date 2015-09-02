@@ -9,7 +9,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -22,29 +22,24 @@
  *
  */
 
-package legacy.local.device
+package device
 
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.PrintWriter
-import java.io.OutputStreamWriter
+import java.io.{InputStream, OutputStream}
 
 /**
- * An IO device that uses buffered readers and writers to read and write to a device.
+ * A trait for classes that provide an input stream and an output stream
  * @author alex
  *
  */
-class BufferedIoDevice(io: Io) extends IoDevice {
+trait Io extends AutoCloseable {
 
-  val reader = new BufferedReader(new InputStreamReader(io in))
-  val writer = new PrintWriter(new OutputStreamWriter(io out))
+  /**
+   * Get this IO's input stream.
+   */
+  def in: InputStream
 
-  override def readLine = Option(reader readLine ())
-
-  override def writeLine(line: String) = {
-    writer println line
-    writer flush
-  }
-
-  override def close = io close
+  /**
+   * Get this IO's output stream.
+   */
+  def out: OutputStream
 }

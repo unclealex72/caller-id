@@ -22,14 +22,13 @@
  *
  */
 
-package legacy.local.device
+package device
 
 import java.net.Socket
 
-import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
-import scala.concurrent.future
+import scala.concurrent.{Await, Future}
 /**
  * An IO based on a socket.
  * @author alex
@@ -37,11 +36,11 @@ import scala.concurrent.future
  */
 class SocketIo(host: String, port: Int) extends Io {
 
-  val socketFuture = future {
+  val socketFuture = Future {
     val socket = new Socket(host, port)
-    (socket, socket getInputStream, socket getOutputStream)
+    (socket, socket.getInputStream, socket.getOutputStream)
   }
-  val (socket, in, out) = Await result (socketFuture, 500 millis)
+  val (socket, in, out) = Await result(socketFuture, 500.millis)
 
-  def close = socket close
+  def close() = socket.close()
 }

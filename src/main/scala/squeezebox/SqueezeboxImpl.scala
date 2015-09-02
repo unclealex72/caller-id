@@ -9,7 +9,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -22,55 +22,51 @@
  *
  */
 
-package legacy.local.squeezebox
+package squeezebox
 
 import java.io.IOException
 
-import com.google.api.client.util.escape.Escaper
-import com.google.api.client.util.escape.PercentEscaper
-import com.typesafe.scalalogging.slf4j.Logging
-
-import javax.inject.Inject
-import javax.inject.Named
-import javax.inject.Provider
-import legacy.local.device.IoDevice
+import com.google.api.client.util.escape.{Escaper, PercentEscaper}
+import com.typesafe.scalalogging.StrictLogging
+import device.{BufferedIoDevice, Io, IoDevice}
+import util.Provider
 
 /**
- * The default implementation of Squeezbox that talks to squeezeboxes
+ * The default implementation of Squeezebox that talks to squeezeboxes
  * via the Network CLI.
  *
  * @author alex
  *
  */
 //@PackagesRequired(Array("logitechmediaserver"))
-class SqueezeboxImpl @Inject() (@Named("squeezebox") squeezeboxProvider: Provider[IoDevice]) extends Squeezebox with Logging {
+class SqueezeboxImpl(ioProvider: Provider[Io]) extends Squeezebox with StrictLogging {
 
-  val percentEscaper: Escaper = new PercentEscaper(PercentEscaper.SAFECHARS_URLENCODER, false);
+  val percentEscaper: Escaper = new PercentEscaper(PercentEscaper.SAFECHARS_URLENCODER, false)
 
   /**
    * {@inheritDoc}
    */
   override def displayText(topLine: String, bottomLine: String) {
-    implicit val ioDevice = squeezeboxProvider.get
-    try {
-      0 until countPlayers foreach (displayText(_, topLine, bottomLine))
-    } finally {
-      ioDevice writeLine "exit"
-      ioDevice close
+    ioProvider.withProvided { io =>
+      implicit val ioDevice = new BufferedIoDevice(io)
+      try {
+        0 until countPlayers foreach displayText(topLine, bottomLine)
+      } finally {
+        ioDevice.writeLine("exit")
+      }
     }
   }
 
   /**
    * Display two lines of text on a player.
-   * @param player The number of the player.
    * @param topLine The top line of text to display.
    * @param bottomLine the bottom line of text to display.
    */
-  def displayText(player: Int, topLine: String, bottomLine: String)(implicit ioDevice: IoDevice) {
-    execute(s"player id ${player} ?") match {
+  def displayText(topLine: String, bottomLine: String)(implicit ioDevice: IoDevice) = (player: Int) => {
+    execute(s"player id $player ?") match {
       case Some(id) => execute(
-        s"${id} display ${percentEscaper.escape(topLine)} ${percentEscaper.escape(bottomLine)} 30")
-      case None => throw new IOException(s"Querying the ID of squeezebox player ${player} failed.")
+        s"$id display ${percentEscaper.escape(topLine)} ${percentEscaper.escape(bottomLine)} 30")
+      case None => throw new IOException(s"Querying the ID of squeezebox player $player failed.")
     }
   }
 
@@ -78,7 +74,7 @@ class SqueezeboxImpl @Inject() (@Named("squeezebox") squeezeboxProvider: Provide
     val numPattern = "([0-9]+)".r
     execute("player count ?") match {
       case Some(numPattern(cnt)) => Integer.parseInt(cnt)
-      case Some(str) => throw new IOException(s"Could not parse the number of squeezbox players: $str")
+      case Some(str) => throw new IOException(s"Could not parse the number of squeezebox players: $str")
       case None => throw new IOException("No response was returned when counting the number of squeezebox players.")
     }
   }

@@ -22,32 +22,26 @@
  *
  */
 
-package legacy.local.device
+package device
 
-import java.io.OutputStream
-import java.io.InputStream
-import java.io.Closeable
-import java.nio.charset.Charset
-import java.io.BufferedReader
-import java.io.BufferedWriter
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
+import java.io.{DataInputStream, DataOutputStream}
 
 /**
- * A trait to allow the abstraction of getting an input stream and output stream to talk to a networked device.
+ * An IO device that uses data streams to read and write to a device.
  * @author alex
  *
  */
-trait IoDevice extends Closeable {
+class DataStreamIoDevice(io: Io) extends IoDevice {
 
-  /**
-   * Get the input stream for this IO device.
-   */
-  def readLine: Option[String]
+  val in = new DataInputStream(io in)
+  val out = new DataOutputStream(io out)
 
-  /**
-   * Get the output stream for this IO device.
-   */
-  def writeLine(line: String): Unit
+  override def readLine = Option(in readLine ())
 
+  override def writeLine(line: String) = {
+    out writeUTF line
+    out write 13
+  }
+
+  override def close = io close
 }
