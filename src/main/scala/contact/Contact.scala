@@ -18,20 +18,23 @@
  * specific language governing permissions and limitations
  * under the License.
  *
+ * @author unclealex72
+ *
+ */
+
+package contact
+
+/**
+ * A class that represents a known person who may have called.
  * @author alex
  *
  */
-package legacy.remote.number
-
-/**
- * An immutable bean containing information about the city a geographic call came from.
- */
-case class City(
+case class Contact(
   /**
-   * The city's name.
+   * The name of the contact
    */
   name: String,
   /**
-   * The city's STD dialling code.
+   * The address of the contact.
    */
-  stdCode: String)
+  address: Option[String])

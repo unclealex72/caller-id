@@ -18,36 +18,37 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * @author unclealex72
- *
- */
-
-package device
-
-import java.io.{BufferedReader, InputStreamReader, OutputStreamWriter, PrintWriter}
-
-import com.typesafe.scalalogging.StrictLogging
-
-/**
- * An IO device that uses buffered readers and writers to read and write to a device.
  * @author alex
  *
  */
-class BufferedIoDevice(io: Io) extends IoDevice with StrictLogging {
+package call
 
-  val reader = new BufferedReader(new InputStreamReader(io.in))
-  val writer = new PrintWriter(new OutputStreamWriter(io.out))
+import argonaut.Argonaut._
+import argonaut._
 
-  override def readLine = Option(reader.readLine())
+/**
+ * An immutable bean containing information about the country call came from.
+ */
+case class Country(
+  /**
+   * The country's name.
+   */
+  name: String,
+  /**
+   * The country's international dialling code.
+   */
+  internationalDiallingCode: String,
+  /**
+   * They country's ISO 3166-1 alpha-2 code.
+   */
+  isoCode: String,
+  /**
+   * The known cities in this country, sorted by longest STD codes first.
+   */
+  cities: List[City]) {
 
-  override def writeLine(line: String) = {
-    writer println line
-    writer flush
-  }
-
-  override def close() = io.close()
 }
 
-object BufferedIoDevice {
-  def apply(io: Io) = new BufferedIoDevice(io)
+object Country {
+  implicit def CountryCodec: CodecJson[Country] = casecodec4(Country.apply, Country.unapply)("name", "internationalDiallingCode", "isoCode", "cities")
 }

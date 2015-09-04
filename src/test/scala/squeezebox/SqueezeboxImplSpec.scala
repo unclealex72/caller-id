@@ -22,73 +22,72 @@
  *
  */
 
-package legacy.local.squeezebox
+package squeezebox
 
-import legacy.local.device.IoDevice
-import legacy.local.squeezebox.SqueezeboxImpl
+import device.IoDevice
+import org.specs2.mock.Mockito
+import org.specs2.mutable.Specification
+import util.Provider
 
 import scala.collection.mutable.ListBuffer
-import org.scalamock.specs2.MockFactory
-import org.specs2.mutable.Specification
-import javax.inject.Provider
 
 /**
  * @author alex
  *
  */
-class SqueezeboxImplTest extends Specification with MockFactory {
+class SqueezeboxImplSpec extends Specification with Mockito {
 
   "a query command" should {
     "should only return the query value" in
-      runCommandTest("player count ?", Some("player count 2"), Some("2"));
+      runCommandTest("player count ?", Some("player count 2"), Some("2"))
   }
 
   "a non-query command" should {
     "should echo the whole response" in
-      runCommandTest("xx display", Some("ok"), Some("ok"));
+      runCommandTest("xx display", Some("ok"), Some("ok"))
   }
 
   "a null command" should {
     "return nothing" in
-      runCommandTest("xx display", None, None);
+      runCommandTest("xx display", None, None)
   }
 
-  "display to two squeezeboxes" should {
-    val responses = Map(
-      "player count ?" -> "player count 2",
-      "player id 0 ?" -> "player id 0 00:11",
-      "player id 1 ?" -> "player id 1 00:22",
-      "exit" -> "")
-    val device = new MapDevice(responses)
-    val provider = new Provider[IoDevice]() { def get = device }
-    val squeezebox = new SqueezeboxImpl(provider)
-    squeezebox.displayText("Top Line", "Bottom Line!")
-    device.commands.toSeq must be equalTo (List(
-      "player count ?",
-      "player id 0 ?",
-      "00:11 display Top%20Line Bottom%20Line%21 30",
-      "player id 1 ?",
-      "00:22 display Top%20Line Bottom%20Line%21 30",
-      "exit").toSeq)
-  }
-
-  def runCommandTest(command: String, response: Option[String], expectedResult: Option[String]) {
-    val device = mock[IoDevice]
-    inSequence {
-      (device.writeLine _) expects command
-      (device.readLine _) expects () returning response
+  "displaying to two squeezeboxes" should {
+    "send the same commands to each squeezebox" in {
+      val responses = Map(
+        "player count ?" -> "player count 2",
+        "player id 0 ?" -> "player id 0 00:11",
+        "player id 1 ?" -> "player id 1 00:22",
+        "exit" -> "")
+      val device = new MapDevice(responses)
+      val provider = Provider.singleton[IoDevice](device)
+      val squeezebox = new SqueezeboxImpl(provider)
+      squeezebox.displayText("Top Line", "Bottom Line!")
+      device.commands.toSeq must be equalTo Seq(
+        "player count ?",
+        "player id 0 ?",
+        "00:11 display Top%20Line Bottom%20Line%21 30",
+        "player id 1 ?",
+        "00:22 display Top%20Line Bottom%20Line%21 30",
+        "exit")
     }
-    val squeezebox = new SqueezeboxImpl(new Provider[IoDevice]() { def get = device })
+  }
+
+  def runCommandTest(command: String, response: Option[String], expectedResult: Option[String]) = {
+    val device = mock[IoDevice]
+    device.readLine returns response
+    val squeezebox = new SqueezeboxImpl(Provider.singleton[IoDevice](device))
     val actualResult = squeezebox.execute(command)(device)
-    actualResult must be equalTo (expectedResult)
+    actualResult must be equalTo expectedResult
+    there was one(device).writeLine(command)
   }
 
 }
 
 class MapDevice(responses: Map[String, String]) extends IoDevice {
 
-  var nextResponse: Option[String] = None
   val commands: ListBuffer[String] = ListBuffer()
+  var nextResponse: Option[String] = None
 
   override def writeLine(command: String) = {
     nextResponse = responses.get(command)

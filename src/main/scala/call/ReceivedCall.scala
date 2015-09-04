@@ -22,19 +22,29 @@
  *
  */
 
-package legacy.remote.contact
+package call
+
+import java.util.Date
+
+import contact.Contact
 
 /**
- * A class that represents a known person who may have called.
+ * A class that encapsulates a received call.
  * @author alex
  *
  */
-case class Contact(
+case class ReceivedCall(
   /**
-   * The name of the contact
+   * The date and time the call was received.
    */
-  name: String,
+  dateReceived: Date,
   /**
-   * The address of the contact.
+   * The number that made the call
    */
-  address: Option[String])
+  phoneNumber: PhoneNumber,
+  /**
+   * The name of the contact associated with the phone number.
+   */
+  contact: Option[Contact]) {
+
+}

@@ -28,7 +28,7 @@ import java.io.IOException
 
 import com.google.api.client.util.escape.{Escaper, PercentEscaper}
 import com.typesafe.scalalogging.StrictLogging
-import device.{BufferedIoDevice, Io, IoDevice}
+import device.IoDevice
 import util.Provider
 
 /**
@@ -39,7 +39,7 @@ import util.Provider
  *
  */
 //@PackagesRequired(Array("logitechmediaserver"))
-class SqueezeboxImpl(ioProvider: Provider[Io]) extends Squeezebox with StrictLogging {
+class SqueezeboxImpl(ioDeviceProvider: Provider[IoDevice]) extends Squeezebox with StrictLogging {
 
   val percentEscaper: Escaper = new PercentEscaper(PercentEscaper.SAFECHARS_URLENCODER, false)
 
@@ -47,10 +47,9 @@ class SqueezeboxImpl(ioProvider: Provider[Io]) extends Squeezebox with StrictLog
    * {@inheritDoc}
    */
   override def displayText(topLine: String, bottomLine: String) {
-    ioProvider.withProvided { io =>
-      implicit val ioDevice = new BufferedIoDevice(io)
+    ioDeviceProvider.withProvided { implicit ioDevice =>
       try {
-        0 until countPlayers foreach displayText(topLine, bottomLine)
+        0 until countPlayers foreach { player => displayText(topLine, bottomLine, player) }
       } finally {
         ioDevice.writeLine("exit")
       }
@@ -62,20 +61,11 @@ class SqueezeboxImpl(ioProvider: Provider[Io]) extends Squeezebox with StrictLog
    * @param topLine The top line of text to display.
    * @param bottomLine the bottom line of text to display.
    */
-  def displayText(topLine: String, bottomLine: String)(implicit ioDevice: IoDevice) = (player: Int) => {
+  def displayText(topLine: String, bottomLine: String, player: Int)(implicit ioDevice: IoDevice) {
     execute(s"player id $player ?") match {
       case Some(id) => execute(
         s"$id display ${percentEscaper.escape(topLine)} ${percentEscaper.escape(bottomLine)} 30")
       case None => throw new IOException(s"Querying the ID of squeezebox player $player failed.")
-    }
-  }
-
-  def countPlayers(implicit ioDevice: IoDevice): Int = {
-    val numPattern = "([0-9]+)".r
-    execute("player count ?") match {
-      case Some(numPattern(cnt)) => Integer.parseInt(cnt)
-      case Some(str) => throw new IOException(s"Could not parse the number of squeezebox players: $str")
-      case None => throw new IOException("No response was returned when counting the number of squeezebox players.")
     }
   }
 
@@ -85,6 +75,15 @@ class SqueezeboxImpl(ioProvider: Provider[Io]) extends Squeezebox with StrictLog
     ioDevice.readLine map { response =>
       logger info s"Got response '$response' from the squeezebox server."
       if (command.endsWith("?")) response.substring(command.length - 1) else response
+    }
+  }
+
+  def countPlayers(implicit ioDevice: IoDevice): Int = {
+    val numPattern = "([0-9]+)".r
+    execute("player count ?") match {
+      case Some(numPattern(cnt)) => Integer.parseInt(cnt)
+      case Some(str) => throw new IOException(s"Could not parse the number of squeezebox players: $str")
+      case None => throw new IOException("No response was returned when counting the number of squeezebox players.")
     }
   }
 }

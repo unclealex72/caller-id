@@ -1,15 +1,14 @@
 package modem
 
-import device.{BufferedIoDevice, Io}
+import device.IoDevice
 
 import scala.collection.immutable.Stream
 
 /**
  * An implementation for AT modems.
  */
-class AtzModem(val io: Io) extends Modem {
+class AtzModem(val ioDevice: IoDevice) extends Modem {
 
-  val ioDevice = new BufferedIoDevice(io)
   val numberRegex = """NMBR = ([0-9]+)""".r
 
   def initialise() = {

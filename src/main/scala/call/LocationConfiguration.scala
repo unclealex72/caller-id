@@ -21,27 +21,9 @@
  * @author alex
  *
  */
-package legacy.remote.number
+package call
 
 /**
- * An immutable bean containing information about the country call came from.
+ * A JSON serialisable instance of LocationConfiguration.
  */
-case class Country(
-  /**
-   * The country's name.
-   */
-  name: String,
-  /**
-   * The country's international dialling code.
-   */
-  internationalDiallingCode: String,
-  /**
-   * They country's ISO 3166-1 alpha-2 code.
-   */
-  isoCode: String,
-  /**
-   * The known cities in this country, sorted by longest STD codes first.
-   */
-  cities: List[City]) {
-
-}
+case class LocationConfiguration(internationalCode : String, stdCode : String)

@@ -22,29 +22,33 @@
  *
  */
 
-package legacy.remote.call
+package modem
 
-import legacy.remote.number.PhoneNumber
-import java.util.Date
-import legacy.remote.contact.Contact
+import device.IoDevice
+import org.specs2.mock.Mockito
+import org.specs2.mutable.Specification
 
 /**
- * A class that encapsulates a received call.
  * @author alex
  *
  */
-case class ReceivedCall(
-  /**
-   * The date and time the call was received.
-   */
-  dateReceived: Date,
-  /**
-   * The number that made the call
-   */
-  phoneNumber: PhoneNumber,
-  /**
-   * The name of the contact associated with the phone number.
-   */
-  contact: Option[Contact]) {
+class AtzModemSpec extends Specification with Mockito {
 
+  "The modem" should {
+    "send the correct initialisation commands" in {
+      val modemDevice = mock[IoDevice]
+      val modem = new AtzModem(modemDevice)
+      modem.initialise()
+      List("ATZ", "AT+FCLASS=1.0", "AT+VCID=1") map {
+        line => there was one(modemDevice).writeLine(line)
+      }
+    }
+
+    "read lines until the modem device is disconnected" in {
+      val modemDevice = mock[IoDevice]
+      modemDevice.readLines returns Stream("OK", "RING", "NMBR = P", "NMBR = 444555", "HUH")
+      val modem = new AtzModem(modemDevice)
+      modem.responses.toSeq must beEqualTo(Seq(Ok, Ring, Witheld, Number("444555"), Unknown("HUH")))
+    }
+  }
 }

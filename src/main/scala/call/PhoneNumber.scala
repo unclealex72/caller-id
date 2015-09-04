@@ -21,7 +21,7 @@
  * @author alex
  *
  */
-package legacy.remote.number
+package call
 
 import scalaz.NonEmptyList
 

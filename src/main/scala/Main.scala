@@ -2,7 +2,8 @@ import java.io.{InputStream, OutputStream}
 
 import actors.{LoggingActor, ParentActor, SqueezeboxActor}
 import akka.actor.ActorSystem
-import device.{Io, SocketIoProvider}
+import call._
+import device.{BufferedIoDevice, Io, SocketIoProvider}
 import modem.{AtzModem, Modem, ModemListener}
 import scaldi.{Injectable, Module}
 import squeezebox.{Squeezebox, SqueezeboxImpl}
@@ -22,13 +23,19 @@ object Main extends App with Injectable {
   }
 
   implicit val injector = new Module {
+    // Present call information
     bind[ActorSystem] to ActorSystem("callerId") destroyWith (_.shutdown())
     bind[ParentActor] to injected[ParentActor]
     bind[LoggingActor] to injected[LoggingActor]
     bind[SqueezeboxActor] to injected[SqueezeboxActor]
-    bind[Provider[Modem]] to Provider.singleton[Modem](new AtzModem(io))
-    bind[Squeezebox] to new SqueezeboxImpl(new SocketIoProvider("localhost", 9090))
+    bind[Squeezebox] to new SqueezeboxImpl(SocketIoProvider("localhost", 9090))
+    // Listen to a modem
+    bind[Provider[Modem]] to Provider.singleton[Modem](new AtzModem(BufferedIoDevice(io)))
     bind[ModemListener] to injected[ModemListener]
+    // Parse telephone numbers
+    bind[NumberLocationService] to injected[NumberLocationServiceImpl]
+    bind[CityDao] to injected[JsonResourceCityDao]
+    bind[NumberFormatter] to injected[NumberFormatterImpl]
   }
 
   val modemListener = inject[ModemListener]

@@ -22,7 +22,7 @@
  *
  */
 
-package legacy.remote.number
+package call
 
 /**
  * A trait for formatting telephone numbers.

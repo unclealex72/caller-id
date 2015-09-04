@@ -21,10 +21,8 @@
  * @author alex
  *
  */
-package legacy.remote.number
+package call
 
-import java.util.Collection
-import com.google.common.base.Optional
 import scalaz.NonEmptyList
 
 /**
@@ -36,7 +34,7 @@ trait CityDao {
    * @param number The phone number to scan.
    * @return The international dialling code for the country from where the phone call originated.
    */
-  def extractInternationalDiallingCode(number: String): String
+  def extractInternationalDiallingCode(number: String): Option[String]
 
   /**
    * Find the city where a phone number (minus a leading zero or international dialling code) originated from.
@@ -51,7 +49,7 @@ trait CityDao {
    * @param The city in question.
    * @return The country for the city in question.
    */
-  def countryOf(city: City): Country
+  def countryOf(city: City): Option[Country]
 
   /**
    * Get a list of countries that have a given international dialling code.
@@ -59,6 +57,6 @@ trait CityDao {
    * @return A list of countries with the given international dialling code sorted so that the country with the
    * most cities is first.
    */
-  def countries(internationalDiallingCode: String): NonEmptyList[Country]
+  def countries(internationalDiallingCode: String): Option[NonEmptyList[Country]]
 
 }

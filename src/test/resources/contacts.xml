@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns='http://www.w3.org/2005/Atom' xmlns:gContact='http://schemas.google.com/contact/2008'
+      xmlns:gd='http://schemas.google.com/g/2005' xmlns:openSearch='http://a9.com/-/spec/opensearchrss/1.0/'>
+  <id>me@gmail.com</id>
+  <updated>2013-04-27T18:57:47.246Z</updated>
+  <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/contact/2008#contact' />
+  <title type='text'>My Contacts</title>
+  <link href='http://www.google.com/' rel='alternate' type='text/html'/>
+  <link href='https://www.google.com/m8/feeds/contacts/me%40gmail.com/full' rel='http://schemas.google.com/g/2005#feed'
+        type='application/atom+xml'/>
+  <link href='https://www.google.com/m8/feeds/contacts/me%40gmail.com/full' rel='http://schemas.google.com/g/2005#post'
+        type='application/atom+xml'/>
+  <link href='https://www.google.com/m8/feeds/contacts/me%40gmail.com/full/batch'
+        rel='http://schemas.google.com/g/2005#batch'
+        type='application/atom+xml'/>
+  <link href='https://www.google.com/m8/feeds/contacts/me%40gmail.com/full?max-results=2147483647' rel='self'
+        type='application/atom+xml'/>
+  <author>
+    <name>Me</name>
+    <email>Me@gmail.com</email>
+  </author>
+  <generator uri='http://www.google.com/m8/feeds' version='1.0'>Contacts</generator>
+  <openSearch:totalResults>6</openSearch:totalResults>
+  <openSearch:startIndex>1</openSearch:startIndex>
+  <openSearch:itemsPerPage>2147483647</openSearch:itemsPerPage>
+  <!-- Contact with two phone numbers -->
+  <entry>
+    <id>http://www.google.com/m8/feeds/contacts/me%40gmail.com/base/249a5ca8f3256c0</id>
+    <updated>2013-02-23T22:35:18.838Z</updated>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/contact/2008#contact' />
+    <title type='text'>Brian May</title>
+    <content type='text'>&lt;HTCData&gt;&lt;Facebook&gt;id:671963785/friendof:592368053&lt;/Facebook&gt;&lt;/HTCData&gt;
+    </content>
+    <link href='https://www.google.com/m8/feeds/photos/media/me%40gmail.com/249a5ca8f3256c0/twf2M1MvVF1OY4ffK9wM7g'
+          rel='http://schemas.google.com/contacts/2008/rel#edit-photo'
+          type='image/*'/>
+    <link href='https://www.google.com/m8/feeds/photos/media/me%40gmail.com/249a5ca8f3256c0'
+          rel='http://schemas.google.com/contacts/2008/rel#photo'
+          type='image/*'/>
+    <link href='https://www.google.com/m8/feeds/contacts/me%40gmail.com/full/249a5ca8f3256c0' rel='self'
+          type='application/atom+xml'/>
+    <link href='https://www.google.com/m8/feeds/contacts/me%40gmail.com/full/249a5ca8f3256c0/1361658918838000'
+          rel='edit'
+          type='application/atom+xml'/>
+    <gd:email address='trevor.jones@captainbeefheart.org.uk' primary='true'
+              rel='http://schemas.google.com/g/2005#other'/>
+    <gd:phoneNumber rel='http://schemas.google.com/g/2005#home' uri='tel:+44-1256-999888'>+441256999888</gd:phoneNumber>
+    <gd:phoneNumber primary='true' rel='http://schemas.google.com/g/2005#mobile' uri='tel:+44-7808-123456'>+447808123456
+    </gd:phoneNumber>
+    <gd:extendedProperty name='PopularityIndex' value='28' />
+    <gd:extendedProperty name='PreferMailFormat' value='0' />
+    <gd:extendedProperty name='AllowRemoteContent' value='0' />
+    <gContact:groupMembershipInfo deleted='false'
+      href='http://www.google.com/m8/feeds/groups/me%40gmail.com/base/7d5fdb908d63047c' />
+  </entry>
+  <!-- Contact with no title -->
+  <entry>
+    <id>http://www.google.com/m8/feeds/contacts/me%40gmail.com/base/3a7740709d5b8f5</id>
+    <updated>2012-05-26T18:36:51.542Z</updated>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/contact/2008#contact' />
+    <title type='text'></title>
+    <link href='https://www.google.com/m8/feeds/photos/media/me%40gmail.com/3a7740709d5b8f5/1B2M2Y8AsgTpgAmY7PhCfg'
+          rel='http://schemas.google.com/contacts/2008/rel#edit-photo'
+          type='image/*'/>
+    <link href='https://www.google.com/m8/feeds/contacts/me%40gmail.com/full/3a7740709d5b8f5' rel='self'
+          type='application/atom+xml'/>
+    <link href='https://www.google.com/m8/feeds/contacts/me%40gmail.com/full/3a7740709d5b8f5/1338057411542001'
+          rel='edit'
+          type='application/atom+xml'/>
+    <gd:email address='ttjones1946@gmail.com' rel='http://schemas.google.com/g/2005#other'/>
+    <gd:extendedProperty name='PreferMailFormat' value='0' />
+  </entry>
+  <!-- Contact with no phone numbers -->
+  <entry>
+    <id>http://www.google.com/m8/feeds/contacts/me%40gmail.com/base/3b319408db5a306</id>
+    <updated>2012-05-26T18:36:51.710Z</updated>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/contact/2008#contact' />
+    <title type='text'>Google Checkout</title>
+    <link href='https://www.google.com/m8/feeds/photos/media/me%40gmail.com/3b319408db5a306/1B2M2Y8AsgTpgAmY7PhCfg'
+          rel='http://schemas.google.com/contacts/2008/rel#edit-photo'
+          type='image/*'/>
+    <link href='https://www.google.com/m8/feeds/contacts/me%40gmail.com/full/3b319408db5a306' rel='self'
+          type='application/atom+xml'/>
+    <link href='https://www.google.com/m8/feeds/contacts/me%40gmail.com/full/3b319408db5a306/1338057411710001'
+          rel='edit'
+          type='application/atom+xml'/>
+    <gd:email address='noreply@checkout.google.com' primary='true' rel='http://schemas.google.com/g/2005#home'/>
+    <gd:extendedProperty name='PreferMailFormat' value='0' />
+  </entry>
+  <!-- Contact with one phone number -->
+  <entry>
+    <id>http://www.google.com/m8/feeds/contacts/me%40gmail.com/base/e3fad6b0e287cd7</id>
+    <updated>2012-05-26T18:36:51.942Z</updated>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/contact/2008#contact' />
+    <title type='text'>Freddie Mercury</title>
+    <content type='text'>&lt;HTCData&gt;&lt;Facebook&gt;id:681276824/friendof:592368053&lt;/Facebook&gt;&lt;/HTCData&gt;
+    </content>
+    <link href='https://www.google.com/m8/feeds/photos/media/me%40gmail.com/e3fad6b0e287cd7/5GUVyS6GU4cYQoxtgmYsrg'
+          rel='http://schemas.google.com/contacts/2008/rel#edit-photo'
+          type='image/*'/>
+    <link href='https://www.google.com/m8/feeds/photos/media/me%40gmail.com/e3fad6b0e287cd7'
+          rel='http://schemas.google.com/contacts/2008/rel#photo'
+          type='image/*'/>
+    <link href='https://www.google.com/m8/feeds/contacts/me%40gmail.com/full/e3fad6b0e287cd7' rel='self'
+          type='application/atom+xml'/>
+    <link href='https://www.google.com/m8/feeds/contacts/me%40gmail.com/full/e3fad6b0e287cd7/1338057411942001'
+          rel='edit'
+          type='application/atom+xml'/>
+    <gd:phoneNumber primary='true' rel='http://schemas.google.com/g/2005#mobile' uri='tel:+44-7535-654321'>+447535654321
+    </gd:phoneNumber>
+    <gd:extendedProperty name='PreferMailFormat' value='0' />
+  </entry>
+  <!-- Contact with postal address and spaces in phone number-->
+  <entry>
+    <id>http://www.google.com/m8/feeds/contacts/me%40gmail.com/base/1d9db82f0d454703</id>
+    <updated>2013-01-19T01:01:31.355Z</updated>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/contact/2008#contact' />
+    <title type='text'>John Deacon</title>
+    <link href='https://www.google.com/m8/feeds/photos/media/me%40gmail.com/1d9db82f0d454703/1B2M2Y8AsgTpgAmY7PhCfg'
+          rel='http://schemas.google.com/contacts/2008/rel#edit-photo'
+          type='image/*'/>
+    <link href='https://www.google.com/m8/feeds/contacts/me%40gmail.com/full/1d9db82f0d454703' rel='self'
+          type='application/atom+xml'/>
+    <link href='https://www.google.com/m8/feeds/contacts/me%40gmail.com/full/1d9db82f0d454703/1358557291355802'
+          rel='edit'
+          type='application/atom+xml'/>
+    <gd:phoneNumber rel='http://schemas.google.com/g/2005#mobile' uri='tel:+44-7818-555444'>+44 7818 555444</gd:phoneNumber>
+    <gd:postalAddress rel='http://schemas.google.com/g/2005#home'>46 The High Street, Basingstoke RG24 8NA</gd:postalAddress>
+  </entry>
+  <!-- Contact with multiline address -->
+  <entry>
+    <id>http://www.google.com/m8/feeds/contacts/me%40gmail.com/base/1e4639cf8aee23c2</id>
+    <updated>2013-02-05T19:28:14.096Z</updated>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/contact/2008#contact' />
+    <title type='text'>Roger Taylor</title>
+    <link href='https://www.google.com/m8/feeds/photos/media/me%40gmail.com/1e4639cf8aee23c2/ZiIKU2gKedf9kKrlmduPxQ'
+          rel='http://schemas.google.com/contacts/2008/rel#edit-photo'
+          type='image/*'/>
+    <link href='https://www.google.com/m8/feeds/photos/media/me%40gmail.com/1e4639cf8aee23c2'
+          rel='http://schemas.google.com/contacts/2008/rel#photo'
+          type='image/*'/>
+    <link href='https://www.google.com/m8/feeds/contacts/me%40gmail.com/full/1e4639cf8aee23c2' rel='self'
+          type='application/atom+xml'/>
+    <link href='https://www.google.com/m8/feeds/contacts/me%40gmail.com/full/1e4639cf8aee23c2/1360092494096001'
+          rel='edit'
+          type='application/atom+xml'/>
+    <gd:phoneNumber rel='http://schemas.google.com/g/2005#mobile'>07941212121</gd:phoneNumber>
+    <gd:postalAddress rel='http://schemas.google.com/g/2005#home'>38 Dental Street
+      Brighton Hill
+      Basingstoke
+      RG22 7NA
+    </gd:postalAddress>
+  </entry>
+</feed>

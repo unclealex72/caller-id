@@ -22,16 +22,15 @@
  *
  */
 
-package legacy.remote.number
+package call
 
 import scala.collection.immutable.List
-import javax.inject.Inject
 
 /**
  * @author alex
  *
  */
-class NumberFormatterImpl @Inject() (
+class NumberFormatterImpl(
   /**
    * The location configuration object that can be used to decide whether a number is legacy.local or not.
    */
@@ -50,7 +49,7 @@ class NumberFormatterImpl @Inject() (
       if (country.internationalDiallingCode != locationConfiguration.internationalCode)
         Some(country.internationalDiallingCode) else None
     internationalDiallingCode.map { internationalDiallingCode =>
-      List(Some(s"+${internationalDiallingCode}"), phoneNumber.city.map(_.stdCode), Some(phoneNumber.number))
+      List(Some(s"+$internationalDiallingCode"), phoneNumber.city.map(_.stdCode), Some(phoneNumber.number))
     }.getOrElse {
       phoneNumber.city.map { city =>
         List(if (city.stdCode == locationConfiguration.stdCode) None else Some(s"0${city.stdCode}"), Some(phoneNumber.number))

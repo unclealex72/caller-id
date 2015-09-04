@@ -9,7 +9,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -21,27 +21,27 @@
  * @author alex
  *
  */
-package legacy.remote.number;
+package call
 
-import scalaz.NonEmptyList
-import javax.inject.Inject
+import util.OptionToValidation._
+
+import scalaz.{NonEmptyList, ValidationNel}
 
 /**
  * The default implementation of {@link NumberLocationService}.
  */
-class NumberLocationServiceImpl @Inject() (
-  /**
-   * The {@link CityDao} used to find cities and countries from telephone numbers.
-   */
-  cityDao: CityDao,
-  /**
-   * The {@link LocationConfiguration} of the telephone number that is receiving calls.
-   */
-  locationConfiguration: LocationConfiguration) extends NumberLocationService {
+class NumberLocationServiceImpl(
+                                 /**
+                                  * The {@link CityDao} used to find cities and countries from telephone numbers.
+                                  */
+                                 cityDao: CityDao,
 
-  case class PrefixAndParser(prefix: String, parser: String => String)
+                                 /**
+                                  * The {@link LocationConfiguration} of the telephone number that is receiving calls.
+                                  */
+                                 locationConfiguration: LocationConfiguration) extends NumberLocationService {
 
-  override def decompose(number: String): PhoneNumber = {
+  override def decompose(number: String): ValidationNel[String, PhoneNumber] = {
     val trimmedNumber = number.replaceAll("\\s+", "")
     val functionsByPrefix =
       List(
@@ -80,20 +80,26 @@ class NumberLocationServiceImpl @Inject() (
    * @param The number to convert.
    * @return A normalised phone number.
    */
-  def toPhoneNumber(number: String): PhoneNumber = {
+  def toPhoneNumber(number: String): ValidationNel[String, PhoneNumber] = {
     val normalisedNumber = "+" + number
-    val internationalDiallingCode = cityDao.extractInternationalDiallingCode(number)
-    val nationalNumber = number.substring(internationalDiallingCode.length)
-    val city = cityDao.extractCity(nationalNumber, internationalDiallingCode)
-    city.map {
-      (c: City) =>
-        val country = cityDao.countryOf(c)
-        PhoneNumber(normalisedNumber, NonEmptyList(country), city, nationalNumber.substring(c.stdCode.length()))
-    }
-      .getOrElse {
-        val countries = cityDao.countries(internationalDiallingCode)
-        PhoneNumber(normalisedNumber, countries, None, nationalNumber)
+    val idcValidation = cityDao.extractInternationalDiallingCode(number) ~~ s"Cannot find a international dialling code for $number"
+    idcValidation.flatMap { idc =>
+      val nationalNumber = number.substring(idc.length)
+      cityDao.extractCity(nationalNumber, idc) match {
+        case Some(city) =>
+          val countryValidation = cityDao.countryOf(city) ~~ s"Cannot find a country for city ${city.name}"
+          countryValidation.map { country =>
+            PhoneNumber(normalisedNumber, NonEmptyList(country), Some(city), nationalNumber.substring(city.stdCode.length()))
+          }
+        case None =>
+          val countriesValidation = cityDao.countries(idc) ~~ s"Cannot find any countries with international dialling code $idc"
+          countriesValidation.map { countries =>
+            PhoneNumber(normalisedNumber, countries, None, nationalNumber)
+          }
       }
+    }
   }
+
+  case class PrefixAndParser(prefix: String, parser: String => String)
 
 }
