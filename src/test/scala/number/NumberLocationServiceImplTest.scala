@@ -1,4 +1,4 @@
-package call
+package number
 
 import org.specs2.mutable.Specification
 

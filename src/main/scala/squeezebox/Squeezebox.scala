@@ -42,4 +42,8 @@ trait Squeezebox {
    * The text to display on the bottom line.
    */
   def displayText(topLine: String, bottomLine: String): Unit
+
+  def displayText(bothLines: String): Unit = {
+    displayText(bothLines, bothLines)
+  }
 }

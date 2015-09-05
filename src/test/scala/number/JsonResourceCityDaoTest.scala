@@ -21,7 +21,7 @@
  * @author alex
  *
  */
-package call
+package number
 
 import org.specs2.mutable.Specification
 import org.specs2.specification.core.Fragments

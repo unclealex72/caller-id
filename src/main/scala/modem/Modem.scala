@@ -7,7 +7,7 @@ package modem
 trait Modem extends AutoCloseable {
 
   /**
-   * Send any required initilisation command strings to the modem.
+   * Send any required initialisation command strings to the modem.
    */
   def initialise(): Unit
 

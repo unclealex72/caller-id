@@ -7,12 +7,12 @@ import modem._
 /**
  * Created by alex on 01/09/15.
  */
-class LoggingActor extends Actor with StrictLogging {
+class ModemLoggingActor extends Actor with StrictLogging {
 
   override def receive = {
     case Ok => logger info "Received OK from the modem."
     case Ring => logger info "Received RING from the modem."
-    case Witheld => logger info "Received a withheld number from the modem."
+    case Withheld => logger info "Received a withheld number from the modem."
     case Unknown(line) => logger warn s"Received an unknown response from the modem: $line"
     case Number(number) => logger info s"Received a call from $number"
   }

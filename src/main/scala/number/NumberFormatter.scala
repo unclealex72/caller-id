@@ -22,7 +22,7 @@
  *
  */
 
-package call
+package number
 
 /**
  * A trait for formatting telephone numbers.
@@ -55,4 +55,19 @@ trait NumberFormatter {
    * non-geographic numbers will only be formatted as the country with the most cities.
    */
   def formatAddress(phoneNumber: PhoneNumber): List[String]
+}
+
+object NumberFormatter {
+
+  implicit class NumberFormaterImplicits(phoneNumber: PhoneNumber) {
+
+    def format(implicit numberFormatter: NumberFormatter) =
+      numberFormatter.formatNumber(phoneNumber)
+
+    def formatInternational(implicit numberFormatter: NumberFormatter) =
+      numberFormatter.formatNumberAsInternational(phoneNumber)
+
+    def formatAddress(implicit numberFormatter: NumberFormatter) =
+      numberFormatter.formatAddress(phoneNumber)
+  }
 }

@@ -21,34 +21,9 @@
  * @author alex
  *
  */
-package call
-
-import argonaut.Argonaut._
-import argonaut._
+package number
 
 /**
- * An immutable bean containing information about the country call came from.
+ * A JSON serialisable instance of LocationConfiguration.
  */
-case class Country(
-  /**
-   * The country's name.
-   */
-  name: String,
-  /**
-   * The country's international dialling code.
-   */
-  internationalDiallingCode: String,
-  /**
-   * They country's ISO 3166-1 alpha-2 code.
-   */
-  isoCode: String,
-  /**
-   * The known cities in this country, sorted by longest STD codes first.
-   */
-  cities: List[City]) {
-
-}
-
-object Country {
-  implicit def CountryCodec: CodecJson[Country] = casecodec4(Country.apply, Country.unapply)("name", "internationalDiallingCode", "isoCode", "cities")
-}
+case class LocationConfiguration(internationalCode : String, stdCode : String)

@@ -20,7 +20,7 @@ class AtzModem(val ioDevice: IoDevice) extends Modem {
   def responses: Stream[ModemResponse] = ioDevice.readLines.filter(!_.isEmpty).map {
     case "OK" => Ok
     case "RING" => Ring
-    case "NMBR = P" => Witheld
+    case "NMBR = P" => Withheld
     case numberRegex(digits) => Number(digits)
     case line =>
       val bytes = line.getBytes.toList

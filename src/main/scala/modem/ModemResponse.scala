@@ -16,17 +16,17 @@ case object Ok extends ModemResponse
 case object Ring extends ModemResponse
 
 /**
- * The response when a witheld number calls.
+ * The response when a withheld number calls.
  */
-case object Witheld extends ModemResponse
+case object Withheld extends ModemResponse
 
 /**
- * The response when a witheld number calls.
+ * The response when a line that cannot be understood is returned from the modem.
  */
 case class Unknown(line: String) extends ModemResponse
 
 /**
- * The response when a non-witheld number calls.
+ * The response when a non-withheld number calls.
  */
 case class Number(
                    /**

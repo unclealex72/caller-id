@@ -48,7 +48,7 @@ class AtzModemSpec extends Specification with Mockito {
       val modemDevice = mock[IoDevice]
       modemDevice.readLines returns Stream("OK", "RING", "NMBR = P", "NMBR = 444555", "HUH")
       val modem = new AtzModem(modemDevice)
-      modem.responses.toSeq must beEqualTo(Seq(Ok, Ring, Witheld, Number("444555"), Unknown("HUH")))
+      modem.responses.toSeq must beEqualTo(Seq(Ok, Ring, Withheld, Number("444555"), Unknown("HUH")))
     }
   }
 }

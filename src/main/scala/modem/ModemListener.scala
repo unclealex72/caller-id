@@ -23,7 +23,7 @@
  */
 package modem
 
-import actors.ParentActor
+import actors.ModemActor
 import akka.actor.ActorSystem
 import com.typesafe.scalalogging.StrictLogging
 import scaldi.Injector
@@ -33,7 +33,7 @@ import util.Provider
 //@PackagesRequired(Array("ser2net"))
 class ModemListener(modemProvider: Provider[Modem])(implicit injector: Injector, actorSystem: ActorSystem) extends Runnable with StrictLogging with AkkaInjectable {
 
-  val modemActor = injectActorRef[ParentActor]
+  val modemActor = injectActorRef[ModemActor]
 
   /**
    * Initialise the modem and then listen for calls.
