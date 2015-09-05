@@ -26,14 +26,14 @@ package number
 import org.specs2.mutable.Specification
 import org.specs2.specification.core.Fragments
 
-class JsonResourceCityDaoTest extends Specification {
+class CityDaoImplTest extends Specification {
 
-  val jsonResourceCityDao: CityDao = new JsonResourceCityDao
+  val cityDao: CityDao = new CityDaoImpl(Countries().countries)
 
 
   "Extracting the international code" should {
     "find 44 for a British number" in {
-      jsonResourceCityDao.extractInternationalDiallingCode("441256118118") must beSome("44")
+      cityDao.extractInternationalDiallingCode("441256118118") must beSome("44")
     }
   }
 
@@ -41,7 +41,7 @@ class JsonResourceCityDaoTest extends Specification {
     Fragments.foreach(Seq("1697500500" -> "Brampton", "1697300300" -> "Wigton", "1697400400" -> "Raughton Head")) {
       case (number, expectedCityName) =>
         s"return $expectedCityName for $number" in {
-          jsonResourceCityDao.extractCity(number, "44").map(_.name) must beSome(expectedCityName)
+          cityDao.extractCity(number, "44").map(_.name) must beSome(expectedCityName)
         }
     }
   }
@@ -49,13 +49,13 @@ class JsonResourceCityDaoTest extends Specification {
   "Getting a country for a city" should {
     "return Basingstoke for 1256" in {
       val basingstoke = City(name = "Basingstoke", stdCode = "1256")
-      jsonResourceCityDao.countryOf(basingstoke).map(_.name) must beSome("United Kingdom")
+      cityDao.countryOf(basingstoke).map(_.name) must beSome("United Kingdom")
     }
   }
 
   "Getting countries for an international dialling code" should {
     "return all the countries in size order" in {
-      val countries = jsonResourceCityDao.countries("44").map(_.list).getOrElse(List.empty[Country])
+      val countries = cityDao.countries("44").map(_.list).getOrElse(List.empty[Country])
       countries.map(c => c.name) must contain("United Kingdom", "Guernsey", "Isle of Man", "Jersey").inOrder
     }
   }

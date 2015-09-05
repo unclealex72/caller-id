@@ -6,7 +6,7 @@ import scalaz.{Success, ValidationNel}
 
 class NumberLocationServiceImplTest extends Specification {
 
-  val cityDao = new JsonResourceCityDao
+  val cityDao = new CityDaoImpl(Countries().countries)
   val numberLocationServiceImpl = new NumberLocationServiceImpl(cityDao, new LocationConfiguration("44", "1256"))
 
   "Spaces" should {

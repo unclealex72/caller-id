@@ -2,6 +2,8 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
 name := """callerid"""
 
+organization := "uk.co.unclealex"
+
 scalaVersion := "2.11.7"
 
 /* Dependencies */

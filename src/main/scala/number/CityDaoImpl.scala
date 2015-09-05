@@ -25,31 +25,18 @@ package number
 
 import java.io.FileNotFoundException
 
+import argonaut.Argonaut._
 import argonaut._
+import com.typesafe.scalalogging.StrictLogging
 
-import scala.io.Source
+import scala.io.{Codec, Source}
 import scalaz.NonEmptyListFunctions
 
 /**
  * An implementation of {@link CityDao} that uses a JSON resource
  * to store countries and cities.
  */
-class JsonResourceCityDao extends CityDao with NonEmptyListFunctions {
-
-  val countries: List[Country] = {
-    Option(getClass.getClassLoader.getResource("countries.json")) match {
-      case Some(url) =>
-        val source = Source.fromURL(url)
-        try {
-          Parse.decodeValidation[List[Country]](source.mkString).toValidationNel.valueOr { errors =>
-            throw new IllegalStateException("Cannot parse STD code information:\n" + errors.stream.mkString("\n"))
-          }
-        } finally {
-          source.close
-        }
-      case None => throw new FileNotFoundException("Cannot find resource /countries.json")
-    }
-  }
+class CityDaoImpl(val countries: List[Country]) extends CityDao with NonEmptyListFunctions {
 
   /**
    * A multimap of all countries keyed by their international dialling codes. The collection values of this map are ordered
@@ -95,4 +82,27 @@ class JsonResourceCityDao extends CityDao with NonEmptyListFunctions {
       case Nil => None
     }
   }
+}
+
+case class Countries(countries: List[Country])
+object Countries extends StrictLogging {
+
+  def apply(): Countries = parseJson("countries.json")
+  def parseJson(resourceName: String): Countries = {
+    Option(getClass.getClassLoader.getResource(resourceName)) match {
+      case Some(url) =>
+        val source = Source.fromURL(url)(Codec.UTF8)
+        logger info s"Loading countries information from $url"
+        try {
+          Parse.decodeValidation[Countries](source.mkString).toValidationNel.valueOr { errors =>
+            throw new IllegalStateException("Cannot parse STD code information:\n" + errors.stream.mkString("\n"))
+          }
+        } finally {
+          source.close
+        }
+      case None => throw new FileNotFoundException("Cannot find resource countries.json")
+    }
+
+  }
+  implicit def CountriesCodec: CodecJson[Countries] = casecodec1(Countries.apply, Countries.unapply)("countries")
 }

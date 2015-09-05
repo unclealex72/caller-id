@@ -10,6 +10,12 @@ import com.typesafe.scalalogging.StrictLogging
 class CallLoggingActor extends Actor with StrictLogging {
 
   def receive = {
-    case receivedCall: ReceivedCall => logger.info(s"Received a call from $receivedCall")
+    case receivedCall: ReceivedCall => {
+      val number = receivedCall.phoneNumber match {
+        case Some(phoneNumber) => phoneNumber.map(_.normalisedNumber).valueOr(identity)
+        case None => "Withheld"
+      }
+      logger.info(s"Received a call from $number")
+    }
   }
 }

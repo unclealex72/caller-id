@@ -14,6 +14,8 @@ import util.Provider
  */
 object Main extends App with Injectable {
 
+  val countries = Countries()
+
   implicit val injector = new Module {
     // Present call information
     bind[ActorSystem] to ActorSystem("callerId") destroyWith (_.shutdown())
@@ -21,14 +23,14 @@ object Main extends App with Injectable {
     bind[ModemLoggingActor] to injected[ModemLoggingActor]
     bind[CallLoggingActor] to injected[CallLoggingActor]
     bind[SqueezeboxActor] to injected[SqueezeboxActor]
-    bind[Squeezebox] to new SqueezeboxImpl(SocketIoProvider("localhost", 3002))
+    bind[Squeezebox] to new SqueezeboxImpl(SocketIoProvider("localhost", 9090))
     // Listen to a modem
-    bind[Provider[Modem]] to Provider.singleton[Modem](new AtzModem(SocketIoProvider("localhost", 9090).get))
+    bind[Provider[Modem]] to Provider.singleton[Modem](new AtzModem(SocketIoProvider("localhost", 3002).get))
     bind[ModemListener] to injected[ModemListener]
     // Parse telephone numbers
     bind[LocationConfiguration] to LocationConfiguration("44", "1256")
     bind[NumberLocationService] to injected[NumberLocationServiceImpl]
-    bind[CityDao] to injected[JsonResourceCityDao]
+    bind[CityDao] to new CityDaoImpl(countries.countries)
     bind[NumberFormatter] to injected[NumberFormatterImpl]
     // Phone calls
     bind[ReceivedCallFactory] to injected[ReceivedCallFactoryImpl]
