@@ -26,6 +26,8 @@
  * @author alex
  *
  */
+
+import modules.CallerIdModule
 import org.squeryl.Session
 import org.squeryl.SessionFactory
 import org.squeryl.adapters.H2Adapter

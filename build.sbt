@@ -1,4 +1,5 @@
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
+import sbt._
 
 name := """callerid"""
 
@@ -6,14 +7,26 @@ organization := "uk.co.unclealex"
 
 scalaVersion := "2.11.7"
 
+lazy val root = (project in file(".")).enablePlugins(JavaServerAppPackaging, PlayScala)
+
+routesGenerator := InjectedRoutesGenerator
+
 /* Dependencies */
 
 libraryDependencies ++= Seq(
   "org.scalaz" %% "scalaz-core" % "7.1.3",
   "io.argonaut" %% "argonaut" % "6.1")
 
+/* Play */
+libraryDependencies ++= Seq(jdbc, cache, ws, evolutions, specs2 % Test)
+
+/* Database */
+libraryDependencies ++= Seq("", "-evolutions").map(suffix => "com.typesafe.play" %% s"play-slick$suffix" % "1.0.1")
+
+libraryDependencies += "org.postgresql" % "postgresql" % "9.4-1202-jdbc42"
+
 /* Dependency Injection */
-libraryDependencies ++= Seq(/*"play" -> "0.5.8",*/ "akka" -> "0.5.6").map(kv => "org.scaldi" %% s"scaldi-${kv._1}" % kv._2)
+libraryDependencies ++= Seq("play" -> "0.5.8", "akka" -> "0.5.6").map(kv => "org.scaldi" %% s"scaldi-${kv._1}" % kv._2)
 
 /* Testing */
 libraryDependencies ++= Seq("core", "mock", "matcher-extra", "analysis", "junit").map(
@@ -36,8 +49,6 @@ resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 scalacOptions in Test ++= Seq("-Yrangepos")
 
 /* Packaging */
-enablePlugins(JavaServerAppPackaging)
-
 maintainer in Linux := "Alex Jones <alex.jones@unclealex.co.uk>"
 
 packageSummary in Linux := "Show who's calling"
