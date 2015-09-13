@@ -34,76 +34,75 @@ import scalaz._
  */
 class NumberFormatterImplTest extends Specification {
 
-  val numberFormatter = new NumberFormatterImpl(new LocationConfiguration("44", "1256"))
+  val numberFormatter = new NumberFormatterImpl()(new LocationConfiguration("44", "1256"))
 
-  val uk = NonEmptyList(Country("United Kingdom", "44", "uk", List()))
+  val uk = NonEmptyList(Country("United Kingdom", "44", "uk", Some("0"), List()))
   val basingstoke = Some(City("Basingstoke", "1256"))
   val guildford = Some(City("Guildford", "1483"))
-  val france = NonEmptyList(Country("France", "33", "fr", List()))
+  val france = NonEmptyList(Country("France", "33", "fr", None, List()))
   val paris = Some(City("Paris", "1"))
 
   def formatNumber(country: NonEmptyList[Country], city: Option[City], number: String) =
-    numberFormatter.formatNumber(PhoneNumber("", country, city, number))
+    numberFormatter.formatNumber(PhoneNumber("", country, city, number)).default
 
   def formatNumberAsInternational(country: NonEmptyList[Country], city: Option[City], number: String) =
-    numberFormatter.formatNumberAsInternational(PhoneNumber("", country, city, number))
+    numberFormatter.formatNumberAsInternational(PhoneNumber("", country, city, number)).default
 
   def formatAddress(country: NonEmptyList[Country], city: Option[City], number: String) =
     numberFormatter.formatAddress(PhoneNumber("", country, city, number))
 
   "International geographic numbers" should {
     "always be formatted with a country code and a city code" in {
-      formatNumber(france, paris, "123456") must beEqualTo(List("+33", "1", "123456"))
-      formatNumberAsInternational(france, paris, "123456") must beEqualTo(List("+33", "1", "123456"))
+      formatNumber(france, paris, "123456") must be_===("+33 (1) 123456")
+      formatNumberAsInternational(france, paris, "123456") must be_===("+33 (1) 123456")
 
     }
   }
 
   "International non-geographic numbers" should {
     "always be formatted with a country code but no city code" in {
-      formatNumber(france, None, "123456789") must beEqualTo(List("+33", "123456789"))
-      formatNumberAsInternational(france, None, "123456789") must beEqualTo(List("+33", "123456789"))
+      formatNumber(france, None, "123456789") must be_===("+33 123456789")
+      formatNumberAsInternational(france, None, "123456789") must be_===("+33 123456789")
 
     }
   }
 
   "National geographic numbers" should {
     "be locally formatted without a country code but with a city code" in {
-      formatNumber(uk, guildford, "123456") must beEqualTo(List("01483", "123456"))
+      formatNumber(uk, guildford, "123456") must be_===("(01483) 123456")
     }
     "be internationally formatted with a country code and a city code" in {
-      formatNumberAsInternational(uk, guildford, "123456") must beEqualTo(List("+44", "1483", "123456"))
+      formatNumberAsInternational(uk, guildford, "123456") must be_===("+44 (1483) 123456")
     }
   }
 
   "National non-geographic numbers" should {
     "be locally formatted without a country code and without a city code" in {
-      formatNumber(uk, None, "123456789") must beEqualTo(List("0123456789"))
+      formatNumber(uk, None, "123456789") must be_===("0123456789")
     }
     "be internationally formatted with a country code and without a city code" in {
-      formatNumberAsInternational(uk, None, "123456789") must beEqualTo(List("+44", "123456789"))
+      formatNumberAsInternational(uk, None, "123456789") must be_===("+44 123456789")
     }
   }
 
   "Local numbers" should {
     "be locally formatted as only a number" in {
-      formatNumber(uk, basingstoke, "123456") must beEqualTo(List("123456"))
+      formatNumber(uk, basingstoke, "123456") must be_===("123456")
     }
     "be internationally formatted with a country code and city code" in {
-      formatNumberAsInternational(uk, basingstoke, "123456") must beEqualTo(List("+44", "1256", "123456"))
-
+      formatNumberAsInternational(uk, basingstoke, "123456") must be_===("+44 (1256) 123456")
     }
   }
 
   "A non-geographic address" should {
     "be formatted as only its country" in {
-      formatAddress(uk, None, "123456") must beEqualTo(List("United Kingdom"))
+      formatAddress(uk, None, "123456") must be_===(List("United Kingdom"))
     }
   }
 
   "A geographic address" should {
     "be fully formatted into a city and a country" in {
-      formatAddress(uk, basingstoke, "123456") must beEqualTo(List("Basingstoke", "United Kingdom"))
+      formatAddress(uk, basingstoke, "123456") must be_===(List("Basingstoke", "United Kingdom"))
     }
   }
 }

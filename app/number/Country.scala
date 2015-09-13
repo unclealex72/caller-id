@@ -43,6 +43,10 @@ case class Country(
    */
   isoCode: String,
   /**
+   * The prefix that needs to be dialled if calling a number in the same country whilst using an STD code.
+    */
+  localStdPrefix: Option[String],
+  /**
    * The known cities in this country, sorted by longest STD codes first.
    */
   cities: List[City]) {
@@ -50,5 +54,6 @@ case class Country(
 }
 
 object Country {
-  implicit def CountryCodec: CodecJson[Country] = casecodec4(Country.apply, Country.unapply)("name", "internationalDiallingCode", "isoCode", "cities")
+  implicit def CountryCodec: CodecJson[Country] =
+    casecodec5(Country.apply, Country.unapply)("name", "internationalDiallingCode", "isoCode", "localStdPrefix", "cities")
 }

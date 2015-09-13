@@ -11,12 +11,13 @@ import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
 import scalaz._
 
 /**
+ * Tests for ContactServiceImpl
  * Created by alex on 12/09/15.
  */
 class ContactServiceImplSpec(implicit ev: ExecutionEnv) extends Specification with Mockito {
 
   trait Context extends Scope with NonEmptyListFunctions {
-    val UK = Country("United Kingdom", "44", "uk", List.empty)
+    val UK = Country("United Kingdom", "44", "uk", Some("0"), List.empty)
     val Basingstoke = City("Basingstoke", "1256")
     def pn(number: String): NPhoneNumber = NPhoneNumber(s"+$number", nels(UK), Some(Basingstoke), number)
     def spn(number: String): ValidationNel[String, NPhoneNumber] = Success(pn(number)).toValidationNel

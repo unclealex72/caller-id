@@ -21867,7 +21867,7 @@
     },
     {
       "name": "Guernsey",
-      "internationalDiallingCode": "44",
+      "internationalDiallingCode": "44", "localStdPrefix": "0",
       "isoCode": "gg",
       "cities": [
         {
@@ -21878,7 +21878,7 @@
     },
     {
       "name": "Isle of Man",
-      "internationalDiallingCode": "44",
+      "internationalDiallingCode": "44", "localStdPrefix": "0",
       "isoCode": "im",
       "cities": [
         {
@@ -21889,7 +21889,7 @@
     },
     {
       "name": "Jersey",
-      "internationalDiallingCode": "44",
+      "internationalDiallingCode": "44", "localStdPrefix": "0",
       "isoCode": "je",
       "cities": [
         {
@@ -21900,7 +21900,7 @@
     },
     {
       "name": "United Kingdom",
-      "internationalDiallingCode": "44",
+      "internationalDiallingCode": "44", "localStdPrefix": "0",
       "isoCode": "gb",
       "cities": [
         {

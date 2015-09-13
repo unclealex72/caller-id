@@ -24,6 +24,8 @@
 
 package number
 
+import number.LocationConfiguration._
+
 import scala.collection.immutable.List
 
 /**
@@ -34,29 +36,33 @@ class NumberFormatterImpl(
   /**
    * The location configuration object that can be used to decide whether a number is legacy.local or not.
    */
-  locationConfiguration: LocationConfiguration) extends NumberFormatter {
+  implicit locationConfiguration: LocationConfiguration) extends NumberFormatter {
 
-  def formatNumberAsInternational(phoneNumber: PhoneNumber): List[String] = {
-    List(
-      Some(s"+${phoneNumber.countries.head.internationalDiallingCode}"),
-      phoneNumber.city.map(_.stdCode),
-      Some(phoneNumber.number)).filter(_.isDefined).map(_.get)
+  override def formatNumberAsInternational(phoneNumber: PhoneNumber): FormattableNumber =
+    formatNumber(phoneNumber, _ => true, _ => true, _ => false)
+
+  override def formatNumber(phoneNumber: PhoneNumber): FormattableNumber = {
+    val includeInternational: Country => Boolean = country =>
+      country.isNotLocal
+    val includeStd: ((Country, City)) => Boolean = {
+      case ((country, city)) => (country.isLocal && city.isNotLocal) || country.isNotLocal
+    }
+    formatNumber(phoneNumber, includeInternational, includeStd, _.isLocal)
   }
 
-  def formatNumber(phoneNumber: PhoneNumber): List[String] = {
+  def formatNumber(phoneNumber: PhoneNumber,
+                   includeInternational: Country => Boolean,
+                   includeStd: ((Country, City)) => Boolean,
+                   includeLocalStdPrefix: Country => Boolean): FormattableNumber = {
     val country = phoneNumber.countries.head
-    val internationalDiallingCode =
-      if (country.internationalDiallingCode != locationConfiguration.internationalCode)
-        Some(country.internationalDiallingCode) else None
-    internationalDiallingCode.map { internationalDiallingCode =>
-      List(Some(s"+$internationalDiallingCode"), phoneNumber.city.map(_.stdCode), Some(phoneNumber.number))
-    }.getOrElse {
-      phoneNumber.city.map { city =>
-        List(if (city.stdCode == locationConfiguration.stdCode) None else Some(s"0${city.stdCode}"), Some(phoneNumber.number))
-      }.getOrElse {
-        List(Some(s"0${phoneNumber.number}"))
-      }
-    }.filter(_.isDefined).map(_.get)
+    val international = Some(country).filter(includeInternational).map(_.internationalDiallingCode)
+    val prefix = Some(country).filter(includeLocalStdPrefix).flatMap(_.localStdPrefix).getOrElse("")
+    val city = phoneNumber.city
+    val std = city.map(city => country -> city).filter(includeStd).map(_._2.stdCode)
+    FormattableNumber(
+      international,
+      std.map(prefix + _),
+      city.map(_ => "").getOrElse(prefix) + phoneNumber.number)
   }
 
   def formatAddress(phoneNumber: PhoneNumber): List[String] = {

@@ -43,12 +43,12 @@ trait NumberFormatter {
    *   <tr><td>Local</td><td>zzzzzz</td></tr>
    * </table>
    */
-  def formatNumber(phoneNumber: PhoneNumber): List[String]
+  def formatNumber(phoneNumber: PhoneNumber): FormattableNumber
 
   /**
    * Format a number as a fully international normalised number.
    */
-  def formatNumberAsInternational(phoneNumber: PhoneNumber): List[String]
+  def formatNumberAsInternational(phoneNumber: PhoneNumber): FormattableNumber
 
   /**
    * Format an address. Geographic numbers with always be of the form <code>city, country</code> whilst

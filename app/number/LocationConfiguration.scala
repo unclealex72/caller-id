@@ -27,3 +27,15 @@ package number
  * A JSON serialisable instance of LocationConfiguration.
  */
 case class LocationConfiguration(internationalCode : String, stdCode : String)
+
+object LocationConfiguration {
+
+  sealed abstract class Implicits[C](c: C, localCodeFactory: LocationConfiguration => String, codeFactory: C => String) {
+    def isLocal(implicit locationConfiguration: LocationConfiguration): Boolean =
+      codeFactory(c) == localCodeFactory(locationConfiguration)
+    def isNotLocal(implicit locationConfiguration: LocationConfiguration) = !isLocal
+  }
+
+  implicit class CityImplicits(c: City) extends Implicits[City](c, _.stdCode, _.stdCode)
+  implicit class CountryImplicits(c: Country) extends Implicits[Country](c, _.internationalCode, _.internationalDiallingCode)
+}
