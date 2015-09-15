@@ -19,6 +19,9 @@ class SlickPersistedContactService(databaseProvider: DatabaseProvider)(implicit 
   override def userExists(emailAddress: String): Future[Boolean] =
     databaseProvider(users.findByEmail(emailAddress)).map(_.isDefined)
 
+  override def insertUser(emailAddress: String): Future[Unit] =
+    databaseProvider(users.insertUser(emailAddress)).map(_ => {})
+
   override def updateTo(emailAddress: String, contacts: Map[ContactName, Seq[Phone]]): Future[Boolean] = {
     databaseProvider(users.findByEmail(emailAddress)).flatMap {
       case Some(persistedUser) => updateUser(persistedUser, contacts).map(_ => true)

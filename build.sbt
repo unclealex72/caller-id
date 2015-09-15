@@ -59,8 +59,15 @@ daemonUser in Linux := "callerid"
 
 debianPackageDependencies in Debian ++= Seq("logitechmediaserver", "ser2net")
 
-javaOptions in Universal += "-Dhttp.port=9001"
+javaOptions in Universal ++= Seq(
+  // -J params will be added as jvm parameters
+  //"-J-Xmx64m",
+  //"-J-Xms64m",
 
+  // others will be added as app parameters
+  "-Dhttp.port=9001",
+  s"-Dpidfile.path=/var/run/${name.value}/${name.value}.pid"
+)
 /* Releases */
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies, // : ReleaseStep

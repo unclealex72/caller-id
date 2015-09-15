@@ -13,6 +13,8 @@ trait PersistedContactService {
 
   def userExists(emailAddress: String): Future[Boolean]
 
+  def insertUser(emailAddress: String): Future[Unit]
+
   def updateTo(emailAddress: String, contacts: Map[ContactName, Seq[Phone]]): Future[Boolean]
 
   def allContacts: Future[Map[String, Map[ContactName, Seq[Phone]]]]

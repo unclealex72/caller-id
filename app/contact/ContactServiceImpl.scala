@@ -1,5 +1,6 @@
 package contact
 
+import com.typesafe.scalalogging.StrictLogging
 import number.NumberLocationService
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -9,7 +10,7 @@ import number.{PhoneNumber => NPhoneNumber}
  * Created by alex on 12/09/15.
  */
 class ContactServiceImpl(val persistedContactService: PersistedContactService,
-                                val numberLocationService: NumberLocationService)(implicit ec: ExecutionContext) extends ContactService with NonEmptyListFunctions {
+                                val numberLocationService: NumberLocationService)(implicit ec: ExecutionContext) extends ContactService with NonEmptyListFunctions with StrictLogging {
 
   override def contactNamesAndPhoneTypesForPhoneNumber(phoneNumber: NPhoneNumber): Future[Set[(ContactName, PhoneType)]] = {
     persistedContactService.contactNamesAndPhoneTypesForNormalisedNumber(phoneNumber.normalisedNumber)
@@ -36,7 +37,17 @@ class ContactServiceImpl(val persistedContactService: PersistedContactService,
       case Nil => Success {}
       case e :: es => Failure(nel(e, es))
     }
-    persistedContactService.updateTo(emailAddress, validPhoneNumbers).map { _ => result }
+    validPhoneNumbers.foreach { vpn =>
+      logger info s"Persisting $vpn"
+    }
+    persistedContactService.updateTo(emailAddress, validPhoneNumbers).map { _ =>
+      result
+    }
   }
 
+  override def insertOrUpdateUser(email: String): Future[Boolean] = {
+    persistedContactService.userExists(email).flatMap { userExists =>
+      if (!userExists) persistedContactService.insertUser(email).map(_ => true) else Future { false }
+    }
+  }
 }
