@@ -1,66 +1,44 @@
-@main("Caller ID") {
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Ratchet template page</title>
 
-    <button onclick="auth();">GET CONTACTS FEED</button>
+            <!-- Sets initial viewport load and disables zooming  -->
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
 
-    <script>
-      function auth() {
-        var config = {
-          'client_id': '720703205602-qbl6kpbobbvapentgos5b6k1e8sk0nm2.apps.googleusercontent.com',
-          'scope': 'https://www.google.com/m8/feeds'
-        };
-        gapi.auth.authorize(config, function() {
-          fetch(gapi.auth.getToken());
-        });
-      }
-      function fetch(token) {
-        $.ajax({
-          url: 'http://www.google.com/m8/feeds/contacts/default/full?alt=json&max-results=1000',
-          dataType: 'jsonp',
-          data: token
-        }).done(function(data) {
-            var contacts = parseContacts(data);
-            updateContacts(contacts);
-          });
-      }
-      function parseContacts(data) {
-        var username = data.feed.author[0].email["$t"];
-        var contacts = _.chain(data.feed.entry)
-        .map(function(entry) {
-          return {
-            title: entry["title"],
-            phoneNumbers: entry["gd$phoneNumber"]
-          }
-        })
-        .filter(function(entry) { return entry.phoneNumbers; })
-        .map(function(entry) {
-          var name = entry["title"]["$t"];
-          var phoneNumbers = _.map(entry["phoneNumbers"], function(phoneNumber) {
-            return {
-              number : phoneNumber["$t"],
-              type: phoneNumber["rel"].replace("http://schemas.google.com/g/2005#", "")
-            };
-          });
-          return { name: name, phoneNumbers: phoneNumbers };
-        })
-        .value();
-        return {
-          email: username,
-          contacts: contacts
-        };
-      }
-      function updateContacts(contacts) {
-        $.ajax({
-          url: 'contacts',
-          method: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify(contacts)
-        }).done(function(data) {
-          alert("finished");
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-          alert("Failed: " + textStatus + " " + errorThrown)
-        });
-      }
-</script>
+            <!-- Makes your prototype chrome-less once bookmarked to your phone's home screen -->
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-}
+            <!-- Include the compiled Ratchet CSS -->
+        <link href="@routes.Assets.versioned("stylesheets/ratchet.min.css")" rel="stylesheet">
+        <link href="@routes.Assets.versioned("stylesheets/ratchet-theme-android.min.css")" rel="stylesheet">
 
+            <!-- Include the compiled Ratchet JS -->
+        <script src="@routes.Assets.versioned("javascripts/ratchet.min.js")"></script>
+        <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
+        <script src="https://apis.google.com/js/client.js"></script>
+        <script src="@routes.Assets.versioned("javascripts/callerid.js")"></script>
+    </head>
+    <body>
+
+            <!-- Make sure all your bars are the first things in your <body> -->
+        <header class="bar bar-nav">
+            <h1 class="title">Caller ID Contacts Synchroniser</h1>
+        </header>
+
+            <!-- Wrap all non-bar HTML in the .content div (this is actually what scrolls) -->
+        <div class="content">
+            <button id="update" class="btn btn-primary btn-block">Synchronise</button>
+            <div id="success" class="card" style="display: none;">
+                <strong>Your contacts were successfully synchronised</strong>
+            </div>
+            <div id="failure" class="card" style="display: none;">
+                <strong>Synchronising your contacts failed.</strong>
+            </div>
+        </div>
+
+    </body>
+</html>
