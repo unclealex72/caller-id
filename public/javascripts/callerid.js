@@ -12,7 +12,7 @@ function auth() {
 }
 function fetch(token) {
     $.ajax({
-        url: 'http://www.google.com/m8/feeds/contacts/default/full?alt=json&max-results=1000',
+        url: '//www.google.com/m8/feeds/contacts/default/full?alt=json&max-results=1000',
         dataType: 'jsonp',
         data: token
     }).done(function(data) {
