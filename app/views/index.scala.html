@@ -15,12 +15,6 @@
         <link href="@routes.Assets.versioned("stylesheets/ratchet.min.css")" rel="stylesheet">
         <link href="@routes.Assets.versioned("stylesheets/ratchet-theme-android.min.css")" rel="stylesheet">
 
-            <!-- Include the compiled Ratchet JS -->
-        <script src="@routes.Assets.versioned("javascripts/ratchet.min.js")"></script>
-        <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
-        <script src="https://apis.google.com/js/client.js"></script>
-        <script src="@routes.Assets.versioned("javascripts/callerid.js")"></script>
     </head>
     <body>
 
@@ -32,6 +26,8 @@
             <!-- Wrap all non-bar HTML in the .content div (this is actually what scrolls) -->
         <div class="content">
             <button id="update" class="btn btn-primary btn-block">Synchronise</button>
+            <div id="gcontacts">
+            </div>
             <div id="success" class="card" style="display: none;">
                 <strong>Your contacts were successfully synchronised</strong>
             </div>
@@ -39,6 +35,12 @@
                 <strong>Synchronising your contacts failed.</strong>
             </div>
         </div>
+
+        <script src="@routes.Assets.versioned("javascripts/ratchet.min.js")"></script>
+        <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
+        <script src="@routes.Assets.versioned("javascripts/experimental.js")"></script>
+        <script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
 
     </body>
 </html>

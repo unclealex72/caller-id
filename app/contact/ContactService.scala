@@ -3,7 +3,8 @@ package contact
 import number.{PhoneNumber => NPhoneNumber}
 
 import scala.concurrent.Future
-import scalaz._
+import scala.language.implicitConversions
+import scalaz.\/
 
 /**
  * Created by alex on 12/09/15.
@@ -14,6 +15,9 @@ trait ContactService {
 
   def contactNamesAndPhoneTypesForPhoneNumber(phoneNumber: NPhoneNumber): Future[Set[(ContactName, PhoneType)]]
 
-  def update(emailAddress: String, contacts: Map[ContactName, Seq[Phone]]): Future[ValidationNel[String, Unit]]
+  def clear(emailAddress: String): Future[Boolean]
 
+  def addContact(emailAddress: String, contactName: ContactName, phoneNumbers: Seq[Phone]): Future[(Boolean, PhoneValidationResults)]
 }
+
+final case class PhoneValidationResults(phoneNumbers: Seq[Phone], errors: Seq[String])

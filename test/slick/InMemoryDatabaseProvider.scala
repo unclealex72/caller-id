@@ -37,7 +37,10 @@ case class InMemoryDatabaseProvider(testUsers: TU*)(implicit ec: ExecutionContex
 case class TU(email: String, contacts: TC*)
 case class TC(name: String, phoneNumbers: TP*)
 case class TP(phoneNumber: String, phoneNumberType: Option[String])
+
 object TP {
   def apply(phoneNumber: String): TP = TP(phoneNumber, None)
   def apply(phoneNumber: String, phoneNumberType: String): TP = TP(phoneNumber, Some(phoneNumberType))
+
+  implicit def toPhone(tp: TP): Phone = (tp.phoneNumber, tp.phoneNumberType)
 }

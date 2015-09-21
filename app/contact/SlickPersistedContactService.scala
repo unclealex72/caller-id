@@ -1,7 +1,7 @@
 package contact
 
 import slick.DatabaseProvider
-import slick.dbio.DBIO
+import slick.dbio.{DBIOAction, Effect, NoStream, DBIO}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -19,33 +19,32 @@ class SlickPersistedContactService(databaseProvider: DatabaseProvider)(implicit 
   override def userExists(emailAddress: String): Future[Boolean] =
     databaseProvider(users.findByEmail(emailAddress)).map(_.isDefined)
 
-  override def insertUser(emailAddress: String): Future[Unit] =
-    databaseProvider(users.insertUser(emailAddress)).map(_ => {})
-
-  override def updateTo(emailAddress: String, contacts: Map[ContactName, Seq[Phone]]): Future[Boolean] = {
-    databaseProvider(users.findByEmail(emailAddress)).flatMap {
-      case Some(persistedUser) => updateUser(persistedUser, contacts).map(_ => true)
-      case None => Future(false)
+  override def insertUser(emailAddress: String): Future[Boolean] = {
+    userExists(emailAddress).flatMap { userExists =>
+      if (userExists) Future(false) else databaseProvider(users.insertUser(emailAddress)).map(_ => true)
     }
   }
 
-  protected def updateUser(persistedUser: PersistedUser, contacts: Map[ContactName, Seq[Phone]]): Future[Any] = {
-    persistedUser.id match {
-      case Some(userId) =>
-        databaseProvider(DBIO.sequence(Seq(removePhoneNumbers(userId), removeContacts(userId), insertContacts(persistedUser, contacts))))
-      case _ => Future {}
+  def withUser[R, S <: NoStream, E <: Effect](emailAddress: String)(action: PersistedUser => Int => DBIOAction[R, S, E]): Future[Boolean] =
+    databaseProvider(users.findByEmail(emailAddress)).flatMap { maybePersistedUser =>
+      val maybeId = maybePersistedUser.flatMap(_.id)
+      (maybePersistedUser, maybeId) match {
+        case (Some(persistedUser), Some(id)) => databaseProvider(action(persistedUser)(id)).map(_ => true)
+        case _ => Future(false)
+      }
     }
+
+  override def clearContacts(emailAddress: String): Future[Boolean] = withUser(emailAddress) { persistedUser => id =>
+    DBIO.seq(phoneNumbers.deletePhoneNumbers(id), contacts.deleteContacts(id))
   }
 
-  def removePhoneNumbers(userId: Int) = phoneNumbers.deletePhoneNumbers(userId)
-  def removeContacts(userId: Int) = contacts.deleteContacts(userId)
-
-
-  def insertContacts(persistedUser: PersistedUser, phoneNumbersByContact: Map[ContactName, Seq[Phone]]) =
-    DBIO.seq(phoneNumbersByContact.toSeq.map { contactAndPhoneNumbers =>
-      val (contact, phoneNumbers) = contactAndPhoneNumbers
-      contacts.insertContact(persistedUser.id.get, contact).flatMap { contactId => insertPhoneNumbers(contactId, phoneNumbers)}
-  } :_*)
+  override def addContact(emailAddress: String, contactName: ContactName, phoneNumbers: Seq[Phone]): Future[Boolean] = {
+    withUser(emailAddress) { persistedUser => id =>
+      DBIO.seq(contacts.insertContact(persistedUser.id.get, contactName).flatMap { contactId =>
+        insertPhoneNumbers(contactId, phoneNumbers)
+      })
+    }
+  }
 
   def insertPhoneNumbers(contactId: Int, testPhoneNumbers: Seq[Phone]) = DBIO.seq(testPhoneNumbers.map { phoneNumber =>
     phoneNumbers.insertPhoneNumber(contactId, phoneNumber._1, phoneNumber._2)

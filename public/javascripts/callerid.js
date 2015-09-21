@@ -14,7 +14,14 @@ function fetch(token) {
     $.ajax({
         url: '//www.google.com/m8/feeds/contacts/default/full?alt=json&max-results=1000',
         dataType: 'jsonp',
-        data: token
+        data: token,
+        xhrFields: {
+            withCredentials: true
+        },
+        headers: {
+            "Access-Control-Allow-Origin": "https://localhost:9001",
+            "Access-Control-Allow-Headers": "Content-Type"
+        }
     }).done(function(data) {
         var contacts = parseContacts(data);
         updateContacts(contacts);
@@ -52,7 +59,7 @@ function updateContacts(contacts) {
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(contacts)
-    }).done(function(data) {
+    }).success(function(data) {
         $("#update").prop('disabled', false);
         $("#success").show();
     }).fail(function(jqXHR, textStatus, errorThrown) {
