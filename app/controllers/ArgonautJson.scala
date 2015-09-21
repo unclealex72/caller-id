@@ -31,7 +31,7 @@ object ArgonautJson extends Results with BodyParsers {
       tolerantParser(decodeJson, ec),
       request => LazyHttpErrorHandler.onClientError(request, UNSUPPORTED_MEDIA_TYPE, "Expecting text/json or application/json body"))
 
-  def tolerantParser[T](implicit decodeJson: DecodeJson[T], ec: ExecutionContext) = parse.text.map(Parse.decodeEither[T]).validate {
+  def tolerantParser[T](implicit decodeJson: DecodeJson[T], ec: ExecutionContext) = parse.tolerantText.map(Parse.decodeEither[T]).validate {
     case -\/(error) => Left(BadRequest(Json("error" -> jString(error))))
     case \/-(value) => Right(value)
   }

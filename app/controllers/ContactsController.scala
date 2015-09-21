@@ -25,10 +25,10 @@ class ContactsController(contactService: ContactService)(implicit ec: ExecutionC
     contactService.addContact(emailAddress, googleContact.name, phoneNumbers) map { case (success, phoneValidationResults) =>
       val numbersAndErrors = NumbersAndErrors(phoneValidationResults.phoneNumbers.map(_._1), phoneValidationResults.errors)
       if (success) {
-        NotFound(numbersAndErrors)
+        Created(numbersAndErrors)
       }
       else {
-        Created(numbersAndErrors)
+        NotFound(numbersAndErrors)
       }
     }
   }

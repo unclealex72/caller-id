@@ -1,46 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="no-js">
     <head>
-        <meta charset="utf-8">
-        <title>Ratchet template page</title>
-
-            <!-- Sets initial viewport load and disables zooming  -->
-        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
-
-            <!-- Makes your prototype chrome-less once bookmarked to your phone's home screen -->
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black">
-
-            <!-- Include the compiled Ratchet CSS -->
-        <link href="@routes.Assets.versioned("stylesheets/ratchet.min.css")" rel="stylesheet">
-        <link href="@routes.Assets.versioned("stylesheets/ratchet-theme-android.min.css")" rel="stylesheet">
-
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Update Contacts</title>
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("stylesheets/normalize.css")" />
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("stylesheets/demo.css")" />
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("stylesheets/component.css")" />
+        <script src="@routes.Assets.versioned("javascripts/modernizr.custom.js")"></script>
     </head>
     <body>
-
-            <!-- Make sure all your bars are the first things in your <body> -->
-        <header class="bar bar-nav">
-            <h1 class="title">Caller ID Contacts Synchroniser</h1>
-        </header>
-
-            <!-- Wrap all non-bar HTML in the .content div (this is actually what scrolls) -->
-        <div class="content">
-            <button id="update" class="btn btn-primary btn-block">Synchronise</button>
-            <div id="gcontacts">
+        <div class="container">
+                <!-- Top Navigation -->
+            <div class="wrapper">
+                <section>
+                    <button class="progress-button" data-style="rotate-angle-bottom" data-perspective data-horizontal>Update Contacts</button>
+                </section>
             </div>
-            <div id="success" class="card" style="display: none;">
-                <strong>Your contacts were successfully synchronised</strong>
-            </div>
-            <div id="failure" class="card" style="display: none;">
-                <strong>Synchronising your contacts failed.</strong>
-            </div>
-        </div>
-
-        <script src="@routes.Assets.versioned("javascripts/ratchet.min.js")"></script>
+        </div><!-- /container -->
+        <script src="@routes.Assets.versioned("javascripts/classie.js")"></script>
+        <script src="@routes.Assets.versioned("javascripts/progressButton.js")"></script>
         <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
-        <script src="@routes.Assets.versioned("javascripts/experimental.js")"></script>
+        <script src="@routes.Assets.versioned("javascripts/callerid.js")"></script>
         <script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
+
+        <script>
+			[].slice.call( document.querySelectorAll( 'button.progress-button' ) ).forEach( function( bttn ) {
+				new ProgressButton( bttn, {
+					callback : function( instance ) {
+						var updateProgressCallback = function(progress, total) {
+						    instance._setProgress(progress / total);
+						};
+						var successCallback = function() {
+						    instance._stop(1);
+						}
+						var failureCallback = function() {
+						    instance._stop(-1);
+						};
+						updateContacts(updateProgressCallback, successCallback, failureCallback);
+					}
+				} );
+			} );
+		</script>
 
     </body>
 </html>

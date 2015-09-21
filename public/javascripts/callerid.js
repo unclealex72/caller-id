@@ -1,74 +1,112 @@
-function auth() {
-    $("#update").prop('disabled', true);
-    $("#success").hide();
-    $("#failure").hide();
-    var config = {
-        'client_id': '720703205602-qbl6kpbobbvapentgos5b6k1e8sk0nm2.apps.googleusercontent.com',
-        'scope': 'https://www.google.com/m8/feeds'
-    };
-    gapi.auth.authorize(config, function() {
-        fetch(gapi.auth.getToken());
-    });
+var clientId = '720703205602-qbl6kpbobbvapentgos5b6k1e8sk0nm2.apps.googleusercontent.com',
+    apiKey = 'AIzaSyBRa8QpgAc21kzW5hsbYfqSRIubkQB-xt0',
+    scopes = 'https://www.google.com/m8/feeds';
+
+// Use a button to handle authentication the first time.
+function handleClientLoad () {
+    console.log("handleClientLoad");
+    gapi.client.setApiKey ( apiKey );
+    //$("#update").on("click", checkAuth);
 }
-function fetch(token) {
-    $.ajax({
-        url: '//www.google.com/m8/feeds/contacts/default/full?alt=json&max-results=1000',
-        dataType: 'jsonp',
-        data: token,
-        xhrFields: {
-            withCredentials: true
+
+function updateContacts(updateProgressCallback, successCallback, failureCallback) {
+    console.log("updateContacts");
+    gapi.auth.authorize({
+            client_id: clientId,
+            scope: scopes,
+            immediate: true
         },
-        headers: {
-            "Access-Control-Allow-Origin": "https://localhost:9001",
-            "Access-Control-Allow-Headers": "Content-Type"
-        }
-    }).done(function(data) {
-        var contacts = parseContacts(data);
-        updateContacts(contacts);
-    });
+        _.partial(handleAuthResult, updateProgressCallback, successCallback, failureCallback));
 }
-function parseContacts(data) {
-    var username = data.feed.author[0].email["$t"];
-    var contacts = _.chain(data.feed.entry)
-        .map(function(entry) {
+
+function handleAuthResult (updateProgressCallback, successCallback, failureCallback, authResult) {
+    console.log("handleAuthResult");
+    if ( authResult && !authResult.error ) {
+        var cif = {
+            method: 'GET',
+            url:  'https://www.google.com/m8/feeds/contacts/default/full/',
+            data: {
+                "access_token": authResult.access_token,
+                "alt":          "json",
+                "max-results":  "10000"
+            },
+            headers: {
+                "Gdata-Version":    "3.0"
+            },
+            xhrFields: {
+                withCredentials: true
+            },
+            dataType: "jsonp"
+        };
+        $.ajax(cif).done(_.partial(onContactsDownloaded, updateProgressCallback, successCallback, failureCallback));
+    } else {
+        console.log(authResult);
+        //authorizeButton.style.visibility = '';
+        //authorizeButton.onclick = handleAuthClick;
+    }
+}
+
+function onContactsDownloaded(updateProgressCallback, successCallback, failureCallback, googleContactsFeed) {
+    var googleContacts = googleContactsFeed["feed"];
+    console.log(googleContacts);
+    var user = googleContacts["author"][0]["email"]["$t"];
+    var contacts = _.map(googleContacts["entry"], function(contact) {
+        var name = contact["title"]["$t"];
+        var phoneNumbers = _.map(contact["gd$phoneNumber"], function(phoneNumber) {
             return {
-                title: entry["title"],
-                phoneNumbers: entry["gd$phoneNumber"]
+                number: phoneNumber["$t"],
+                type: phoneNumber["rel"].replace("http://schemas.google.com/g/2005#", "")
             }
-        })
-        .filter(function(entry) { return entry.phoneNumbers; })
-        .map(function(entry) {
-            var name = entry["title"]["$t"];
-            var phoneNumbers = _.map(entry["phoneNumbers"], function(phoneNumber) {
-                return {
-                    number : phoneNumber["$t"],
-                    type: phoneNumber["rel"].replace("http://schemas.google.com/g/2005#", "")
-                };
-            });
-            return { name: name, phoneNumbers: phoneNumbers };
-        })
-        .value();
-    return {
-        email: username,
-        contacts: contacts
-    };
+        });
+        return {
+            name: name,
+            phoneNumbers: phoneNumbers
+        };
+    });
+    var contactsWithPhoneNumbers = _.filter(contacts, function(contact) { return contact.phoneNumbers.length != 0; });
+    update(updateProgressCallback, successCallback, failureCallback, user, contactsWithPhoneNumbers);
 }
-function updateContacts(contacts) {
+
+function update(updateProgressCallback, successCallback, failureCallback, user, contacts) {
+    updateProgressCallback(0, contacts.length);
     $.ajax({
-        url: 'contacts',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(contacts)
-    }).success(function(data) {
-        $("#update").prop('disabled', false);
-        $("#success").show();
-    }).fail(function(jqXHR, textStatus, errorThrown) {
-        $("#update").prop('disabled', false);
-        $("#failure").show();
+        url: "/user/" + user + "/contacts",
+        method: "DELETE"
+    }).done(function() {
+        add(updateProgressCallback, successCallback, failureCallback, user, contacts, 1, contacts.length);
+    }).error(function(jqXHR, textStatus, errorThrown) {
+        failureCallback();
     });
 }
 
-$(function() {
+function add(updateProgressCallback, successCallback, failureCallback, user, contacts, progress, total) {
+    if (contacts.length != 0) {
+        var contact = contacts[0];
+        console.log(contact);
+        $.ajax({
+            url: "/user/" + user + "/contacts",
+            method: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify(contact)
+        }).done(function(response) {
+            updateProgressCallback(progress, total);
+            $("#results").append("<tr><td><pre>" + JSON.stringify(response, null, 2) + "</pre></td></tr>");
+            contacts.shift();
+            add(updateProgressCallback, successCallback, failureCallback, user, contacts, progress + 1, total);
+        }).error(function(jqXHR, textStatus, errorThrown) {
+            failureCallback();
+        });
+    }
+    else {
+        successCallback();
+    }
+}
 
-    $("#update").on("click", auth);
-});
+/*
+function handleAuthClick() {
+    console.log("handleAuthClick");
+    gapi.auth.authorize ( { client_id: clientId, scope: scopes, immediate: false }, handleAuthResult );
+    return false;
+}
+    */
