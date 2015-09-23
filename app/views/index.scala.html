@@ -15,7 +15,7 @@
                 <!-- Top Navigation -->
             <div class="wrapper">
                 <section>
-                    <button class="progress-button" data-style="rotate-angle-bottom" data-perspective data-horizontal>Update Contacts</button>
+                    <button id="main-button" class="progress-button" data-style="rotate-angle-bottom" data-perspective data-horizontal>Update Contacts</button>
                 </section>
             </div>
         </div><!-- /container -->
@@ -36,8 +36,10 @@
 						var successCallback = function() {
 						    instance._stop(1);
 						}
-						var failureCallback = function() {
+						var failureCallback = function(errorText) {
 						    instance._stop(-1);
+						    instance._text(errorText);
+						    instance._disable();
 						};
 						updateContacts(updateProgressCallback, successCallback, failureCallback);
 					}

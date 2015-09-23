@@ -20,7 +20,6 @@ function updateContacts(updateProgressCallback, successCallback, failureCallback
 }
 
 function handleAuthResult (updateProgressCallback, successCallback, failureCallback, authResult) {
-    console.log("handleAuthResult");
     if ( authResult && !authResult.error ) {
         var cif = {
             method: 'GET',
@@ -40,9 +39,7 @@ function handleAuthResult (updateProgressCallback, successCallback, failureCallb
         };
         $.ajax(cif).done(_.partial(onContactsDownloaded, updateProgressCallback, successCallback, failureCallback));
     } else {
-        console.log(authResult);
-        //authorizeButton.style.visibility = '';
-        //authorizeButton.onclick = handleAuthClick;
+        failureCallback("Please sign in");
     }
 }
 
@@ -75,14 +72,13 @@ function update(updateProgressCallback, successCallback, failureCallback, user, 
     }).done(function() {
         add(updateProgressCallback, successCallback, failureCallback, user, contacts, 1, contacts.length);
     }).error(function(jqXHR, textStatus, errorThrown) {
-        failureCallback();
+        showFailureMessage(failureCallback, jqXHR, textStatus, errorThrown);
     });
 }
 
 function add(updateProgressCallback, successCallback, failureCallback, user, contacts, progress, total) {
     if (contacts.length != 0) {
         var contact = contacts[0];
-        console.log(contact);
         $.ajax({
             url: "/user/" + user + "/contacts",
             method: "POST",
@@ -95,11 +91,20 @@ function add(updateProgressCallback, successCallback, failureCallback, user, con
             contacts.shift();
             add(updateProgressCallback, successCallback, failureCallback, user, contacts, progress + 1, total);
         }).error(function(jqXHR, textStatus, errorThrown) {
-            failureCallback();
+            showFailureMessage(failureCallback, jqXHR, textStatus, errorThrown);
         });
     }
     else {
         successCallback();
+    }
+}
+
+function showFailureMessage(failureCallback, jqXHR, textStatus, errorThrown) {
+    if (jqXHR.status == 404) {
+        failureCallback("Who are ya?");
+    }
+    else {
+        failureCallback(errorThrown);
     }
 }
 

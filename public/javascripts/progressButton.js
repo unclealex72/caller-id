@@ -90,6 +90,7 @@
 		var textEl = document.createElement( 'span' );
 		textEl.className = 'content';
 		textEl.innerHTML = this.button.innerHTML;
+		this.textElement = textEl;
 		var progressEl = document.createElement( 'span' );
 		progressEl.className = 'progress';
 
@@ -122,6 +123,10 @@
 			this.progressProp = 'height';
 		}
 		this._enable();
+	};
+
+	ProgressButton.prototype._text = function( text ) {
+		this.textElement.innerHTML = text;
 	};
 
 	ProgressButton.prototype._setProgress = function( val ) {
@@ -204,6 +209,11 @@
 			classie.remove( self.button, 'state-loading' );
 		}, 100 );
 	};
+
+	// disable button
+	ProgressButton.prototype._enable = function() {
+		this.button.setAttribute( 'disabled', 'disabled' );
+	}
 
 	// enable button
 	ProgressButton.prototype._enable = function() {
