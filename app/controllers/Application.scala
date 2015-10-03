@@ -8,4 +8,8 @@ class Application extends Controller {
     Ok(views.html.index())
   }
 
+  def register = Action {
+    Ok(views.html.register())
+  }
+
 }

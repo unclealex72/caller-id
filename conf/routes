@@ -4,6 +4,7 @@
 
 # Home page
 GET         /                       controllers.Application.index
+GET         /register.html          controllers.Application.register
 POST        /modem                  controllers.ModemResponseController.push
 POST        /user/:email/contacts   controllers.ContactsController.addContact(email)
 DELETE      /user/:email/contacts   controllers.ContactsController.deleteContacts(email)

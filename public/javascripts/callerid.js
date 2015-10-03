@@ -10,16 +10,34 @@ function handleClientLoad () {
 }
 
 function updateContacts(updateProgressCallback, successCallback, failureCallback) {
-    console.log("updateContacts");
+    var onAuth = _.partial(authUpdateContacts, updateProgressCallback, successCallback, failureCallback);
+    authorise(onAuth, true);
+}
+
+function register(successCallback, failureCallback) {
+    var onAuth = _.partial(authRegister, successCallback, failureCallback);
+    authorise(onAuth, false);
+}
+function authorise(onAuth, immediate) {
     gapi.auth.authorize({
             client_id: clientId,
             scope: scopes,
-            immediate: true
+            immediate: immediate
         },
-        _.partial(handleAuthResult, updateProgressCallback, successCallback, failureCallback));
+        onAuth);
 }
 
-function handleAuthResult (updateProgressCallback, successCallback, failureCallback, authResult) {
+function authRegister(successCallback, failureCallback, authResult) {
+    if (authResult && !authResult.error) {
+        successCallback();
+    }
+    else {
+        var error = authResult ? authResult.error : "No auth object.";
+        failureCallback(error);
+    }
+}
+
+function authUpdateContacts (updateProgressCallback, successCallback, failureCallback, authResult) {
     if ( authResult && !authResult.error ) {
         var cif = {
             method: 'GET',
@@ -37,7 +55,11 @@ function handleAuthResult (updateProgressCallback, successCallback, failureCallb
             },
             dataType: "jsonp"
         };
-        $.ajax(cif).done(_.partial(onContactsDownloaded, updateProgressCallback, successCallback, failureCallback));
+        $.ajax(cif)
+            .done(_.partial(onContactsDownloaded, updateProgressCallback, successCallback, failureCallback))
+            .error(function (jqXHR, textStatus, errorThrown) {
+                failureCallback(textStatus + " " + errorThrown);
+            });
     } else {
         failureCallback("Please sign in");
     }
@@ -111,7 +133,7 @@ function showFailureMessage(failureCallback, jqXHR, textStatus, errorThrown) {
 /*
 function handleAuthClick() {
     console.log("handleAuthClick");
-    gapi.auth.authorize ( { client_id: clientId, scope: scopes, immediate: false }, handleAuthResult );
+    gapi.auth.authorize ( { client_id: clientId, scope: scopes, immediate: false }, authUpdateContacts );
     return false;
 }
     */
