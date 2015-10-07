@@ -72,9 +72,11 @@ function onContactsDownloaded(updateProgressCallback, successCallback, failureCa
     var contacts = _.map(googleContacts["entry"], function(contact) {
         var name = contact["title"]["$t"];
         var phoneNumbers = _.map(contact["gd$phoneNumber"], function(phoneNumber) {
+            var rel = phoneNumber["rel"];
+            var type = rel ? rel.replace("http://schemas.google.com/g/2005#", "") : null;
             return {
                 number: phoneNumber["$t"],
-                type: phoneNumber["rel"].replace("http://schemas.google.com/g/2005#", "")
+                type: type
             }
         });
         return {

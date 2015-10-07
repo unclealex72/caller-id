@@ -40,8 +40,8 @@ class ContactsController(contactService: ContactService)(implicit ec: ExecutionC
 case class GoogleContact(name: String, googlePhoneNumbers: Seq[GooglePhoneNumber]) {
   def toContact: (ContactName, Seq[Phone]) = (name, googlePhoneNumbers.map(_.toPhone))
 }
-case class GooglePhoneNumber(number: String, phoneType: String) {
-  def toPhone: Phone = (number, Some(phoneType))
+case class GooglePhoneNumber(number: String, phoneType: Option[String]) {
+  def toPhone: Phone = (number, phoneType)
 }
 case class NumbersAndErrors(numbers: Seq[String], errors: Seq[String])
 
