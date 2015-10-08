@@ -11,24 +11,26 @@ import scalaz._
 /**
  * Created by alex on 04/09/15.
  */
-class ReceivedCallFactoryImpl(
+class ReceivedFactoryImpl(
                                val contactService: ContactService,
                                val numberLocationService: NumberLocationService,
-                               val nowService: NowService)(implicit val executionContext: ExecutionContext) extends ReceivedCallFactory with StrictLogging {
+                               val nowService: NowService)(implicit val executionContext: ExecutionContext) extends ReceivedFactory with StrictLogging {
 
-  override def create(number: Option[String]): Future[ReceivedCall] = {
+  override def create(number: Option[String]): Future[CallReceived] = {
     val now = nowService.now
     number match {
       case Some(number) =>
         numberLocationService.decompose(number) match {
           case Success(phoneNumber) =>
             contactService.contactNamesAndPhoneTypesForPhoneNumber(phoneNumber).map { contactNamesAndPhoneTypes =>
-              ReceivedCall(now, Some(\/-(phoneNumber, contactNamesAndPhoneTypes)))
+              CallReceived(now, Some(\/-(phoneNumber, contactNamesAndPhoneTypes)))
             }
           case Failure(errors) =>
-            Future(ReceivedCall(now, Some(-\/(number))))
+            Future(CallReceived(now, Some(-\/(number))))
         }
-      case None => Future(ReceivedCall(now, None))
+      case None => Future(CallReceived(now, None))
     }
   }
+
+  override def ring: Future[Received] = Future(RingReceived)
 }

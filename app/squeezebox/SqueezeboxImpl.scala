@@ -46,10 +46,10 @@ class SqueezeboxImpl(ioDeviceProvider: Provider[IoDevice]) extends Squeezebox wi
   /**
    * {@inheritDoc}
    */
-  override def displayText(topLine: String, bottomLine: String) {
+  override def displayText(topLine: String, bottomLine: String, duration: Int) {
     ioDeviceProvider.withProvided { implicit ioDevice =>
       try {
-        0 until countPlayers foreach { player => displayText(topLine, bottomLine, player) }
+        0 until countPlayers foreach { player => displayText(topLine, bottomLine, duration, player) }
       } finally {
         ioDevice.writeLine("exit")
       }
@@ -61,10 +61,10 @@ class SqueezeboxImpl(ioDeviceProvider: Provider[IoDevice]) extends Squeezebox wi
    * @param topLine The top line of text to display.
    * @param bottomLine the bottom line of text to display.
    */
-  def displayText(topLine: String, bottomLine: String, player: Int)(implicit ioDevice: IoDevice) {
+  def displayText(topLine: String, bottomLine: String, duration: Int, player: Int)(implicit ioDevice: IoDevice) {
     execute(s"player id $player ?") match {
       case Some(id) => execute(
-        s"$id display ${percentEscaper.escape(topLine)} ${percentEscaper.escape(bottomLine)} 30")
+        s"$id display ${percentEscaper.escape(topLine)} ${percentEscaper.escape(bottomLine)} $duration")
       case None => throw new IOException(s"Querying the ID of squeezebox player $player failed.")
     }
   }

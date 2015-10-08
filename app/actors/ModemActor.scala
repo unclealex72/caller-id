@@ -1,8 +1,8 @@
 package actors
 
 import akka.actor.Actor
-import call.ReceivedCallFactory
-import modem.{Number, Withheld}
+import call.ReceivedFactory
+import modem.{Ring, Number, Withheld}
 import scaldi.Injector
 import scaldi.akka.AkkaInjectable
 
@@ -15,22 +15,23 @@ class ModemActor(implicit inj: Injector, ec: ExecutionContext) extends Actor wit
 
   val forwardActors = Seq(injectActorRef[ModemLoggingActor])
   val callActors = Seq(injectActorRef[CallLoggingActor], injectActorRef[SqueezeboxActor])
-  val receivedCallFactory = inject[ReceivedCallFactory]
+  val receivedFactory = inject[ReceivedFactory]
 
   override def receive: Receive = {
     case msg =>
       forwardActors foreach { actor => actor ! msg }
-      val receivedCallsFuture = msg match {
-        case Number(number) => receivedCallFactory.create(Some(number)).map(Some(_))
-        case Withheld => receivedCallFactory.create(None).map(Some(_))
+      val receivedsFuture = msg match {
+        case Number(number) => receivedFactory.create(Some(number)).map(Some(_))
+        case Withheld => receivedFactory.create(None).map(Some(_))
+        case Ring => receivedFactory.ring.map(Some(_))
         case _ => Future { None }
       }
-      receivedCallsFuture.map { receivedCalls =>
+      receivedsFuture.map { receiveds =>
         for {
-          receivedCall <- receivedCalls
+          received <- receiveds
           actor <- callActors
         } {
-          actor ! receivedCall
+          actor ! received
         }
       }
   }

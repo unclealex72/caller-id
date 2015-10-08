@@ -62,13 +62,13 @@ class SqueezeboxImplSpec extends Specification with Mockito {
       val device = new MapDevice(responses)
       val provider = Provider.singleton[IoDevice](device)
       val squeezebox = new SqueezeboxImpl(provider)
-      squeezebox.displayText("Top Line", "Bottom Line!")
+      squeezebox.displayText("Top Line", "Bottom Line!", 5)
       device.commands.toSeq must be equalTo Seq(
         "player count ?",
         "player id 0 ?",
-        "00:11 display Top%20Line Bottom%20Line%21 30",
+        "00:11 display Top%20Line Bottom%20Line%21 5",
         "player id 1 ?",
-        "00:22 display Top%20Line Bottom%20Line%21 30",
+        "00:22 display Top%20Line Bottom%20Line%21 5",
         "exit")
     }
   }

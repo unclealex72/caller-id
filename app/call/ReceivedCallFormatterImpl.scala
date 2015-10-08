@@ -11,7 +11,7 @@ import scalaz._
  */
 class ReceivedCallFormatterImpl(implicit val numberFormatter: NumberFormatter) extends ReceivedCallFormatter {
 
-  override def format(receivedCall: ReceivedCall): String = {
+  override def format(receivedCall: CallReceived): String = {
     receivedCall.phoneNumberAndContacts match {
       case Some(\/-((phoneNumber, contacts))) =>
         if (contacts.isEmpty) {

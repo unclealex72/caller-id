@@ -1,7 +1,7 @@
 package actors
 
 import akka.actor.Actor
-import call.{ReceivedCallFormatter, ReceivedCall}
+import call.{ReceivedCallFormatter, CallReceived}
 import call.ReceivedCallFormatter._
 import com.typesafe.scalalogging.StrictLogging
 
@@ -11,7 +11,7 @@ import com.typesafe.scalalogging.StrictLogging
 class CallLoggingActor(implicit val receivedCallFormatter: ReceivedCallFormatter) extends Actor with StrictLogging {
 
   def receive = {
-    case receivedCall: ReceivedCall =>
-      logger.info(s"Received a call from ${receivedCall.format}")
+    case callReceived: CallReceived =>
+      logger.info(s"Received a call from ${callReceived.format}")
   }
 }

@@ -1,6 +1,6 @@
 package controllers
 
-import modem.{Number, ModemListener}
+import modem.{Ring, Withheld, Number, ModemListener}
 import play.api.mvc.{Action, Controller}
 
 /**
@@ -8,8 +8,18 @@ import play.api.mvc.{Action, Controller}
  */
 class ModemResponseController(modemListener: ModemListener) extends Controller {
 
-  def push = Action(parse.text) { implicit request =>
+  def number = Action(parse.text) { implicit request =>
     modemListener.pushResponse(Number(request.body))
+    Created("")
+  }
+
+  def withheld = Action { implicit request =>
+    modemListener.pushResponse(Withheld)
+    Created("")
+  }
+
+  def ring = Action { implicit request =>
+    modemListener.pushResponse(Ring)
     Created("")
   }
 }

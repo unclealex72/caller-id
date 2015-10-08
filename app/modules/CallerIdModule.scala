@@ -1,7 +1,7 @@
 package modules
 
 import actors.{CallLoggingActor, ModemActor, ModemLoggingActor, SqueezeboxActor}
-import call.{ReceivedCallFormatterImpl, ReceivedCallFormatter, ReceivedCallFactory, ReceivedCallFactoryImpl}
+import call.{ReceivedCallFormatterImpl, ReceivedCallFormatter, ReceivedFactory, ReceivedFactoryImpl}
 import contact.{ContactServiceImpl, ContactService, PersistedContactService, SlickPersistedContactService}
 import device.SocketIoProvider
 import modem.{AtzModem, Modem, ModemListener}
@@ -30,7 +30,7 @@ class CallerIdModule extends Module {
   bind[CityDao] to new CityDaoImpl(Countries().countries)
   bind[NumberFormatter] to injected[NumberFormatterImpl]
   // Phone calls
-  bind[ReceivedCallFactory] to injected[ReceivedCallFactoryImpl]
+  bind[ReceivedFactory] to injected[ReceivedFactoryImpl]
   bind[ReceivedCallFormatter] to injected[ReceivedCallFormatterImpl]
   // Time
   bind[NowService] to NowService()

@@ -5,7 +5,9 @@
 # Home page
 GET         /                       controllers.Application.index
 GET         /register.html          controllers.Application.register
-POST        /modem                  controllers.ModemResponseController.push
+POST        /modem/number           controllers.ModemResponseController.number
+POST        /modem/ring             controllers.ModemResponseController.ring
+POST        /modem/withheld         controllers.ModemResponseController.withheld
 POST        /user/:email/contacts   controllers.ContactsController.addContact(email)
 DELETE      /user/:email/contacts   controllers.ContactsController.deleteContacts(email)
 PUT         /user/:email            controllers.UserController.user(email)

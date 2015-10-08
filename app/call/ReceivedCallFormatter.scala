@@ -6,12 +6,12 @@ package call
  */
 trait ReceivedCallFormatter {
 
-  def format(receivedCall: ReceivedCall): String
+  def format(receivedCall: CallReceived): String
 }
 
 object ReceivedCallFormatter {
 
-  implicit class ReceivedCallFormatterImplicits(receivedCall: ReceivedCall) {
+  implicit class ReceivedCallFormatterImplicits(receivedCall: CallReceived) {
     def format(implicit receivedCallFormatter: ReceivedCallFormatter) =
       receivedCallFormatter.format(receivedCall)
   }
