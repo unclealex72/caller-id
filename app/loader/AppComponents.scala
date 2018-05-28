@@ -111,13 +111,14 @@ class AppComponents(context: ApplicationLoader.Context)
     controllerComponents)
 
   val notifier: Notifier = {
+    val loggingSink = new LoggingSink(numberFormatter)
     val persistingSink = new PersistingSink(persistedCallFactory, persistedCallDao)
     new Notifier(
       modem,
       callService,
       applicationLifecycle,
       NonEmptyList.of(
-        LoggingSink,
+        loggingSink,
         persistingSink
       ))(actorSystem, materializer, executionContext)
   }
