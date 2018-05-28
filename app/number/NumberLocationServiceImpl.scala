@@ -23,26 +23,26 @@
  */
 package number
 
-import util.OptionToValidation._
-
-import scalaz.{NonEmptyList, ValidationNel}
-import scalaz.Validation.FlatMap._
+import cats._
+import cats.data._
+import cats.implicits._
+import javax.inject.Inject
 
 /**
- * The default implementation of {@link NumberLocationService}.
+ * The default implementation of [[NumberLocationService]].
  */
-class NumberLocationServiceImpl(
+class NumberLocationServiceImpl @Inject() (
                                  /**
-                                  * The {@link CityDao} used to find cities and countries from telephone numbers.
+                                  * The [[CityDao]] used to find cities and countries from telephone numbers.
                                   */
                                  cityDao: CityDao,
 
                                  /**
-                                  * The {@link LocationConfiguration} of the telephone number that is receiving calls.
+                                  * The [[LocationConfiguration]] of the telephone number that is receiving calls.
                                   */
                                  locationConfiguration: LocationConfiguration) extends NumberLocationService {
 
-  override def decompose(number: String): ValidationNel[String, PhoneNumber] = {
+  override def decompose(number: String): ValidatedNel[String, PhoneNumber] = {
     val trimmedNumber = number.replaceAll("\\s+", "")
     val functionsByPrefix =
       List(
@@ -53,7 +53,7 @@ class NumberLocationServiceImpl(
     val matchingPrefixAndParser = functionsByPrefix.find { pp => trimmedNumber.startsWith(pp.prefix) }.get
     val actualNumber = matchingPrefixAndParser.parser(
       trimmedNumber.substring(matchingPrefixAndParser.prefix.length))
-    toPhoneNumber(actualNumber)
+    toPhoneNumber(actualNumber).toValidatedNel
   }
 
   /**
@@ -78,22 +78,23 @@ class NumberLocationServiceImpl(
    * Convert a phone number containing the international dialling code (without a 00 or + prefix),
    * the std code (without the 0 prefix)
    * and the rest of the number into a normalised phone number.
-   * @param The number to convert.
+   * @param number The number to convert.
    * @return A normalised phone number.
    */
-  def toPhoneNumber(number: String): ValidationNel[String, PhoneNumber] = {
+  def toPhoneNumber(number: String): Either[String, PhoneNumber] = {
     val normalisedNumber = "+" + number
-    val idcValidation = cityDao.extractInternationalDiallingCode(number) ~~ s"Cannot find a international dialling code for $number"
+    val idcValidation =
+      cityDao.extractInternationalDiallingCode(number).toRight(s"Cannot find a international dialling code for $number")
     idcValidation.flatMap { idc =>
       val nationalNumber = number.substring(idc.length)
       cityDao.extractCity(nationalNumber, idc) match {
         case Some(city) =>
-          val countryValidation = cityDao.countryOf(city) ~~ s"Cannot find a country for city ${city.name}"
+          val countryValidation = cityDao.countryOf(city).toRight(s"Cannot find a country for city ${city.name}")
           countryValidation.map { country =>
-            PhoneNumber(normalisedNumber, NonEmptyList(country), Some(city), nationalNumber.substring(city.stdCode.length()))
+            PhoneNumber(normalisedNumber, NonEmptyList.of(country), Some(city), nationalNumber.substring(city.stdCode.length()))
           }
         case None =>
-          val countriesValidation = cityDao.countries(idc) ~~ s"Cannot find any countries with international dialling code $idc"
+          val countriesValidation = cityDao.countries(idc).toRight(s"Cannot find any countries with international dialling code $idc")
           countriesValidation.map { countries =>
             PhoneNumber(normalisedNumber, countries, None, nationalNumber)
           }

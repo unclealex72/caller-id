@@ -23,7 +23,7 @@
  */
 package number
 
-import scalaz.NonEmptyList
+import cats.data.NonEmptyList
 
 /**
  * A data access interface used to find countries and cities from telephone numbers.
@@ -40,13 +40,13 @@ trait CityDao {
    * Find the city where a phone number (minus a leading zero or international dialling code) originated from.
    * @param number The phone number without an international dialling code to scan.
    * @param internationalDiallingCode The international dialling code used to limit the city search.
-   * @return The city from where the phone call originated or {@link Optional#absent} if the phone number is non-geographic.
+   * @return The city from where the phone call originated or [[Option#absent]] if the phone number is non-geographic.
    */
   def extractCity(number: String, internationalDiallingCode: String): Option[City]
 
   /**
    * Get a city's country.
-   * @param The city in question.
+   * @param city The city in question.
    * @return The country for the city in question.
    */
   def countryOf(city: City): Option[Country]
@@ -59,4 +59,9 @@ trait CityDao {
    */
   def countries(internationalDiallingCode: String): Option[NonEmptyList[Country]]
 
+  /**
+    * Get a list of all countries.
+    * @return A list of all countries.
+    */
+  def all(): Seq[Country]
 }

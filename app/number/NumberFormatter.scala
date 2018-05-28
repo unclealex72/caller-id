@@ -59,7 +59,7 @@ trait NumberFormatter {
 
 object NumberFormatter {
 
-  implicit class NumberFormaterImplicits(phoneNumber: PhoneNumber) {
+  implicit class NumberFormatterImplicits(phoneNumber: PhoneNumber) {
 
     def format(implicit numberFormatter: NumberFormatter) =
       numberFormatter.formatNumber(phoneNumber)

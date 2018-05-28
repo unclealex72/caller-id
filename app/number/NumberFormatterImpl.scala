@@ -24,6 +24,7 @@
 
 package number
 
+import javax.inject.Inject
 import number.LocationConfiguration._
 
 import scala.collection.immutable.List
@@ -32,9 +33,9 @@ import scala.collection.immutable.List
  * @author alex
  *
  */
-class NumberFormatterImpl(
+class NumberFormatterImpl @Inject() (
   /**
-   * The location configuration object that can be used to decide whether a number is legacy.local or not.
+   * The location configuration object that can be used to decide whether a number is local or not.
    */
   implicit locationConfiguration: LocationConfiguration) extends NumberFormatter {
 
@@ -45,11 +46,12 @@ class NumberFormatterImpl(
     val includeInternational: Country => Boolean = country =>
       country.isNotLocal
     val includeStd: ((Country, City)) => Boolean = {
-      case ((country, city)) => (country.isLocal && city.isNotLocal) || country.isNotLocal
+      case (country, city) => (country.isLocal && city.isNotLocal) || country.isNotLocal
     }
     formatNumber(phoneNumber, includeInternational, includeStd, _.isLocal)
   }
 
+  //noinspection ScalaUnnecessaryParentheses
   def formatNumber(phoneNumber: PhoneNumber,
                    includeInternational: Country => Boolean,
                    includeStd: ((Country, City)) => Boolean,

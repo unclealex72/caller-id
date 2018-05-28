@@ -24,22 +24,23 @@
 
 package number
 
-import org.specs2.mutable.Specification
+import cats.data._
+import org.scalatest._
 
-import scalaz._
+import scala.collection.SortedSet
 
 /**
  * @author alex
  *
  */
-class NumberFormatterImplTest extends Specification {
+class NumberFormatterImplTest extends WordSpec with Matchers {
 
   val numberFormatter = new NumberFormatterImpl()(new LocationConfiguration("44", "1256"))
 
-  val uk = NonEmptyList(Country("United Kingdom", "44", "uk", Some("0"), List()))
+  val uk = NonEmptyList.of(Country("United Kingdom", "44", "uk", Some("0"), SortedSet.empty))
   val basingstoke = Some(City("Basingstoke", "1256"))
   val guildford = Some(City("Guildford", "1483"))
-  val france = NonEmptyList(Country("France", "33", "fr", None, List()))
+  val france = NonEmptyList.of(Country("France", "33", "fr", None, SortedSet.empty))
   val paris = Some(City("Paris", "1"))
 
   def formatNumber(country: NonEmptyList[Country], city: Option[City], number: String) =
@@ -53,56 +54,56 @@ class NumberFormatterImplTest extends Specification {
 
   "International geographic numbers" should {
     "always be formatted with a country code and a city code" in {
-      formatNumber(france, paris, "123456") must be_===("+33 (1) 123456")
-      formatNumberAsInternational(france, paris, "123456") must be_===("+33 (1) 123456")
+      formatNumber(france, paris, "123456") should ===("+33 (1) 123456")
+      formatNumberAsInternational(france, paris, "123456") should ===("+33 (1) 123456")
 
     }
   }
 
   "International non-geographic numbers" should {
     "always be formatted with a country code but no city code" in {
-      formatNumber(france, None, "123456789") must be_===("+33 123456789")
-      formatNumberAsInternational(france, None, "123456789") must be_===("+33 123456789")
+      formatNumber(france, None, "123456789") should ===("+33 123456789")
+      formatNumberAsInternational(france, None, "123456789") should ===("+33 123456789")
 
     }
   }
 
   "National geographic numbers" should {
     "be locally formatted without a country code but with a city code" in {
-      formatNumber(uk, guildford, "123456") must be_===("(01483) 123456")
+      formatNumber(uk, guildford, "123456") should ===("(01483) 123456")
     }
     "be internationally formatted with a country code and a city code" in {
-      formatNumberAsInternational(uk, guildford, "123456") must be_===("+44 (1483) 123456")
+      formatNumberAsInternational(uk, guildford, "123456") should ===("+44 (1483) 123456")
     }
   }
 
   "National non-geographic numbers" should {
     "be locally formatted without a country code and without a city code" in {
-      formatNumber(uk, None, "123456789") must be_===("0123456789")
+      formatNumber(uk, None, "123456789") should ===("0123456789")
     }
     "be internationally formatted with a country code and without a city code" in {
-      formatNumberAsInternational(uk, None, "123456789") must be_===("+44 123456789")
+      formatNumberAsInternational(uk, None, "123456789") should ===("+44 123456789")
     }
   }
 
   "Local numbers" should {
     "be locally formatted as only a number" in {
-      formatNumber(uk, basingstoke, "123456") must be_===("123456")
+      formatNumber(uk, basingstoke, "123456") should ===("123456")
     }
     "be internationally formatted with a country code and city code" in {
-      formatNumberAsInternational(uk, basingstoke, "123456") must be_===("+44 (1256) 123456")
+      formatNumberAsInternational(uk, basingstoke, "123456") should ===("+44 (1256) 123456")
     }
   }
 
   "A non-geographic address" should {
     "be formatted as only its country" in {
-      formatAddress(uk, None, "123456") must be_===(List("United Kingdom"))
+      formatAddress(uk, None, "123456") should ===(List("United Kingdom"))
     }
   }
 
   "A geographic address" should {
     "be fully formatted into a city and a country" in {
-      formatAddress(uk, basingstoke, "123456") must be_===(List("Basingstoke", "United Kingdom"))
+      formatAddress(uk, basingstoke, "123456") should ===(List("Basingstoke", "United Kingdom"))
     }
   }
 }

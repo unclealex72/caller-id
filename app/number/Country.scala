@@ -23,8 +23,7 @@
  */
 package number
 
-import argonaut.Argonaut._
-import argonaut._
+import scala.collection.SortedSet
 
 /**
  * An immutable bean containing information about the country call came from.
@@ -49,11 +48,11 @@ case class Country(
   /**
    * The known cities in this country, sorted by longest STD codes first.
    */
-  cities: List[City]) {
-
-}
+  cities: SortedSet[City])
 
 object Country {
-  implicit def CountryCodec: CodecJson[Country] =
-    casecodec5(Country.apply, Country.unapply)("name", "internationalDiallingCode", "isoCode", "localStdPrefix", "cities")
+  import play.api.libs.json._
+
+  implicit val countryReads: Reads[Country] = Json.reads[Country]
+  implicit val countryWrites: Writes[Country] = Json.writes[Country]
 }

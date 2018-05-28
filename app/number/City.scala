@@ -23,9 +23,6 @@
  */
 package number
 
-import argonaut.Argonaut._
-import argonaut.CodecJson
-
 /**
  * An immutable bean containing information about the city a geographic call came from.
  */
@@ -40,6 +37,13 @@ case class City(
   stdCode: String)
 
 object City {
+  import play.api.libs.json._
 
-  implicit def CityCodec: CodecJson[City] = casecodec2(City.apply, City.unapply)("name", "stdCode")
+  implicit val cityReads: Reads[City] = Json.reads[City]
+  implicit val cityWrites: Writes[City] = Json.writes[City]
+
+  /**
+    * Order cities so that cities with longer STD codes are smaller.
+    */
+  implicit val cityOrdering: Ordering[City] = Ordering.by(c => (-c.stdCode.length, c.stdCode, c.name))
 }
