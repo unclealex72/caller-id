@@ -15,7 +15,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class Notifier(val modem: Modem,
                callService: CallService,
                applicationLifecycle: ApplicationLifecycle,
-               sinkActions: NonEmptyList[Call => Unit])
+               sinkActions: NonEmptyList[Call => _])
               (implicit val actorSystem: ActorSystem, materializer: Materializer, ec: ExecutionContext) extends StrictLogging {
 
   logger.info("Starting modem notifications")
@@ -29,7 +29,12 @@ class Notifier(val modem: Modem,
       }
 
   val sinks: NonEmptyList[Sink[Call, NotUsed]] =
-    sinkActions.map(action => Sink.foreachParallel(16)(action).mapMaterializedValue(_ => NotUsed))
+    sinkActions.map { originalAction =>
+      val newAction: Call => Unit = call => {
+        originalAction.apply(call)
+      }
+      newAction
+    }.map(action => Sink.foreachParallel(16)(action).mapMaterializedValue(_ => NotUsed))
 
   val sink: Sink[Call, NotUsed] = {
     val firstSink = sinks.head
