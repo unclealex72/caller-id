@@ -6,6 +6,7 @@ import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.DefaultDB
 import reactivemongo.api.commands.{MultiBulkWriteResult, WriteError, WriteResult}
+import reactivemongo.api.indexes.IndexType
 import reactivemongo.play.json.collection.JSONCollection
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -84,4 +85,8 @@ class MongoDbDao(
     def ?<=(maybeValue: Option[JsonComparable]): JsObject = elvis(maybeValue, <=)
 
   }
+
+  def indicies(): Seq[Index] = Seq.empty
 }
+
+case class Index(field: String, indexType: IndexType)

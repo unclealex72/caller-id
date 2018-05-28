@@ -3,7 +3,7 @@ package loader
 import java.security.PrivateKey
 import java.time.Clock
 
-import call.{Call, CallService, CallServiceImpl}
+import call._
 import cats.data.NonEmptyList
 import com.gu.googleauth._
 import com.typesafe.scalalogging.StrictLogging
@@ -11,6 +11,7 @@ import contact.{ContactDao, GoogleContactLoader, MongoDbContactDao}
 import controllers.{AssetsComponents, Home, routes}
 import modem.{Modem, ModemSender, SendableAtzModem, TcpAtzModem}
 import notify.Notifier
+import notify.sinks.{LoggingSink, PersistingSink}
 import number._
 import play.api.ApplicationLoader
 import play.api.libs.ws.ahc.AhcWSComponents
@@ -60,6 +61,8 @@ class AppComponents(context: ApplicationLoader.Context)
     antiForgeryChecker = AntiForgeryChecker.borrowSettingsFromPlay(httpConfiguration)
   )
 
+  val persistedCallDao: PersistedCallDao = new MongoDbPersistedCallDao(reactiveMongoApi)
+  val persistedCallFactory: PersistedCallFactory = new PersistedCallFactoryImpl(numberFormatter)
   val (modem: Modem, maybeModemSender: Option[ModemSender]) = {
     val debug = configuration.get[Boolean]("modem.debug")
     if (debug) {
@@ -108,14 +111,15 @@ class AppComponents(context: ApplicationLoader.Context)
     controllerComponents)
 
   val notifier: Notifier = {
-    val loggingSink: Call => Unit = call => {
-      logger.info(s"Received call $call")
-    }
+    val persistingSink = new PersistingSink(persistedCallFactory, persistedCallDao)
     new Notifier(
       modem,
       callService,
       applicationLifecycle,
-      NonEmptyList.of(loggingSink))(actorSystem, materializer, executionContext)
+      NonEmptyList.of(
+        LoggingSink,
+        persistingSink
+      ))(actorSystem, materializer, executionContext)
   }
 
   override def router: Router = new Routes(
