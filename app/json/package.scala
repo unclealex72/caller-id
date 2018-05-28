@@ -8,13 +8,13 @@ import play.api.libs.json._
   */
 package object json {
 
-  def merge(a: JsValue, b: JsValue): JsValue = {
+  def merge(a: JsValue, b: JsObject): JsObject = {
     (a, b) match {
       case (oa : JsObject, ob: JsObject) =>
         ob.value.foldLeft(oa){ (result, kv) =>
           val (key, value) = kv
           val newValue = (result.value.get(key), value) match {
-            case (Some(sub :JsObject), ov : JsObject) => sub ++ ov
+            case (Some(sub :JsObject), ov : JsObject) => merge(sub, ov)
             case _ => value
           }
           result + (key -> newValue)
