@@ -52,6 +52,16 @@ class MongoDbPersistedCallDaoSpec extends MongoDbDaoSpec[MongoDbPersistedCallDao
     }
   }
 
+  "Adding a call" should {
+    "add it and not affect any other calls" in { f =>
+      for {
+        _ <- f.dao.insert(fourthCall)
+        calls <- f.dao.calls(None, None, None)
+      } yield {
+        calls should ===(Seq(firstCall, secondCall, thirdCall, fourthCall))
+      }
+    }
+  }
   val firstCall: PersistedCall = "2018-05-28T11:09:28+00:00".from(PersistedWithheld)
 
   val secondCall: PersistedCall = "2018-05-28T11:15:14+00:00".from(
@@ -71,6 +81,7 @@ class MongoDbPersistedCallDaoSpec extends MongoDbDaoSpec[MongoDbPersistedCallDao
         None,
         NonEmptyList.of("England", "UK"))))
 
+  val fourthCall: PersistedCall = "2018-05-30T13:50:19+00:00".from(PersistedWithheld)
 
   override def initialData(): Seq[BSONDocument] = {
     Seq(
