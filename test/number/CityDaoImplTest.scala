@@ -23,25 +23,24 @@
  */
 package number
 
-import org.specs2.mutable.Specification
-import org.specs2.specification.core.Fragments
+import org.scalatest._
 
-class CityDaoImplTest extends Specification {
+class CityDaoImplTest extends WordSpec with Matchers {
 
   val cityDao: CityDao = new CityDaoImpl(Countries().countries)
 
 
   "Extracting the international code" should {
     "find 44 for a British number" in {
-      cityDao.extractInternationalDiallingCode("441256118118") must beSome("44")
+      cityDao.extractInternationalDiallingCode("441256118118") should ===(Some("44"))
     }
   }
 
   "Extracting UK cities" should {
-    Fragments.foreach(Seq("1697500500" -> "Brampton", "1697300300" -> "Wigton", "1697400400" -> "Raughton Head")) {
+    Seq("1697500500" -> "Brampton", "1697300300" -> "Wigton", "1697400400" -> "Raughton Head").foreach {
       case (number, expectedCityName) =>
         s"return $expectedCityName for $number" in {
-          cityDao.extractCity(number, "44").map(_.name) must beSome(expectedCityName)
+          cityDao.extractCity(number, "44").map(_.name) should ===(Some(expectedCityName))
         }
     }
   }
@@ -49,14 +48,14 @@ class CityDaoImplTest extends Specification {
   "Getting a country for a city" should {
     "return Basingstoke for 1256" in {
       val basingstoke = City(name = "Basingstoke", stdCode = "1256")
-      cityDao.countryOf(basingstoke).map(_.name) must beSome("United Kingdom")
+      cityDao.countryOf(basingstoke).map(_.name) should ===(Some("United Kingdom"))
     }
   }
 
   "Getting countries for an international dialling code" should {
     "return all the countries in size order" in {
-      val countries = cityDao.countries("44").map(_.list).getOrElse(List.empty[Country])
-      countries.map(c => c.name) must contain("United Kingdom", "Guernsey", "Isle of Man", "Jersey").inOrder
+      val countries = cityDao.countries("44").map(_.toList).getOrElse(List.empty[Country])
+      countries.map(c => c.name) should contain inOrderOnly("United Kingdom", "Guernsey", "Isle of Man", "Jersey")
     }
   }
 }

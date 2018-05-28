@@ -23,7 +23,7 @@
  */
 package number
 
-import scalaz.NonEmptyList
+import cats.data.NonEmptyList
 
 /**
  * The representation of a telephone number that called.
@@ -49,3 +49,12 @@ case class PhoneNumber(
    * The rest of the number that called, minus the international and STD codes.
    */
   number: String)
+
+object PhoneNumber {
+  import play.api.libs.json._
+  import json._
+
+  implicit val phoneNumberReads: Reads[PhoneNumber] = Json.reads[PhoneNumber]
+  implicit val phoneNumberWrites: Writes[PhoneNumber] = Json.writes[PhoneNumber]
+
+}

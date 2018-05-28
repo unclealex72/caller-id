@@ -1,19 +1,27 @@
 package modem
 
+import akka.stream.scaladsl._
+
 /**
  * A trait describing the output of a modem.
  * Created by alex on 31/08/15.
  */
-trait Modem extends AutoCloseable {
-
-  /**
-   * Send any required initialisation command strings to the modem.
-   */
-  def initialise(): Unit
+trait Modem {
 
   /**
    *
-   * @return A stream of modem responses as they are received from the modem.
+   * @return A source of modem responses as they are received from the modem.
    */
-  def responses: Stream[ModemResponse]
+  def responses(): Source[ModemResponse, Disconnect]
+
+  /**
+    * A class that can be used to disconnect fromm the modem.
+    */
+  trait Disconnect {
+
+    /**
+      * Disconnect from a modem.
+      */
+    def disconnect()
+  }
 }

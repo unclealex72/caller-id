@@ -38,4 +38,9 @@ object LocationConfiguration {
 
   implicit class CityImplicits(c: City) extends Implicits[City](c, _.stdCode, _.stdCode)
   implicit class CountryImplicits(c: Country) extends Implicits[Country](c, _.internationalCode, _.internationalDiallingCode)
+
+  import play.api.libs.json._
+
+  implicit val locationConfigurationReads: Reads[LocationConfiguration] = Json.reads[LocationConfiguration]
+  implicit val locationConfigurationWrites: Writes[LocationConfiguration] = Json.writes[LocationConfiguration]
 }

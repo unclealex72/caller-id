@@ -25,25 +25,21 @@ package number
 
 import java.io.FileNotFoundException
 
-import argonaut.Argonaut._
-import argonaut._
-import com.typesafe.scalalogging.StrictLogging
-
-import scala.io.{Codec, Source}
-import scalaz.NonEmptyListFunctions
+import cats.data.NonEmptyList
+import play.api.libs.json.{JsError, JsSuccess, Json}
 
 /**
- * An implementation of {@link CityDao} that uses a JSON resource
+ * An implementation of [[CityDao]] that uses a JSON resource
  * to store countries and cities.
  */
-class CityDaoImpl(val countries: List[Country]) extends CityDao with NonEmptyListFunctions {
+class CityDaoImpl(val countries: List[Country]) extends CityDao {
 
   /**
    * A multimap of all countries keyed by their international dialling codes. The collection values of this map are ordered
    * such that countries with more cities are listed first.
    */
   val countriesByInternationalDiallingCode: Map[String, Seq[Country]] =
-    countries.groupBy(_.internationalDiallingCode).mapValues(_.sortBy(c => (-c.cities.length, c.name)))
+    countries.groupBy(_.internationalDiallingCode).mapValues(_.sortBy(c => (-c.cities.size, c.name)))
 
   /**
    * A multimap of all cities keyed by their international dialling codes. The collection values of this map are ordered
@@ -64,45 +60,46 @@ class CityDaoImpl(val countries: List[Country]) extends CityDao with NonEmptyLis
     map ++ country.cities.map(_ -> country)
   }
 
-  override def extractInternationalDiallingCode(number: String) =
+  override def extractInternationalDiallingCode(number: String): Option[String] =
     internationalDiallingCodes.find(number.startsWith)
 
-  override def extractCity(number: String, internationalDiallingCode: String) = {
+  override def extractCity(number: String, internationalDiallingCode: String): Option[City] = {
     val cities = citiesByInternationalDiallingCode.getOrElse(internationalDiallingCode, Seq.empty)
     cities.find((c: City) => number.startsWith(c.stdCode))
   }
 
-  override def countryOf(city: City) = {
+  override def countryOf(city: City): Option[Country] = {
     countriesByCity.get(city)
   }
 
-  override def countries(internationalDiallingCode: String) = {
+  override def countries(internationalDiallingCode: String): Option[NonEmptyList[Country]] = {
     countriesByInternationalDiallingCode.getOrElse(internationalDiallingCode, Seq.empty).toList match {
-      case c :: cc => Some(nel(c, cc))
+      case c :: cc => Some(NonEmptyList(c, cc))
       case Nil => None
     }
   }
+
+  override def all(): Seq[Country] = countries
 }
 
-case class Countries(countries: List[Country])
-object Countries extends StrictLogging {
+object CityDaoImpl {
 
-  def apply(): Countries = parseJson("countries.json")
-  def parseJson(resourceName: String): Countries = {
-    Option(getClass.getClassLoader.getResource(resourceName)) match {
-      case Some(url) =>
-        val source = Source.fromURL(url)(Codec.UTF8)
-        logger info s"Loading countries information from $url"
-        try {
-          Parse.decodeValidation[Countries](source.mkString).toValidationNel.valueOr { errors =>
-            throw new IllegalStateException("Cannot parse STD code information:\n" + errors.stream.mkString("\n"))
-          }
-        } finally {
-          source.close
+  def apply(): CityDaoImpl = {
+    val fileName = "countries.json"
+    val source = Option(classOf[CityDaoImpl].getClassLoader.getResourceAsStream("countries.json")).getOrElse(
+      throw new FileNotFoundException(fileName)
+    )
+    val countryList = Json.parse(source).validate[Countries] match {
+      case JsSuccess(countries, _) => countries.countries
+      case JsError(errors) =>
+        val errorReports = for {
+          (path, validationErrors) <- errors
+          validationError <- validationErrors
+        } yield {
+          s"${path.toJsonString} ${validationError.message}"
         }
-      case None => throw new FileNotFoundException("Cannot find resource countries.json")
+        throw new IllegalStateException(errorReports.mkString("\n"))
     }
-
+    new CityDaoImpl(countryList)
   }
-  implicit def CountriesCodec: CodecJson[Countries] = casecodec1(Countries.apply, Countries.unapply)("countries")
 }

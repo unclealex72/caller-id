@@ -1,6 +1,6 @@
 package number
 
-import scalaz.ValidationNel
+import cats.data.ValidatedNel
 
 /**
  * An interface for classes that can turn a telephone number in string form into a normalised phone number.
@@ -8,8 +8,8 @@ import scalaz.ValidationNel
 trait NumberLocationService {
 
   /**
-   * Decompose a telephone number into a normalised {@link PhoneNumber}.
+   * Decompose a telephone number into a normalised [[PhoneNumber]].
    */
-  def decompose(number: String): ValidationNel[String, PhoneNumber]
+  def decompose(number: String): ValidatedNel[String, PhoneNumber]
 
 }
