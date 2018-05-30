@@ -1,8 +1,8 @@
 package squeezebox
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 trait Squeezebox {
 
-  def display(text: String)(implicit ec: ExecutionContext): Future[_]
+  def display(text: String): Future[Seq[String]]
 }
