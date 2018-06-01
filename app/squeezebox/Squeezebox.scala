@@ -1,6 +1,6 @@
 package squeezebox
 
-trait Squeezebox {
+trait Squeezebox[MAT] {
 
-  def display(text: String): Unit
+  def display(text: String): MAT
 }

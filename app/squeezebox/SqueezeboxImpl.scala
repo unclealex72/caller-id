@@ -3,8 +3,7 @@ package squeezebox
 
 import akka.NotUsed
 import akka.stream._
-import akka.stream.scaladsl.{Flow, Framing, Source}
-import akka.stream.stage.{GraphStage, GraphStageLogic, InHandler, OutHandler}
+import akka.stream.scaladsl.{Flow, Framing, Keep, Source}
 import akka.util.ByteString
 import com.google.api.client.util.escape.{Escaper, PercentEscaper}
 import com.typesafe.scalalogging.StrictLogging
@@ -12,11 +11,11 @@ import com.typesafe.scalalogging.StrictLogging
 import scala.collection.immutable._
 import scala.concurrent.ExecutionContext
 
-class SqueezeboxImpl(rawServerFlow: Flow[ByteString, ByteString, _], messageDuration: Int)(implicit materializer: Materializer, ec: ExecutionContext) extends Squeezebox with StrictLogging {
-  override def display(message: String): Unit = {
-    val fullServerFlow: Flow[SqueezeboxRequest, SqueezeboxResponse, NotUsed] =
+class SqueezeboxImpl[MAT](rawServerFlow: Flow[ByteString, ByteString, MAT], messageDuration: Int)(implicit materializer: Materializer, ec: ExecutionContext) extends Squeezebox[MAT] with StrictLogging {
+  override def display(message: String): MAT = {
+    val fullServerFlow: Flow[SqueezeboxRequest, SqueezeboxResponse, MAT] =
     {
-      val serverFlow: Flow[ByteString, SqueezeboxResponse, _] = rawServerFlow.map { raw =>
+      val serverFlow: Flow[ByteString, SqueezeboxResponse, MAT] = rawServerFlow.map { raw =>
         logger.debug(s"Received raw: ${raw.utf8String}")
         raw
       }.via(Framing.delimiter(delimiter = ByteString('\n'), maximumFrameLength = Int.MaxValue, allowTruncation = true)).
@@ -27,98 +26,56 @@ class SqueezeboxImpl(rawServerFlow: Flow[ByteString, ByteString, _], messageDura
           logger.debug(s"Received from media server: $rawResponse")
           SqueezeboxResponse.parse(rawResponse)
         }
-      Flow.fromFunction[SqueezeboxRequest, ByteString](request => ByteString(s"${request.request}\n")).via(serverFlow)
+      Flow.fromFunction[SqueezeboxRequest, ByteString](request => ByteString(s"${request.request}\n")).viaMat(serverFlow)(Keep.right)
     }.merge(Source.single[SqueezeboxResponse](Start))
 
     val notificationFlow = Flow[SqueezeboxResponse].statefulMapConcat[SqueezeboxRequest](() => {
       var maybePlayerCount: Option[Int] = None
-      var displayMessagesReceived = 0
+      var nextPlayerIndex = 0
 
-      (response: SqueezeboxResponse) => {
+      def requestNextIdOrExit(): Option[SqueezeboxRequest] = {
+        maybePlayerCount match {
+          case Some(playerCount) if playerCount == nextPlayerIndex =>
+            logger.debug("All players have displayed the message so sending exit.")
+            Some(Exit)
+          case _ =>
+            logger.debug("Not all players have displayed the message so requesting next ID.")
+            Some(RequestId(nextPlayerIndex))
+        }
+      }
+
+      response: SqueezeboxResponse => {
         logger.debug(s"Received parsed response from server: $response")
-        val nextRequests: Seq[SqueezeboxRequest] = response match {
+        val nextRequests: Option[SqueezeboxRequest] = response match {
           case Start =>
-            Seq(CountPlayers)
+            Some(CountPlayers)
           case PlayerCount(count) =>
+            logger.debug(s"There are $count players")
             maybePlayerCount = Some(count)
-            0.until(count).map(idx => RequestId(idx))
+            requestNextIdOrExit()
           case PlayerId(_, id) =>
-            Seq(DisplayMessage(id, message))
-          case DisplayingMessage(_, _) =>
-            displayMessagesReceived += 1
-            maybePlayerCount match {
-              case Some(playerCount) if playerCount == displayMessagesReceived => Seq(Exit)
-              case _ => Seq.empty
-            }
+            Some(DisplayMessage(id, message))
+          case DisplayingMessage(id, msg) =>
+            logger.debug(s"Play $id has displayed message: $msg")
+            nextPlayerIndex += 1
+            requestNextIdOrExit()
           case Unknown(text) =>
             logger.warn(s"Received unknown response from server. Ignoring: $text")
-            Seq.empty
+            None
         }
         logger.whenDebugEnabled {
           nextRequests.foreach { request =>
             logger.debug(s"Sending request: $request")
           }
         }
-        nextRequests
+        nextRequests match {
+          case Some(nextRequest) => Seq(nextRequest)
+          case None => Seq.empty
+        }
       }})
-    /*
-    val notificationFlow = Flow.fromGraph(new NotificationFlow(text)).mapError {
-      case e: Exception =>
-        logger.error("Notification flow failed.", e)
-        e
-    }
-    */
     fullServerFlow.join(notificationFlow).run()
   }
 
-  class NotificationFlow(message: String) extends GraphStage[FlowShape[SqueezeboxResponse, SqueezeboxRequest]] {
-    val in: Inlet[SqueezeboxResponse] = Inlet("NotificationFlowInlet")
-    val out: Outlet[SqueezeboxRequest] = Outlet("NotificationFlowOutlet")
-
-    override def shape: FlowShape[SqueezeboxResponse, SqueezeboxRequest] = FlowShape(in, out)
-
-    override def createLogic(inheritedAttributes: Attributes): GraphStageLogic = new GraphStageLogic(shape) {
-      var maybePlayerCount: Option[Int] = None
-      var displayMessagesReceived = 0
-
-      setHandlers(in, out, new InHandler with OutHandler {
-        override def onPush(): Unit = {
-          val response = grab(in)
-          try {
-            logger.debug(s"Received parsed response from server: $response")
-            val nextRequests: Seq[SqueezeboxRequest] = response match {
-              case Start =>
-                Seq(CountPlayers)
-              case PlayerCount(count) =>
-                maybePlayerCount = Some(count)
-                0.until(count).map(idx => RequestId(idx))
-              case PlayerId(_, id) =>
-                Seq(DisplayMessage(id, message))
-              case DisplayingMessage(_, _) =>
-                displayMessagesReceived += 1
-                maybePlayerCount match {
-                  case Some(playerCount) if playerCount == displayMessagesReceived => Seq(Exit)
-                  case _ => Seq.empty
-                }
-              case Unknown(text) =>
-                logger.warn(s"Received unknown response from server. Ignoring: $text")
-                Seq.empty
-            }
-            nextRequests.foreach(request => logger.debug(s"Sending request $request"))
-            emitMultiple(out, nextRequests)
-          } catch {
-            case e: Exception =>
-              logger.error("An unexpected error occurred whilst trying to respond to the media server.", e)
-              fail(out, e)
-          }
-        }
-
-        override def onPull(): Unit = {
-          pull(in)
-        }
-      })
-    }
-  }
   val percentEscaper: Escaper = new PercentEscaper(PercentEscaper.SAFECHARS_URLENCODER, false)
 
   sealed trait SqueezeboxResponse
@@ -133,8 +90,8 @@ class SqueezeboxImpl(rawServerFlow: Flow[ByteString, ByteString, _], messageDura
   object SqueezeboxResponse {
 
     private val playerCount = """player count ([0-9]+)""".r
-    private val playerId = """player id ([0-9]+) ([0-9a-fA-F%3]+)""".r
-    private val display = """([0-9a-fA-F%3]+) display (^\s+) (^\s+) ([0-9]+)""".r
+    private val playerId = """player id ([0-9]+) ([0-9a-fA-F%]+)""".r
+    private val display = """([0-9a-fA-F%]+) display (\S+) (\S+) ([0-9]+)""".r
 
     def parse(response: String): SqueezeboxResponse = {
       response match {

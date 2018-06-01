@@ -9,12 +9,16 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.StrictLogging
 import org.scalatest.{AsyncWordSpec, Matchers}
 
-import scala.concurrent.Future
+import scala.collection.mutable
+import scala.concurrent.{Future, Promise}
 
 class SqueezeboxImplSpec extends AsyncWordSpec with Matchers with StrictLogging {
 
   implicit val actorSystem: ActorSystem = ActorSystem("notifierSpec", ConfigFactory.empty())
   implicit val materializer: Materializer = ActorMaterializer()
+
+  val eventualResultPromise: Promise[Seq[String]] = Promise[Seq[String]]
+  var requests: mutable.Seq[String] = mutable.Buffer[String]()
 
   val serverFlow: Flow[ByteString, ByteString, NotUsed] = {
     val id0 = "00%3A00"
