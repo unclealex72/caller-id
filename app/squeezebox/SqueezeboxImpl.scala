@@ -34,51 +34,56 @@ class SqueezeboxImpl(messageDuration: Int)(implicit materializer: Materializer, 
     }.merge(Source.single[SqueezeboxResponse](Start))
 
     val completedPromise: Promise[Done] = Promise[Done]
-    val notificationFlow = Flow[SqueezeboxResponse].statefulMapConcat[SqueezeboxRequest](() => {
-      var maybePlayerCount: Option[Int] = None
-      var nextPlayerIndex = 0
-
-      def requestNextIdOrExit(): Option[SqueezeboxRequest] = {
-        maybePlayerCount match {
-          case Some(playerCount) if playerCount == nextPlayerIndex =>
+    case class State(maybePlayerCount: Option[Int], nextPlayerIndex: Int, maybeNextRequest: Option[SqueezeboxRequest]) {
+      def withPlayerCount(count: Int): State =
+        copy(maybePlayerCount = Some(count), maybeNextRequest = None)
+      def increment(): State = copy(nextPlayerIndex = nextPlayerIndex + 1, maybeNextRequest = None)
+      def withNextRequest(nextRequest: SqueezeboxRequest): State = copy(maybeNextRequest = Some(nextRequest))
+      def continue(): State = copy(maybeNextRequest = None)
+    }
+    object State {
+      def zero: State = State(None, 0, None)
+    }
+    val notificationFlow = Flow[SqueezeboxResponse].scan(State.zero) { (state, response) =>
+      def requestNextIdOrExit(state: State): State = {
+        state.maybePlayerCount match {
+          case Some(playerCount) if playerCount == state.nextPlayerIndex =>
             logger.debug("All players have displayed the message so sending exit.")
             completedPromise.complete(Success(Done))
-            Some(Exit)
+            state.withNextRequest(Exit)
           case _ =>
             logger.debug("Not all players have displayed the message so requesting next ID.")
-            Some(RequestId(nextPlayerIndex))
+            state.withNextRequest(RequestId(state.nextPlayerIndex))
         }
       }
-
-      response: SqueezeboxResponse => {
-        logger.debug(s"Received parsed response from server: $response")
-        val nextRequests: Option[SqueezeboxRequest] = response match {
-          case Start =>
-            Some(CountPlayers)
-          case PlayerCount(count) =>
-            logger.debug(s"There are $count players")
-            maybePlayerCount = Some(count)
-            requestNextIdOrExit()
-          case PlayerId(_, id) =>
-            Some(DisplayMessage(id, message))
-          case DisplayingMessage(id, msg) =>
-            logger.debug(s"Play $id has displayed message: $msg")
-            nextPlayerIndex += 1
-            requestNextIdOrExit()
-          case Unknown(text) =>
-            logger.warn(s"Received unknown response from server. Ignoring: $text")
-            None
+      logger.debug(s"Received parsed response from server: $response")
+      val nextState: State = response match {
+        case Start =>
+          state.withNextRequest(CountPlayers)
+        case PlayerCount(count) =>
+          logger.debug(s"There are $count players")
+          requestNextIdOrExit(state.withPlayerCount(count))
+        case PlayerId(_, id) =>
+          state.withNextRequest(DisplayMessage(id, message))
+        case DisplayingMessage(id, msg) =>
+          logger.debug(s"Play $id has displayed message: $msg")
+          requestNextIdOrExit(state.increment())
+        case Unknown(text) =>
+          logger.warn(s"Received unknown response from server. Ignoring: $text")
+          state.continue()
+      }
+      logger.whenDebugEnabled {
+        state.maybeNextRequest.foreach { request =>
+          logger.debug(s"Sending request: $request")
         }
-        logger.whenDebugEnabled {
-          nextRequests.foreach { request =>
-            logger.debug(s"Sending request: $request")
-          }
-        }
-        nextRequests match {
-          case Some(nextRequest) => Seq(nextRequest)
-          case None => Seq.empty
-        }
-      }})
+      }
+      nextState
+    }.mapConcat { state =>
+      state.maybeNextRequest match {
+        case Some(nextRequest) => Seq(nextRequest)
+        case _ => Seq.empty
+      }
+    }
     fullServerFlow.mapMaterializedValue(m => m -> completedPromise.future).join(notificationFlow).run()
   }
 

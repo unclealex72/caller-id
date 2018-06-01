@@ -95,7 +95,9 @@ class SqueezeboxImplSpec extends AsyncWordSpec with Matchers with StrictLogging 
 
             override def onPull(): Unit = {
               maybeNextResponse.foreach(push(out, _))
-              pull(in)
+              if (!hasBeenPulled(in)) {
+                pull(in)
+              }
             }
           })
         }
