@@ -1,7 +1,7 @@
 package squeezebox
 
 
-import akka.NotUsed
+import akka.{Done, NotUsed}
 import akka.stream._
 import akka.stream.scaladsl.{Flow, Framing, Keep, Source}
 import akka.util.ByteString
@@ -9,10 +9,14 @@ import com.google.api.client.util.escape.{Escaper, PercentEscaper}
 import com.typesafe.scalalogging.StrictLogging
 
 import scala.collection.immutable._
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.util.Success
 
-class SqueezeboxImpl[MAT](rawServerFlow: Flow[ByteString, ByteString, MAT], messageDuration: Int)(implicit materializer: Materializer, ec: ExecutionContext) extends Squeezebox[MAT] with StrictLogging {
-  override def display(message: String): MAT = {
+class SqueezeboxImpl(messageDuration: Int)(implicit materializer: Materializer, ec: ExecutionContext) extends Squeezebox with StrictLogging {
+
+  override def display(serverFlow: Flow[ByteString, ByteString, _], message: String): Future[Done] = displayWithMaterializer(serverFlow, message)._2
+
+  def displayWithMaterializer[MAT](rawServerFlow: Flow[ByteString, ByteString, MAT], message: String): (MAT, Future[Done]) = {
     val fullServerFlow: Flow[SqueezeboxRequest, SqueezeboxResponse, MAT] =
     {
       val serverFlow: Flow[ByteString, SqueezeboxResponse, MAT] = rawServerFlow.map { raw =>
@@ -29,6 +33,7 @@ class SqueezeboxImpl[MAT](rawServerFlow: Flow[ByteString, ByteString, MAT], mess
       Flow.fromFunction[SqueezeboxRequest, ByteString](request => ByteString(s"${request.request}\n")).viaMat(serverFlow)(Keep.right)
     }.merge(Source.single[SqueezeboxResponse](Start))
 
+    val completedPromise: Promise[Done] = Promise[Done]
     val notificationFlow = Flow[SqueezeboxResponse].statefulMapConcat[SqueezeboxRequest](() => {
       var maybePlayerCount: Option[Int] = None
       var nextPlayerIndex = 0
@@ -37,6 +42,7 @@ class SqueezeboxImpl[MAT](rawServerFlow: Flow[ByteString, ByteString, MAT], mess
         maybePlayerCount match {
           case Some(playerCount) if playerCount == nextPlayerIndex =>
             logger.debug("All players have displayed the message so sending exit.")
+            completedPromise.complete(Success(Done))
             Some(Exit)
           case _ =>
             logger.debug("Not all players have displayed the message so requesting next ID.")
@@ -73,7 +79,7 @@ class SqueezeboxImpl[MAT](rawServerFlow: Flow[ByteString, ByteString, MAT], mess
           case None => Seq.empty
         }
       }})
-    fullServerFlow.join(notificationFlow).run()
+    fullServerFlow.mapMaterializedValue(m => m -> completedPromise.future).join(notificationFlow).run()
   }
 
   val percentEscaper: Escaper = new PercentEscaper(PercentEscaper.SAFECHARS_URLENCODER, false)

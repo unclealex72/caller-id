@@ -20,16 +20,21 @@ class SqueezeboxImplSpec extends AsyncWordSpec with Matchers with StrictLogging 
 
   "sending a request to display a message on all squeezeboxes" should {
     "elicit the correct responses from the media server" in {
-      val squeezeboxImpl: SqueezeboxImpl[Future[Seq[String]]] = new SqueezeboxImpl(generateFlow(), 30)
+      val squeezeboxImpl: SqueezeboxImpl = new SqueezeboxImpl(messageDuration = 30)
       logger.info("Starting test")
-      squeezeboxImpl.display("Hello") map { responses =>
-        responses should contain theSameElementsInOrderAs Seq(
+      val (eventualRequests, eventualCompleted) = squeezeboxImpl.displayWithMaterializer(generateFlow(), "Hello")
+      for {
+        _ <- eventualCompleted
+        requests <- eventualRequests
+      } yield {
+        requests should contain theSameElementsInOrderAs Seq(
           "player count ?",
           "player id 0 ?",
           "00%3A00 display Hello Hello 30",
           "player id 1 ?",
           "01%3A01 display Hello Hello 30",
           "exit")
+
       }
     }
   }
@@ -39,6 +44,8 @@ class SqueezeboxImplSpec extends AsyncWordSpec with Matchers with StrictLogging 
     class Logic extends GraphStage[FlowShape[String, String]] {
       val in: Inlet[String] = Inlet("logic.in")
       val out: Outlet[String] = Outlet("logic.out")
+
+      override def shape: FlowShape[String, String] = FlowShape(in, out)
 
       override def createLogic(inheritedAttributes: Attributes): GraphStageLogic = {
         new GraphStageLogic(shape) {
@@ -93,8 +100,6 @@ class SqueezeboxImplSpec extends AsyncWordSpec with Matchers with StrictLogging 
           })
         }
       }
-
-      override def shape: FlowShape[String, String] = FlowShape(in, out)
     }
 
     val codec: BidiFlow[ByteString, String, String, ByteString, NotUsed] = BidiFlow.fromFunctions(

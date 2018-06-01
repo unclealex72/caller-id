@@ -1,6 +1,12 @@
 package squeezebox
 
-trait Squeezebox[MAT] {
+import akka.Done
+import akka.stream.scaladsl.Flow
+import akka.util.ByteString
 
-  def display(text: String): MAT
+import scala.concurrent.Future
+
+trait Squeezebox {
+
+  def display(serverFlow: Flow[ByteString, ByteString, _], message: String): Future[Done]
 }
