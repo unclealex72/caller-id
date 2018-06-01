@@ -1,7 +1,7 @@
 package squeezebox
 
 
-import akka.{Done, NotUsed}
+import akka.Done
 import akka.stream._
 import akka.stream.scaladsl.{Flow, Framing, Keep, Source}
 import akka.util.ByteString
@@ -49,7 +49,6 @@ class SqueezeboxImpl(messageDuration: Int)(implicit materializer: Materializer, 
         state.maybePlayerCount match {
           case Some(playerCount) if playerCount == state.nextPlayerIndex =>
             logger.debug("All players have displayed the message so sending exit.")
-            completedPromise.complete(Success(Done))
             state.withNextRequest(Exit)
           case _ =>
             logger.debug("Not all players have displayed the message so requesting next ID.")
@@ -70,6 +69,10 @@ class SqueezeboxImpl(messageDuration: Int)(implicit materializer: Materializer, 
           requestNextIdOrExit(state.increment())
         case Unknown(text) =>
           logger.warn(s"Received unknown response from server. Ignoring: $text")
+          state.continue()
+        case Exiting =>
+          logger.debug("Received exiting response from server")
+          completedPromise.complete(Success(Done))
           state.continue()
       }
       logger.whenDebugEnabled {
@@ -94,6 +97,9 @@ class SqueezeboxImpl(messageDuration: Int)(implicit materializer: Materializer, 
   case class PlayerId(index: Int, id: String) extends SqueezeboxResponse
   case class DisplayingMessage(id: String, message: String) extends SqueezeboxResponse
   case class Unknown(text: String) extends SqueezeboxResponse
+  object Exiting extends SqueezeboxResponse {
+    override def toString: String = "Exiting()"
+  }
   object Start extends SqueezeboxResponse {
     override def toString: String = "Start()"
   }
@@ -109,6 +115,7 @@ class SqueezeboxImpl(messageDuration: Int)(implicit materializer: Materializer, 
         case playerCount(count) => PlayerCount(Integer.parseInt(count))
         case playerId(index, id) => PlayerId(Integer.parseInt(index), id)
         case display(id, message, _, _) => DisplayingMessage(id, message)
+        case "exit" => Exiting
         case _ =>
           logger.warn(s"Received unknown squeezebox response: $response")
           Unknown(response)

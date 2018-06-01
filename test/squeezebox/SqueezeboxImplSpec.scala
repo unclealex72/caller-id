@@ -3,7 +3,7 @@ package squeezebox
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream._
-import akka.stream.scaladsl.{BidiFlow, Flow}
+import akka.stream.scaladsl.{BidiFlow, Flow, Source}
 import akka.stream.stage.{GraphStage, GraphStageLogic, InHandler, OutHandler}
 import akka.util.ByteString
 import com.typesafe.config.ConfigFactory
@@ -24,8 +24,8 @@ class SqueezeboxImplSpec extends AsyncWordSpec with Matchers with StrictLogging 
       logger.info("Starting test")
       val (eventualRequests, eventualCompleted) = squeezeboxImpl.displayWithMaterializer(generateFlow(), "Hello")
       for {
-        _ <- eventualCompleted
-        requests <- eventualRequests
+        _ <- eventualCompleted.logging("Client side has completed.")
+        requests <- eventualRequests.logging("Server side has completed.")
       } yield {
         requests should contain theSameElementsInOrderAs Seq(
           "player count ?",
@@ -39,9 +39,15 @@ class SqueezeboxImplSpec extends AsyncWordSpec with Matchers with StrictLogging 
     }
   }
 
+  implicit class Logging[A](fa: Future[A]) {
+    def logging(msg: String): Future[A] = {
+      logger.info(msg)
+      fa
+    }
+  }
   def generateFlow(): Flow[ByteString, ByteString, Future[Seq[String]]] = {
     val responsesPromise: Promise[Seq[String]] = Promise()
-    class Logic extends GraphStage[FlowShape[String, String]] {
+    val logic: GraphStage[FlowShape[String, String]] = new GraphStage[FlowShape[String, String]] {
       val in: Inlet[String] = Inlet("logic.in")
       val out: Outlet[String] = Outlet("logic.out")
 
@@ -71,7 +77,7 @@ class SqueezeboxImplSpec extends AsyncWordSpec with Matchers with StrictLogging 
               requests = requests :+ request
               if (request == "exit") {
                 responsesPromise.complete(Success(requests))
-                completeStage()
+                maybeNextResponse = Some(request)
               }
               else {
                 val nextResponse = serverResponses.get(request) match {
@@ -108,6 +114,6 @@ class SqueezeboxImplSpec extends AsyncWordSpec with Matchers with StrictLogging 
       outbound = { bytes => bytes.utf8String.replaceAll("\n", "") },
       inbound = { str => ByteString(s"$str\n") }
     )
-    codec.join(new Logic()).mapMaterializedValue(_ => responsesPromise.future)
+    codec.join(Flow.fromGraph(logic)).mapMaterializedValue(_ => responsesPromise.future)
   }
 }
