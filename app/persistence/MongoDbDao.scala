@@ -86,6 +86,7 @@ class MongoDbDao(
 
   }
 
+  def set(fieldAndValues: (String, JsValue)*): JsObject = Json.obj("$set" -> JsObject(fieldAndValues))
   def indicies(): Seq[Index] = Seq.empty
 }
 

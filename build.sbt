@@ -13,7 +13,7 @@ libraryDependencies ++= Seq(
   "org.typelevel" %% "cats-core" % "1.0.1",
   "org.reactivemongo" %% "play2-reactivemongo" % "0.13.0-play26",
   "com.gu" %% "play-googleauth" % "0.7.6-SNAPSHOT",
-  "org.webjars" % "Semantic-UI" % "2.3.1",
+  "org.webjars.npm" % "materialize-css" % "1.0.0-rc.1",
   "org.webjars" % "jquery" % "3.3.1-1",
   "com.google.apis" % "google-api-services-people" % "v1-rev288-1.23.0"
 )

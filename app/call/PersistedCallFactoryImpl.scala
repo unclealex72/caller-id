@@ -12,7 +12,8 @@ class PersistedCallFactoryImpl(numberFormatter: NumberFormatter) extends Persist
   override def persist(call: Call): PersistedCall = {
     val persistedCaller: PersistedCaller = call.caller match {
       case Withheld => PersistedWithheld
-      case Known(name, phoneType, phoneNumber) => PersistedKnown(name, phoneType, persistPhoneNumber(phoneNumber))
+      case Known(name, phoneType, avatarUrl, phoneNumber) =>
+        PersistedKnown(name, phoneType, avatarUrl, persistPhoneNumber(phoneNumber))
       case Unknown(phoneNumber) => PersistedUnknown(persistPhoneNumber(phoneNumber))
       case Undefinable(str) => PersistedUndefinable(str)
     }

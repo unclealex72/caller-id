@@ -19,7 +19,7 @@ sealed trait PersistedCaller
 
 object PersistedWithheld extends PersistedCaller
 
-case class PersistedKnown(name: String, phoneType: PhoneType, persistedPhoneNumber: PersistedPhoneNumber) extends PersistedCaller
+case class PersistedKnown(name: String, phoneType: PhoneType, avatarUrl: Option[String], persistedPhoneNumber: PersistedPhoneNumber) extends PersistedCaller
 
 case class PersistedUnknown(persistedPhoneNumber: PersistedPhoneNumber) extends PersistedCaller
 

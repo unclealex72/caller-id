@@ -30,9 +30,9 @@ class MongoDbContactDao(reactiveMongoApi: ReactiveMongoApi) extends
   }
 
   def insertUser(contacts: JSONCollection, user: User)(implicit ec: ExecutionContext): EitherT[Future, Seq[String], Unit] = {
-    val persistedContacts = user.contacts.map(contact =>
-      PersistedContact(user.emailAddress, contact.normalisedPhoneNumber, contact.name, contact.phoneType))
-    val insert = contacts.insert[PersistedContact](ordered = false)
+    val persistedContacts: Seq[PersistedContact] = user.contacts.map(contact =>
+      PersistedContact(user.emailAddress, contact.normalisedPhoneNumber, contact.name, contact.phoneType, contact.avatarUrl))
+    val insert: contacts.InsertBuilder[PersistedContact] = contacts.insert[PersistedContact](ordered = false)
     EitherT(insert.many(persistedContacts).map(_.toEither))
   }
 
@@ -43,13 +43,18 @@ class MongoDbContactDao(reactiveMongoApi: ReactiveMongoApi) extends
       maybeContact <- cursor.headOption
     } yield {
       maybeContact.map { persistedContact =>
-        Contact(normalisedPhoneNumber, persistedContact.name, persistedContact.phoneType)
+        Contact(normalisedPhoneNumber, persistedContact.name, persistedContact.phoneType, persistedContact.avatarUrl)
       }
     }
   }
 }
 
-case class PersistedContact(emailAddress: String, normalisedPhoneNumber: String, name: String, phoneType: PhoneType)
+case class PersistedContact(
+                             emailAddress: String,
+                             normalisedPhoneNumber: String,
+                             name: String,
+                             phoneType: PhoneType,
+                             avatarUrl: Option[String])
 object PersistedContact {
   implicit val persistedContactReads: Reads[PersistedContact] = Json.reads[PersistedContact]
   implicit val persistedContactWrites: OWrites[PersistedContact] = Json.writes[PersistedContact]

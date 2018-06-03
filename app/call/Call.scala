@@ -11,7 +11,7 @@ sealed trait Caller
 
 object Withheld extends Caller
 
-case class Known(name: String, phoneType: PhoneType, phoneNumber: PhoneNumber) extends Caller
+case class Known(name: String, phoneType: PhoneType, maybeAvatarUrl: Option[String], phoneNumber: PhoneNumber) extends Caller
 
 case class Unknown(phoneNumber: PhoneNumber) extends Caller
 

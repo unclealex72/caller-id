@@ -23,22 +23,17 @@ package object json {
     }
   }
 
-  implicit def nonEmptyListReads[A](implicit listReads: Reads[List[A]]): Reads[NonEmptyList[A]] = {
-    listReads.flatMap {
-      case Nil => (_: JsValue) => JsError("empty.list")
-      case x :: xs => Reads.pure(NonEmptyList.of(x, xs :_*))
+  implicit def nonEmptyListFormat[A](implicit listFormat: Format[List[A]]): Format[NonEmptyList[A]] = new Format[NonEmptyList[A]] {
+    override def reads(json: JsValue): JsResult[NonEmptyList[A]] = listFormat.reads(json).flatMap {
+      case Nil => JsError("list.empty")
+      case x :: xs => JsSuccess(NonEmptyList(x, xs))
     }
+    override def writes(o: NonEmptyList[A]): JsValue = listFormat.writes(o.toList)
+
   }
 
-  implicit def nonEmptyListWrites[A](implicit listWrites: Writes[List[A]]): Writes[NonEmptyList[A]] = (o: NonEmptyList[A]) => {
-    listWrites.writes(o.toList)
-  }
-
-  implicit def instantReads(implicit longReads: Reads[Long]): Reads[Instant] = {
-    longReads.map(millis => Instant.ofEpochMilli(millis))
-  }
-
-  implicit def instantWrites(implicit longWrites: Writes[Long]): Writes[Instant] = (instant: Instant) => {
-    longWrites.writes(instant.toEpochMilli)
+  implicit def instantFormat(implicit longFormat: Format[Long]): Format[Instant] = new Format[Instant] {
+    override def reads(json: JsValue): JsResult[Instant] = longFormat.reads(json).map(Instant.ofEpochMilli)
+    override def writes(instant: Instant): JsValue = longFormat.writes(instant.toEpochMilli)
   }
 }

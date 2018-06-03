@@ -23,7 +23,7 @@ class CallServiceImpl @Inject() (clock: Clock, numberLocationService: NumberLoca
       case modem.Number(number) => numberLocationService.decompose(number) match {
         case Valid(phoneNumber) =>
           contactService.findContactNameAndPhoneTypeForPhoneNumber(phoneNumber.normalisedNumber).map {
-            case Some(Contact(_, name, phoneType)) => call(Known(name, phoneType, phoneNumber))
+            case Some(Contact(_, name, phoneType, avatarUrl)) => call(Known(name, phoneType, avatarUrl, phoneNumber))
             case None => call(Unknown(phoneNumber))
           }
         case Invalid(_) => undefinable(number)

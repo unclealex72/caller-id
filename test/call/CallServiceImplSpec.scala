@@ -26,7 +26,7 @@ class CallServiceImplSpec extends AsyncWordSpec with Matchers {
       find(_.normalisedNumber == number).
       toValidNel("Don't know that phone number!")
 
-  val BBC = Contact("+441818118181", "The BBC", "main")
+  val BBC = Contact("+441818118181", "The BBC", "main", Some("http://bbc"))
   val contactsService: ContactDao = new ContactDao {
     override def upsertUser(user: User)(implicit ec: ExecutionContext): Future[Either[Seq[String], Unit]] = {
       throw new NotImplementedError("upsertUser")
@@ -75,7 +75,7 @@ class CallServiceImplSpec extends AsyncWordSpec with Matchers {
   "Contacts' telephone numbers" should {
     "identify the contact" in {
       callService.call(modem.Number("+441818118181")).map { response =>
-        response should ===(callOf(Known("The BBC", "main", knownPhoneNumber)))
+        response should ===(callOf(Known("The BBC", "main", Some("http://bbc"), knownPhoneNumber)))
       }
     }
   }

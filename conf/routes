@@ -5,8 +5,10 @@
 
 # An example controller showing a sample home page
 GET     /                           controllers.Home.index
-POST    /contacts/update            controllers.Home.updateContacts
-# GET     /calls                      controllers.Home.listCalls
+GET     /index.html                 controllers.Home.index
+GET     /calls.html                 controllers.Home.calls
+GET     /unauthorised.html          controllers.Home.unauthorised
+POST    /contacts                   controllers.Home.updateContacts
 POST    /call                       controllers.Home.sendToModem
 
 # Map static resources from the /public folder to the /assets URL path

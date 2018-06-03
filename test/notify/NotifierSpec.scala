@@ -7,6 +7,7 @@ import akka.stream.{ActorMaterializer, Materializer}
 import akka.stream.scaladsl.{Keep, Source}
 import call._
 import cats.data.NonEmptyList
+import com.typesafe.config.ConfigFactory
 import modem.{Modem, ModemResponse}
 import org.scalatest.{AsyncWordSpec, Matchers}
 import play.api.inject.ApplicationLifecycle
@@ -16,7 +17,7 @@ import scala.util.Success
 
 class NotifierSpec extends AsyncWordSpec with Matchers {
 
-  implicit val actorSystem: ActorSystem = ActorSystem("notifierSpec")
+  implicit val actorSystem: ActorSystem = ActorSystem("notifierSpec", ConfigFactory.empty())
   implicit val materializer: Materializer = ActorMaterializer()
 
   val now: Instant = Instant.parse("2018-05-20T15:39:00Z")

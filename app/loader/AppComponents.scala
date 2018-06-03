@@ -35,10 +35,10 @@ class AppComponents(context: ApplicationLoader.Context)
 
   implicit val locationConfiguration: LocationConfiguration = {
     val internationalDiallingCodes: Set[String] = cityDao.all().map(_.internationalDiallingCode).toSet
-    val countryCode = configuration.getAndValidate[String]("location.countryCode", internationalDiallingCodes)
-    val country = cityDao.countries(countryCode).get.head
-    val stdCodes = country.cities.map(_.stdCode).toSet
-    val stdCode = configuration.getAndValidate[String]("location.stdCode", stdCodes)
+    val countryCode: String = configuration.getAndValidate[String]("location.countryCode", internationalDiallingCodes)
+    val country: Country = cityDao.countries(countryCode).get.head
+    val stdCodes: Set[String] = country.cities.map(_.stdCode).toSet
+    val stdCode: String = configuration.getAndValidate[String]("location.stdCode", stdCodes)
     logger.info(s"Creating location configuration with international dialling code $countryCode and STD code $stdCode")
     LocationConfiguration(countryCode, stdCode)
   }
@@ -105,6 +105,8 @@ class AppComponents(context: ApplicationLoader.Context)
     googleGroupChecker,
     requiredGoogleGroups,
     wsClient,
+    numberLocationService,
+    persistedCallDao,
     contactLoader,
     contactService,
     maybeModemSender,

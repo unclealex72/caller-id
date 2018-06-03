@@ -71,12 +71,13 @@ class PersistedCallSpec extends WordSpec with Matchers {
                             |    "type" : "withheld"
                             |  }
                             |}""".stripMargin
-  val known: PersistedCall = call(PersistedKnown("Freddie", "mobile", phoneNumber))
+  val known: PersistedCall = call(PersistedKnown("Freddie", "mobile", Some("http://freddie"), phoneNumber))
   val _known: String = """{
                          |  "when" : 1527505768000,
                          |  "caller" : {
                          |    "name" : "Freddie",
                          |    "phoneType" : "mobile",
+                         |    "avatarUrl" : "http://freddie",
                          |    "persistedPhoneNumber" : {
                          |      "normalisedNumber" : "+44181811811",
                          |      "formattedNumber" : "+44 (181) 811811",

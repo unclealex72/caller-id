@@ -1,0 +1,74 @@
+@(name: String, calls: Seq[controllers.CallView])
+
+
+<!DOCTYPE html>
+<html>
+    <head>
+            <!--Import Google Icon Font-->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" media="screen,projection">
+            <!--Import materialize.css-->
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("lib/materialize-css/dist/css/materialize.min.css")" media="screen,projection">
+
+
+            <!--Let browser know website is optimized for mobile-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Caller ID</title>
+    </head>
+  <body>
+
+      <nav class="blue-grey lighten-1" role="navigation">
+          <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Caller ID</a>
+              <ul class="right hide-on-med-and-down">
+                  <li><a href="@routes.Home.updateContacts()">Update contacts</a></li>
+                  <li><a href="@routes.Home.logout()">Logout, @name</a></li>
+              </ul>
+
+              <ul id="nav-mobile" class="sidenav">
+                  <li><a href="@routes.Home.updateContacts()">Update contacts</a></li>
+                  <li><a href="@routes.Home.logout()">Logout, @name</a></li>
+              </ul>
+              <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+          </div>
+      </nav>
+      <div class="section no-pad-bot" id="calls-banner">
+          <div class="container">
+              <div class="row center">
+                  <h3 class="header col s12 light">Your last @calls.length call@if(calls.length == 1){}else{s}</h3>
+              </div>
+              @for(call <- calls) {
+                  <div class="row center">
+                      <div class="col hide-on-small-only m3"></div>
+                      <div class="col s12 m6">
+                          <div class="card horizontal center">
+                              <div class="card-image">
+                                  @call.maybeContact.flatMap(_.avatarUrl) match {
+                                      case Some(avatarUrl) => {
+                                          <img class="contact-avatar" src="@avatarUrl">
+                                      }
+                                      case None => {
+                                          <img class="contact-avatar" src="@routes.Assets.versioned("/images/whocalled.png")">
+                                      }
+                                  }
+                              </div>
+                              <div class="card-stacked">
+                                  <div class="card-content">
+                                      <p>I am a very simple card. I am good at containing small bits of information.</p>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col hide-on-small-only m3"></div>
+                  </div>
+              }
+
+          </div>
+      </div>
+
+
+      <script src="@routes.Assets.versioned("lib/jquery/jquery.min.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.versioned("lib/materialize-css/dist/js/materialize.min.js")" type="text/javascript"></script>
+  </body>
+
+</html>

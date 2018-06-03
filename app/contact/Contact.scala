@@ -1,6 +1,10 @@
 package contact
 
-case class Contact(normalisedPhoneNumber: String, name: String, phoneType: PhoneType)
+case class Contact(
+                    normalisedPhoneNumber: String,
+                    name: String,
+                    phoneType: PhoneType,
+                    avatarUrl: Option[String])
 
 object Contact {
   import play.api.libs.json._

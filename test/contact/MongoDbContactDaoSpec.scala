@@ -41,7 +41,7 @@ class MongoDbContactDaoSpec extends MongoDbDaoSpec[MongoDbContactDao]("contacts"
 
   "Upserting a user" should {
     "Upsert the user but leave all other users alone" in { f =>
-      val user = User("freddie@queen", Seq(Contact("01256767879", "Basingstoke Taxis", "main")))
+      val user = User("freddie@queen", Seq(Contact("01256767879", "Basingstoke Taxis", "main", Some("http://taxi"))))
       for {
         _ <- f.dao.upsertUser(user)
         db <- f.db
@@ -50,20 +50,20 @@ class MongoDbContactDaoSpec extends MongoDbDaoSpec[MongoDbContactDao]("contacts"
       } yield {
         val contacts = contactsWithId.map(doc => doc.--("_id"))
         contacts should contain theSameElementsAs Seq(
-          contact("brian@queen", "01818118181", "The BBC", "main"),
-          contact("brian@queen", "01611234567", "Jodrell Bank", "main"),
-          contact("freddie@queen", "01256767879", "Basingstoke Taxis", "main")
+          contact("brian@queen", "01818118181", "The BBC", "main", Some("http://bbc")),
+          contact("brian@queen", "01611234567", "Jodrell Bank", "main", None),
+          contact("freddie@queen", "01256767879", "Basingstoke Taxis", "main", Some("http://taxi"))
         )
       }
     }
   }
 
-  def contact(emailAddress: String, normalisedPhoneNumber: String, name: String, phoneType: PhoneType): BSONDocument = {
+  def contact(emailAddress: String, normalisedPhoneNumber: String, name: String, phoneType: PhoneType, maybeAvatarUrl: Option[String]): BSONDocument = {
     BSONDocument(Seq(
       "emailAddress" -> BSONString(emailAddress),
       "normalisedPhoneNumber" -> BSONString(normalisedPhoneNumber),
       "name" -> BSONString(name),
-      "phoneType" -> BSONString(phoneType)))
+      "phoneType" -> BSONString(phoneType)) ++ maybeAvatarUrl.map(url => "avatarUrl" -> BSONString(url)))
   }
 
   override def createDao(reactiveMongoApi: ReactiveMongoApi): MongoDbContactDao = {
@@ -72,10 +72,10 @@ class MongoDbContactDaoSpec extends MongoDbDaoSpec[MongoDbContactDao]("contacts"
 
   override def initialData(): Seq[BSONDocument] = {
     Seq(
-      contact("freddie@queen", "01818118181", "The BBC", "main"),
-      contact("freddie@queen", "07001234567", "Delilah", "mobile"),
-      contact("brian@queen", "01818118181", "The BBC", "main"),
-      contact("brian@queen", "01611234567", "Jodrell Bank", "main")
+      contact("freddie@queen", "01818118181", "The BBC", "main", None),
+      contact("freddie@queen", "07001234567", "Delilah", "mobile", None),
+      contact("brian@queen", "01818118181", "The BBC", "main", Some("http://bbc")),
+      contact("brian@queen", "01611234567", "Jodrell Bank", "main", None)
     )
   }
 }
