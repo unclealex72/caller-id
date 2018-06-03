@@ -8,7 +8,7 @@ class LoggingSink(numberFormatter: NumberFormatter) extends StrictLogging with (
   override def apply(call: Call): Unit = {
     val formattedCaller: String = call.caller match {
       case Withheld => "Withheld"
-      case Known(name, _, number) => s"$name on ${numberFormatter.formatNumber(number).default}"
+      case Known(name, _, _, number) => s"$name on ${numberFormatter.formatNumber(number).default}"
       case Unknown(number) => numberFormatter.formatNumber(number).default
       case Undefinable(str) => s"unparseable $str"
     }

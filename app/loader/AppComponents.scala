@@ -1,27 +1,22 @@
 package loader
 
-import java.security.PrivateKey
 import java.time.Clock
 
 import call._
 import cats.data.NonEmptyList
-import com.gu.googleauth._
 import com.typesafe.scalalogging.StrictLogging
 import contact.{ContactDao, GoogleContactLoader, MongoDbContactDao}
-import controllers.{AssetsComponents, Home, routes}
+import controllers.{AssetsComponents, Home}
 import modem.{Modem, ModemSender, SendableAtzModem, TcpAtzModem}
 import notify.Notifier
 import notify.sinks.{LoggingSink, PersistingSink}
 import number._
 import play.api.ApplicationLoader
 import play.api.libs.ws.ahc.AhcWSComponents
-import play.api.mvc.AnyContent
 import play.api.routing.Router
 import play.filters.HttpFiltersComponents
 import play.modules.reactivemongo.{ReactiveMongoApiComponents, ReactiveMongoApiFromContext}
 import router.Routes
-
-import scala.concurrent.{ExecutionContext, Future}
 
 class AppComponents(context: ApplicationLoader.Context)
   extends ReactiveMongoApiFromContext(context)
@@ -49,18 +44,6 @@ class AppComponents(context: ApplicationLoader.Context)
   val contactService: ContactDao = new MongoDbContactDao(reactiveMongoApi)
   val callService: CallService = new CallServiceImpl(clock, numberLocationService, contactService)
 
-  val googleAuthConfig = GoogleAuthConfig(
-    configuration.get[String]("oauth.clientId"),
-    configuration.get[String]("oauth.clientSecret"),
-    configuration.get[String]("oauth.redirectUrl"),
-    domain = None,
-    extraScopes = Seq("https://www.googleapis.com/auth/contacts.readonly"),
-    maxAuthAge = None,
-    enforceValidity = true,
-    prompt = None,
-    antiForgeryChecker = AntiForgeryChecker.borrowSettingsFromPlay(httpConfiguration)
-  )
-
   val persistedCallDao: PersistedCallDao = new MongoDbPersistedCallDao(reactiveMongoApi)
   val persistedCallFactory: PersistedCallFactory = new PersistedCallFactoryImpl(numberFormatter)
   val (modem: Modem, maybeModemSender: Option[ModemSender]) = {
@@ -77,34 +60,10 @@ class AppComponents(context: ApplicationLoader.Context)
     }
   }
 
-  val requiredGoogleGroups: Set[String] = Set("auth")
-  val fakeGoogleServiceAccount: GoogleServiceAccount = {
-    val privateKey = new PrivateKey {
-      override def getAlgorithm: String = "none"
-      override def getFormat: String = "none"
-      override def getEncoded: Array[Byte] = Array.emptyByteArray
-    }
-    GoogleServiceAccount("", privateKey, "")
-  }
-
-  val authAction = new AuthAction[AnyContent](
-    googleAuthConfig,
-    routes.Home.loginAction(),
-    controllerComponents.parsers.default)(executionContext)
-
   val validUsers: Seq[String] = configuration.get[String]("emails").split(',').map(_.trim).toSeq
 
-  val googleGroupChecker: GoogleGroupChecker = new GoogleGroupChecker(fakeGoogleServiceAccount) {
-    override def retrieveGroupsFor(userEmail: String)(implicit ec: ExecutionContext): Future[Set[String]] =
-      Future.successful(requiredGoogleGroups.filter(_ => validUsers.contains(userEmail)))
-  }
   val contactLoader = new GoogleContactLoader(numberLocationService)
   val home = new Home(
-    authAction,
-    googleAuthConfig,
-    googleGroupChecker,
-    requiredGoogleGroups,
-    wsClient,
     numberLocationService,
     persistedCallDao,
     contactLoader,

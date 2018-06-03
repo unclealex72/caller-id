@@ -21,13 +21,11 @@
       <nav class="blue-grey lighten-1" role="navigation">
           <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Caller ID</a>
               <ul class="right hide-on-med-and-down">
-                  <li><a href="@routes.Home.updateContacts()">Update contacts</a></li>
-                  <li><a href="@routes.Home.logout()">Logout, @name</a></li>
+                  @menu(name)
               </ul>
 
               <ul id="nav-mobile" class="sidenav">
-                  <li><a href="@routes.Home.updateContacts()">Update contacts</a></li>
-                  <li><a href="@routes.Home.logout()">Logout, @name</a></li>
+                  @menu(name)
               </ul>
               <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
           </div>

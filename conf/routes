@@ -16,6 +16,3 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 # Oauth2
 
-GET        /loginAction           controllers.Home.loginAction
-GET        /oauth2callback        controllers.Home.oauth2Callback
-GET        /logout                controllers.Home.logout
