@@ -6,7 +6,7 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.people.v1.PeopleService
-import com.google.api.services.people.v1.model.{CoverPhoto, ListConnectionsResponse, PhoneNumber => GooglePhoneNumber}
+import com.google.api.services.people.v1.model.{CoverPhoto, ListConnectionsResponse, Photo, PhoneNumber => GooglePhoneNumber}
 import number.NumberLocationService
 
 import scala.collection.JavaConverters._
@@ -20,13 +20,13 @@ class GoogleContactLoader(numberLocationService: NumberLocationService) extends 
   override def loadContacts(emailAddress: String, accessToken: String)(implicit ec: ExecutionContext): Future[User] = Future {
     val googleCredential: GoogleCredential = new GoogleCredential.Builder().build().setAccessToken(accessToken)
     val peopleService: PeopleService =
-      new PeopleService.Builder(transport, jacksonFactory, googleCredential).build()
+      new PeopleService.Builder(transport, jacksonFactory, googleCredential).setApplicationName("Caller ID").build()
     val response: ListConnectionsResponse =
       peopleService.
         people().
         connections().
         list("people/me").
-        setPersonFields("names,phoneNumbers,coverPhotos").
+        setPersonFields("names,phoneNumbers,photos").
         execute()
     val contacts: Seq[Contact] = for {
       person <- response.getConnections.asScala
@@ -35,13 +35,12 @@ class GoogleContactLoader(numberLocationService: NumberLocationService) extends 
       canonicalForm <- Option(googlePhoneNumber.getCanonicalForm).toSeq
       phoneNumber <- numberLocationService.decompose(canonicalForm).toOption.toSeq
     } yield {
-      val coverPhotos: Seq[CoverPhoto] = Option(person.getCoverPhotos).map(_.asScala).getOrElse(Seq.empty)
-      val maybeCoverPhoto: Option[CoverPhoto] = coverPhotos.find(_.getDefault).orElse(coverPhotos.headOption)
+      val maybePhoto: Option[Photo] = Option(person.getPhotos).map(_.asScala).flatMap(_.headOption)
       Contact(
         phoneNumber.normalisedNumber,
         name.getDisplayName,
         Option(googlePhoneNumber.getFormattedType).getOrElse("other"),
-        maybeCoverPhoto.map(_.getUrl))
+        maybePhoto.map(_.getUrl))
     }
     User(emailAddress, contacts.distinct)
   }

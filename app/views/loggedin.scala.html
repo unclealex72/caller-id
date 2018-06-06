@@ -1,0 +1,13 @@
+@(username: String)
+
+<html>
+    <head>
+        <title>My Logged in page</title>
+    </head>
+    <body>
+        <p>Hello, @username</p>
+        <form action="@routes.SocialAuthController.signOut()">
+            <input type="submit" value="Log out">
+        </form>
+    </body>
+</html>

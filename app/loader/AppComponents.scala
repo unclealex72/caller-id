@@ -2,21 +2,39 @@ package loader
 
 import java.time.Clock
 
-import call._
-import cats.data.NonEmptyList
-import com.typesafe.scalalogging.StrictLogging
-import contact.{ContactDao, GoogleContactLoader, MongoDbContactDao}
-import controllers.{AssetsComponents, Home}
-import modem.{Modem, ModemSender, SendableAtzModem, TcpAtzModem}
 import notify.Notifier
 import notify.sinks.{LoggingSink, PersistingSink}
+import loader.ConfigLoaders._
+import auth._
+import call._
+import cats.data.NonEmptyList
+import com.mohiva.play.silhouette.api.actions._
+import com.mohiva.play.silhouette.api.crypto.{AuthenticatorEncoder, CrypterAuthenticatorEncoder}
+import com.mohiva.play.silhouette.api.util.{FingerprintGenerator, PlayHTTPLayer, Clock => SilhouetteClock}
+import com.mohiva.play.silhouette.api._
+import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings, JcaSigner, JcaSignerSettings}
+import com.mohiva.play.silhouette.impl.authenticators._
+import com.mohiva.play.silhouette.impl.providers.oauth2.GoogleProvider
+import com.mohiva.play.silhouette.impl.providers.{DefaultSocialStateHandler, OAuth2Settings, SocialProviderRegistry}
+import com.mohiva.play.silhouette.impl.util.{DefaultFingerprintGenerator, SecureRandomIDGenerator}
+import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
+import com.typesafe.scalalogging.StrictLogging
+import contact.{ContactDao, GoogleContactLoader, MongoDbContactDao}
+import controllers.{AssetsComponents, Home, SocialAuthController}
+import modem.{Modem, ModemSender, SendableAtzModem, TcpAtzModem}
 import number._
+import play.api
 import play.api.ApplicationLoader
+import play.api.ConfigLoader._
+import play.api.cache.ehcache.EhCacheComponents
 import play.api.libs.ws.ahc.AhcWSComponents
+import play.api.mvc.{CookieHeaderEncoding, DefaultCookieHeaderEncoding, RequestHeader, Result}
 import play.api.routing.Router
 import play.filters.HttpFiltersComponents
 import play.modules.reactivemongo.{ReactiveMongoApiComponents, ReactiveMongoApiFromContext}
 import router.Routes
+
+import scala.concurrent.Future
 
 class AppComponents(context: ApplicationLoader.Context)
   extends ReactiveMongoApiFromContext(context)
@@ -24,6 +42,7 @@ class AppComponents(context: ApplicationLoader.Context)
     with HttpFiltersComponents
     with ReactiveMongoApiComponents
     with AssetsComponents
+    with EhCacheComponents
     with StrictLogging {
 
   val cityDao: CityDao = CityDaoImpl()
@@ -60,8 +79,56 @@ class AppComponents(context: ApplicationLoader.Context)
     }
   }
 
-  val validUsers: Seq[String] = configuration.get[String]("emails").split(',').map(_.trim).toSeq
-
+  val userDao = new MongoDbUserDao(reactiveMongoApi)
+  val userService = new UserServiceImpl(userDao)
+  val httpLayer = new PlayHTTPLayer(wsClient)
+  val socialStateSigner = new JcaSigner(configuration.get[JcaSignerSettings]("silhouette.socialStateHandler.signer"))
+  val socialStateHandler = new DefaultSocialStateHandler(Set(), socialStateSigner)
+  val googleProvider = new GoogleProvider(httpLayer, socialStateHandler, configuration.get[OAuth2Settings]("silhouette.google"))
+  val crypter = new JcaCrypter(configuration.get[JcaCrypterSettings]("silhouette.authenticator.crypter"))
+  val idGenerator = new SecureRandomIDGenerator()
+  val silhouetteClock = SilhouetteClock()
+  val eventBus = EventBus()
+  val cookieHeaderEncoding: CookieHeaderEncoding = new DefaultCookieHeaderEncoding()
+  val authenticatorEncoder: AuthenticatorEncoder = new CrypterAuthenticatorEncoder(crypter)
+  val fingerprintGenerator: FingerprintGenerator = new DefaultFingerprintGenerator()
+  val cookieAuthenticatorSettings: CookieAuthenticatorSettings =
+    configuration.get[CookieAuthenticatorSettings]("silhouette.cookie")
+  val authenticatorService =  new CookieAuthenticatorService(cookieAuthenticatorSettings, None,
+    socialStateSigner, cookieHeaderEncoding, authenticatorEncoder, fingerprintGenerator, idGenerator, silhouetteClock)
+  val env: Environment[DefaultEnv] = Environment[DefaultEnv](
+    userService,
+    authenticatorService,
+    Seq(),
+    eventBus
+  )
+  val bodyParserDefault = new api.mvc.BodyParsers.Default(playBodyParsers)
+  val validUsers: Seq[String] = configuration.get[String]("silhouette.emails").split(',').map(_.trim)
+  val authorization: Authorization[User, CookieAuthenticator] = new ValidUserAuthorization(validUsers)
+  val unsecuredErrorHandler = new DefaultUnsecuredErrorHandler(messagesApi)
+  val unsecuredRequestHandler = new DefaultUnsecuredRequestHandler(unsecuredErrorHandler)
+  val unsecuredAction = new DefaultUnsecuredAction(unsecuredRequestHandler, bodyParserDefault)
+  val userAwareRequestHandler = new DefaultUserAwareRequestHandler()
+  val userAwareAction = new DefaultUserAwareAction(userAwareRequestHandler, bodyParserDefault)
+  val authInfoDao = new MongoDbOauth2AuthInfoDao(reactiveMongoApi)
+  val authInfoRepository = new DelegableAuthInfoRepository(authInfoDao)
+  val securedErrorHandler: SecuredErrorHandler = new DefaultSecuredErrorHandler(messagesApi) {
+    override def onNotAuthenticated(implicit request: RequestHeader): Future[Result] = {
+      socialAuthController.authenticate().apply(request).run()
+    }
+  }
+  val securedRequestHandler = new DefaultSecuredRequestHandler(securedErrorHandler)
+  val securedAction = new DefaultSecuredAction(securedRequestHandler, bodyParserDefault)
+  val socialAuthController = new SocialAuthController(
+    controllerComponents,
+    env,
+    userAwareAction,
+    userService,
+    authInfoRepository,
+    googleProvider,
+    defaultCacheApi)
+  val silhouette: Silhouette[DefaultEnv] =
+    new SilhouetteProvider[DefaultEnv](env, securedAction, unsecuredAction, userAwareAction)
   val contactLoader = new GoogleContactLoader(numberLocationService)
   val home = new Home(
     numberLocationService,
@@ -69,7 +136,11 @@ class AppComponents(context: ApplicationLoader.Context)
     contactLoader,
     contactService,
     maybeModemSender,
+    silhouette,
+    authorization,
+    authInfoDao,
     controllerComponents)
+
 
   val notifier: Notifier = {
     val loggingSink = new LoggingSink(numberFormatter)
@@ -87,6 +158,7 @@ class AppComponents(context: ApplicationLoader.Context)
   override def router: Router = new Routes(
     httpErrorHandler,
     home,
+    socialAuthController,
     assets
   )
 }
