@@ -4,19 +4,17 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /                           controllers.Home.index
-GET     /index.html                 controllers.Home.index
-GET     /unauthorised.html          controllers.Home.unauthorised
-POST    /contacts                   controllers.Home.updateContacts
-POST    /call                       controllers.Home.sendToModem
+GET         /caller-id/                         controllers.Home.index
+GET         /caller-id/index.html               controllers.Home.index
+GET         /caller-id/unauthorised.html        controllers.Home.unauthorised
+POST        /caller-id/contacts                 controllers.Home.updateContacts
+POST        /caller-id/call                     controllers.Home.sendToModem
 
-GET         /authenticate          controllers.SocialAuthController.authenticate
-POST        /authenticate          controllers.SocialAuthController.authenticate
-GET         /oauth2callback        controllers.SocialAuthController.authenticate
-GET         /signOut               controllers.SocialAuthController.signOut
+GET         /caller-id/authenticate             controllers.SocialAuthController.authenticate
+POST        /caller-id/authenticate             controllers.SocialAuthController.authenticate
+GET         /caller-id/oauth2callback           controllers.SocialAuthController.authenticate
+GET         /caller-id/signout                  controllers.SocialAuthController.signOut
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
-
-# Oauth2
+GET         /caller-id/assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
