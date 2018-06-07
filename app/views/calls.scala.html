@@ -52,7 +52,19 @@
                               </div>
                               <div class="card-stacked">
                                   <div class="card-content">
-                                      <p>I am a very simple card. I am good at containing small bits of information.</p>
+                                      <p>@call.when</p>
+                                      @for(contact <- call.maybeContact) {
+                                          <p>@contact.name (@contact.phoneType)</p>
+                                      }
+                                      @for(phoneNumber <- call.maybePhoneNumber) {
+                                          <p>@phoneNumber._2.default</p>
+                                          <p>
+                                            @for(city <- phoneNumber._1.city) {
+                                                @city.name,
+                                            }
+                                            @phoneNumber._1.countries.toList.map(_.name).mkString(", ")
+                                          </p>
+                                      }
                                   </div>
                               </div>
                           </div>

@@ -66,16 +66,13 @@ class AppComponents(context: ApplicationLoader.Context)
   val persistedCallDao: PersistedCallDao = new MongoDbPersistedCallDao(reactiveMongoApi)
   val persistedCallFactory: PersistedCallFactory = new PersistedCallFactoryImpl(numberFormatter)
   val (modem: Modem, maybeModemSender: Option[ModemSender]) = {
-    val debug = configuration.get[Boolean]("modem.debug")
-    if (debug) {
-      logger.info("Debug modem enabled.")
-      val modem = new SendableAtzModem()(actorSystem, materializer)
-      (modem, Some(modem))
-    }
-    else {
-      val host = configuration.get[String]("modem.host")
-      val port = configuration.get[Int]("modem.port")
-      (new TcpAtzModem(host, port)(actorSystem, materializer), None)
+    val modemConfiguration = configuration.get[ModemConfiguration]("modem")
+    modemConfiguration match {
+      case DebugModemConfiguration =>
+        val modem = new SendableAtzModem()(actorSystem, materializer)
+        (modem, Some(modem))
+      case NetworkModemConfiguration(host, port) =>
+        (new TcpAtzModem(host, port)(actorSystem, materializer), None)
     }
   }
 
@@ -132,6 +129,7 @@ class AppComponents(context: ApplicationLoader.Context)
   val contactLoader = new GoogleContactLoader(numberLocationService)
   val home = new Home(
     numberLocationService,
+    numberFormatter,
     persistedCallDao,
     contactLoader,
     contactService,

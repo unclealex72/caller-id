@@ -55,20 +55,22 @@ class SocialAuthController @Inject()(
    */
   def authenticate() = Action.async { implicit request =>
       // build a new JSON body as our ng2-ui-auth client put the data somewhere specific
-      googleProvider.authenticate()(request.withBody(AnyContentAsJson(getAuthenticationPayload(request.body.asJson)))).flatMap {
+      val body = AnyContentAsJson(getAuthenticationPayload(request.body.asJson))
+      googleProvider.authenticate()(request.withBody(body)).flatMap {
         case Left(result) =>
          Future.successful(result)
-        case Right(authInfo) => for {
-          profile <- googleProvider.retrieveProfile(authInfo)
-          user <- userService.save(profile)
-          _ <- authInfoRepository.save(profile.loginInfo, authInfo)
-          authenticator <- env.authenticatorService.create(profile.loginInfo)
-          token <- env.authenticatorService.init(authenticator)
-          result <- env.authenticatorService.embed(token, Redirect(redirectOnLogin))
-        } yield {
-          env.eventBus.publish(LoginEvent(user, request))
-          result
-        }
+        case Right(authInfo) =>
+          for {
+            profile <- googleProvider.retrieveProfile(authInfo)
+            user <- userService.save(profile)
+            _ <- authInfoRepository.save(profile.loginInfo, authInfo)
+            authenticator <- env.authenticatorService.create(profile.loginInfo)
+            token <- env.authenticatorService.init(authenticator)
+            result <- env.authenticatorService.embed(token, Redirect(redirectOnLogin))
+          } yield {
+            env.eventBus.publish(LoginEvent(user, request))
+            result
+          }
       }.recover {
         case e: ProviderException =>
           Logger.error("Unexpected provider error", e)

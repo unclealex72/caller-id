@@ -77,20 +77,19 @@ object ConfigLoaders {
     }
   }
 
-  /*
-  case class CookieAuthenticatorSettings(
-  cookieName: String = "id",
-  cookiePath: String = "/",
-  cookieDomain: Option[String] = None,
-  secureCookie: Boolean = true,
-  httpOnlyCookie: Boolean = true,
-  useFingerprinting: Boolean = true,
-  cookieMaxAge: Option[FiniteDuration] = None,
-  authenticatorIdleTimeout: Option[FiniteDuration] = None,
-  authenticatorExpiry: FiniteDuration = 12 hours
-)
-   */
-
+  implicit val modemConfigurationConfigLoader: ConfigLoader[ModemConfiguration] = new ConfigurationLoader[ModemConfiguration] {
+    override def load(implicit path: String, configuration: Configuration): ModemConfiguration = {
+      val useDebug = "debug".get[Boolean]
+      if (useDebug) {
+        DebugModemConfiguration
+      }
+      else {
+        val host = "host".get[String]
+        val port = "port".get[Int]
+        NetworkModemConfiguration(host, port)
+      }
+    }
+  }
   implicit val cookieAuthenticatorSettingsConfigLoader: ConfigLoader[CookieAuthenticatorSettings] = new ConfigurationLoader[CookieAuthenticatorSettings] {
     override def load(implicit path: String, configuration: Configuration): CookieAuthenticatorSettings = {
       CookieAuthenticatorSettings().

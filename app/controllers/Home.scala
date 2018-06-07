@@ -12,13 +12,14 @@ import com.mohiva.play.silhouette.impl.providers.OAuth2Info
 import com.mohiva.play.silhouette.persistence.daos.AuthInfoDAO
 import contact.{Contact, ContactDao, ContactLoader}
 import modem.ModemSender
-import number.{NumberLocationService, PhoneNumber}
+import number.{FormattableNumber, NumberFormatter, NumberLocationService, PhoneNumber}
 import play.api.mvc.{Filters => _, _}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class Home(
             val numberLocationService: NumberLocationService,
+            val numberFormatter: NumberFormatter,
             val persistedCallDao: PersistedCallDao,
             val contactLoader: ContactLoader,
             val contactService: ContactDao,
@@ -50,9 +51,12 @@ class Home(
                 Some(CallView(when, None, None))
               case PersistedKnown(contactName, phoneType, maybeAvatarUrl, persistedPhoneNumber) =>
                 build(persistedPhoneNumber, pn =>
-                  CallView(when, Some(Contact(pn.normalisedNumber, contactName, phoneType, maybeAvatarUrl)), Some(pn)))
+                  CallView(when, Some(Contact(pn.normalisedNumber, contactName, phoneType, maybeAvatarUrl)), None))
               case PersistedUnknown(persistedPhoneNumber) =>
-                build(persistedPhoneNumber, pn => CallView(when, None, Some(pn)))
+                build(persistedPhoneNumber, pn => {
+                  val formattableNumber = numberFormatter.formatNumber(pn)
+                  CallView(when, None, Some((pn, formattableNumber)))
+                })
               case PersistedUndefinable(_) => None
             }
           }
@@ -91,4 +95,7 @@ class Home(
 
 }
 
-case class CallView(when: Instant, maybeContact: Option[Contact], maybePhoneNumber: Option[PhoneNumber])
+case class CallView(
+                     when: Instant,
+                     maybeContact: Option[Contact],
+                     maybePhoneNumber: Option[(PhoneNumber, FormattableNumber)])
