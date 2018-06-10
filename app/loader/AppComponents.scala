@@ -36,7 +36,7 @@ import play.filters.hosts.AllowedHostsFilter
 import play.modules.reactivemongo.{ReactiveMongoApiComponents, ReactiveMongoApiFromContext}
 import router.Routes
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AppComponents(context: ApplicationLoader.Context)
   extends ReactiveMongoApiFromContext(context)
@@ -49,7 +49,9 @@ class AppComponents(context: ApplicationLoader.Context)
 
   val cityDao: CityDao = CityDaoImpl()
 
-  implicit val locationConfiguration: LocationConfiguration = {
+  val mongoExecutionContext: ExecutionContext = actorSystem.dispatcher
+
+  val locationConfiguration: LocationConfiguration = {
     val internationalDiallingCodes: Set[String] = cityDao.all().map(_.internationalDiallingCode).toSet
     val countryCode: String = configuration.getAndValidate[String]("location.countryCode", internationalDiallingCodes)
     val country: Country = cityDao.countries(countryCode).get.head
@@ -58,17 +60,17 @@ class AppComponents(context: ApplicationLoader.Context)
     logger.info(s"Creating location configuration with international dialling code $countryCode and STD code $stdCode")
     LocationConfiguration(countryCode, stdCode)
   }
-  val numberFormatter: NumberFormatter = new NumberFormatterImpl()
-  val numberLocationService: NumberLocationService = new NumberLocationServiceImpl(cityDao, locationConfiguration)
+  val localService: LocalService = new LocalServiceImpl(locationConfiguration.internationalCode, locationConfiguration.stdCode)
+  val numberFormatter: NumberFormatter = new NumberFormatterImpl(localService)
+  val numberLocationService: PhoneNumberFactory = new PhoneNumberFactoryImpl(cityDao, numberFormatter, localService)
 
   val clock: Clock = Clock.systemDefaultZone()
-  val contactService: ContactDao = new MongoDbContactDao(reactiveMongoApi)
+  val contactService: ContactDao = new MongoDbContactDao(reactiveMongoApi)(mongoExecutionContext)
   val callService: CallService = new CallServiceImpl(clock, numberLocationService, contactService)
 
-  val persistedCallDao: PersistedCallDao = new MongoDbPersistedCallDao(reactiveMongoApi)
-  val persistedCallFactory: PersistedCallFactory = new PersistedCallFactoryImpl(numberFormatter)
+  val callDao: CallDao = new MongoDbCallDao(reactiveMongoApi)(mongoExecutionContext)
   val (modem: Modem, maybeModemSender: Option[ModemSender]) = {
-    val modemConfiguration = configuration.get[ModemConfiguration]("modem")
+    val modemConfiguration: ModemConfiguration = configuration.get[ModemConfiguration]("modem")
     modemConfiguration match {
       case DebugModemConfiguration =>
         val modem = new SendableAtzModem()(actorSystem, materializer)
@@ -78,7 +80,7 @@ class AppComponents(context: ApplicationLoader.Context)
     }
   }
 
-  val userDao = new MongoDbUserDao(reactiveMongoApi)
+  val userDao = new MongoDbUserDao(reactiveMongoApi)(mongoExecutionContext)
   val userService = new UserServiceImpl(userDao)
   val httpLayer = new PlayHTTPLayer(wsClient)
   val socialStateSigner = new JcaSigner(configuration.get[JcaSignerSettings]("silhouette.socialStateHandler.signer"))
@@ -109,7 +111,7 @@ class AppComponents(context: ApplicationLoader.Context)
   val unsecuredAction = new DefaultUnsecuredAction(unsecuredRequestHandler, bodyParserDefault)
   val userAwareRequestHandler = new DefaultUserAwareRequestHandler()
   val userAwareAction = new DefaultUserAwareAction(userAwareRequestHandler, bodyParserDefault)
-  val authInfoDao = new MongoDbOauth2AuthInfoDao(reactiveMongoApi)
+  val authInfoDao = new MongoDbOauth2AuthInfoDao(reactiveMongoApi)(mongoExecutionContext)
   val authInfoRepository = new DelegableAuthInfoRepository(authInfoDao)
   val securedErrorHandler: SecuredErrorHandler = new DefaultSecuredErrorHandler(messagesApi) {
     override def onNotAuthenticated(implicit request: RequestHeader): Future[Result] = {
@@ -132,7 +134,7 @@ class AppComponents(context: ApplicationLoader.Context)
   val home = new Home(
     numberLocationService,
     numberFormatter,
-    persistedCallDao,
+    callDao,
     contactLoader,
     contactService,
     maybeModemSender,
@@ -143,8 +145,8 @@ class AppComponents(context: ApplicationLoader.Context)
 
 
   val notifier: Notifier = {
-    val loggingSink = new LoggingSink(numberFormatter)
-    val persistingSink = new PersistingSink(persistedCallFactory, persistedCallDao)
+    val loggingSink = new LoggingSink
+    val persistingSink = new PersistingSink(callDao)
     new Notifier(
       modem,
       callService,

@@ -28,33 +28,12 @@ import cats.data.NonEmptyList
 /**
  * The representation of a telephone number that called.
  */
-case class PhoneNumber(
-  /**
-   * The normalised number that called. A normalised number is of the form <i>+iisssnnnn</i> or <i>+iinnnn</i>
-   * where <i>ii</i> is the international dialling code, <i>sss</i> is the STD code less the leading zero (if any) and <i>nnnn</i> is
-   * the remaining number.
-   */
-  normalisedNumber: String,
-  /**
-   * The list of countries from where this phone number could have originated. If the city is known then this list
-   * will be of length exactly one. Otherwise, the countries will be listed with the country with the most cities
-   * first.
-   */
-  countries: NonEmptyList[Country],
-  /**
-   * The city from which this phone number was made, if known.
-   */
-  city: Option[City],
-  /**
-   * The rest of the number that called, minus the international and STD codes.
-   */
-  number: String)
+case class PhoneNumber(normalisedNumber: String, formattedNumber: String, city: Option[String], countries: NonEmptyList[String])
 
 object PhoneNumber {
   import play.api.libs.json._
   import json._
-
-  implicit val phoneNumberReads: Reads[PhoneNumber] = Json.reads[PhoneNumber]
-  implicit val phoneNumberWrites: Writes[PhoneNumber] = Json.writes[PhoneNumber]
+  
+  implicit val phoneNumberFormat: OFormat[PhoneNumber] = Json.format[PhoneNumber]
 
 }

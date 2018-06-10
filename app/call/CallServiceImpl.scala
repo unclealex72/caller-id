@@ -7,11 +7,11 @@ import com.typesafe.scalalogging.StrictLogging
 import contact.{Contact, ContactDao}
 import javax.inject.Inject
 import modem.ModemResponse
-import number.NumberLocationService
+import number.PhoneNumberFactory
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CallServiceImpl @Inject() (clock: Clock, numberLocationService: NumberLocationService, contactService: ContactDao) extends CallService with StrictLogging {
+class CallServiceImpl @Inject() (clock: Clock, numberLocationService: PhoneNumberFactory, contactService: ContactDao) extends CallService with StrictLogging {
 
   override def call(modemResponse: ModemResponse)(implicit ec: ExecutionContext): Future[Option[Call]] = {
     val now = clock.instant()

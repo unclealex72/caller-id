@@ -60,7 +60,7 @@ class MongoDbContactDaoSpec extends MongoDbDaoSpec[MongoDbContactDao]("contacts"
 
   def contact(emailAddress: String, normalisedPhoneNumber: String, name: String, phoneType: PhoneType, maybeAvatarUrl: Option[String]): BSONDocument = {
     BSONDocument(Seq(
-      "emailAddress" -> BSONString(emailAddress),
+      "userEmailAddress" -> BSONString(emailAddress),
       "normalisedPhoneNumber" -> BSONString(normalisedPhoneNumber),
       "name" -> BSONString(name),
       "phoneType" -> BSONString(phoneType)) ++ maybeAvatarUrl.map(url => "avatarUrl" -> BSONString(url)))

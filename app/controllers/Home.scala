@@ -1,27 +1,23 @@
 package controllers
 
-import java.time.Instant
-
 import auth.{DefaultEnv, User}
 import call.{Call => _, _}
-import cats.data.Validated._
 import cats.data._
 import cats.implicits._
 import com.mohiva.play.silhouette.api.{Authorization, Silhouette}
 import com.mohiva.play.silhouette.impl.providers.OAuth2Info
 import com.mohiva.play.silhouette.persistence.daos.AuthInfoDAO
-import contact.{Contact, ContactDao, ContactLoader}
+import contact.{ContactDao, ContactLoader}
 import modem.ModemSender
-import number.{FormattableNumber, NumberFormatter, NumberLocationService, PhoneNumber}
+import number.{NumberFormatter, PhoneNumberFactory}
 import play.api.mvc.{Filters => _, _}
-import play.filters.csrf.CSRF
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class Home(
-            val numberLocationService: NumberLocationService,
+            val numberLocationService: PhoneNumberFactory,
             val numberFormatter: NumberFormatter,
-            val persistedCallDao: PersistedCallDao,
+            val callDao: CallDao,
             val contactLoader: ContactLoader,
             val contactService: ContactDao,
             val maybeModemSender: Option[ModemSender],
@@ -36,32 +32,11 @@ class Home(
   }
 
   def index = silhouette.SecuredAction(authorization).async { implicit request =>
-    def build(persistedPhoneNumber: PersistedPhoneNumber, builder: PhoneNumber => CallView): Option[CallView] = {
-      numberLocationService.decompose(persistedPhoneNumber.normalisedNumber) match {
-        case Valid(phoneNumber) => Some(builder(phoneNumber))
-        case Invalid(_) => None
-      }
-    }
     request.identity.fullName match {
       case Some(name) =>
-        persistedCallDao.calls(max = Some(20)).map { persistedCalls =>
-          val calls: Seq[CallView] = persistedCalls.flatMap { persistedCall =>
-            val when: Instant = persistedCall.when
-            persistedCall.caller match {
-              case PersistedWithheld =>
-                Some(CallView(when, None, None))
-              case PersistedKnown(contactName, phoneType, maybeAvatarUrl, persistedPhoneNumber) =>
-                build(persistedPhoneNumber, pn =>
-                  CallView(when, Some(Contact(pn.normalisedNumber, contactName, phoneType, maybeAvatarUrl)), None))
-              case PersistedUnknown(persistedPhoneNumber) =>
-                build(persistedPhoneNumber, pn => {
-                  val formattableNumber: FormattableNumber = numberFormatter.formatNumber(pn)
-                  CallView(when, None, Some((pn, formattableNumber)))
-                })
-              case PersistedUndefinable(_) => None
-            }
-          }
-          Ok(views.html.calls(name, calls))
+        callDao.calls(max = Some(20)).map { calls =>
+          val callViews: Seq[CallView] = calls.flatMap(_.view)
+          Ok(views.html.calls(name, callViews))
         }
       case None => Future.successful(Forbidden(""))
     }
@@ -78,7 +53,7 @@ class Home(
       accessToken <- EitherT(authInfoDao.find(user.loginInfo).map(_.toRight(Seq("Access token required"))))
       user <- EitherT.right(contactLoader.loadContacts(emailAddress, accessToken.accessToken))
       _ <- EitherT(contactService.upsertUser(user))
-      persistedCallResponse <- EitherT(persistedCallDao.alterContacts(user.contacts))
+      persistedCallResponse <- EitherT(callDao.alterContacts(user.contacts))
     } yield {
       persistedCallResponse
     }
@@ -100,7 +75,3 @@ class Home(
 
 }
 
-case class CallView(
-                     when: Instant,
-                     maybeContact: Option[Contact],
-                     maybePhoneNumber: Option[(PhoneNumber, FormattableNumber)])

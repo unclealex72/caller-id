@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
   * Give access to the user object.
   */
-class MongoDbUserDao(override val reactiveMongoApi: ReactiveMongoApi) extends MongoDbDao(reactiveMongoApi, "user") with UserDao {
+class MongoDbUserDao(override val reactiveMongoApi: ReactiveMongoApi)(implicit ec: ExecutionContext) extends MongoDbDao(reactiveMongoApi, "user") with UserDao {
 
   /**
     * Finds a user by its login info.
@@ -21,7 +21,7 @@ class MongoDbUserDao(override val reactiveMongoApi: ReactiveMongoApi) extends Mo
     * @param loginInfo The login info of the user to find.
     * @return The found user or None if no user for the given login info could be found.
     */
-  def find(loginInfo: LoginInfo)(implicit ec: ExecutionContext): Future[Option[User]] = {
+  def find(loginInfo: LoginInfo): Future[Option[User]] = {
     val query = Json.obj("loginInfo" -> loginInfo)
     collection().flatMap(_.find(query).one[User])
   }
@@ -32,7 +32,7 @@ class MongoDbUserDao(override val reactiveMongoApi: ReactiveMongoApi) extends Mo
     * @param userID The ID of the user to find.
     * @return The found user or None if no user for the given ID could be found.
     */
-  def find(userID: UUID)(implicit ec: ExecutionContext): Future[Option[User]] = {
+  def find(userID: UUID): Future[Option[User]] = {
     val query = Json.obj("userID" -> userID)
     collection().flatMap(_.find(query).one[User])
   }
@@ -43,7 +43,7 @@ class MongoDbUserDao(override val reactiveMongoApi: ReactiveMongoApi) extends Mo
     * @param user The user to save.
     * @return The saved user.
     */
-  def save(user: User)(implicit ec: ExecutionContext): Future[User] = {
+  def save(user: User): Future[User] = {
     collection.flatMap(_.update(Json.obj("userID" -> user.userID), user, upsert = true)).map(_ => user)
   }
 }

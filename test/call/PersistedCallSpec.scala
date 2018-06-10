@@ -4,10 +4,11 @@ import java.time.{Instant, OffsetDateTime}
 
 import cats.data.NonEmptyList
 import org.scalatest.{Matchers, WordSpec}
-import call.PersistedCall._
+import call.Call._
+import number.PhoneNumber
 import play.api.libs.json._
 
-class PersistedCallSpec extends WordSpec with Matchers {
+class CallSpec extends WordSpec with Matchers {
 
   "Serialising a withheld call" should {
     "serialise correctly" in {
@@ -57,50 +58,50 @@ class PersistedCallSpec extends WordSpec with Matchers {
     }
   }
 
-  def call(persistedCaller: PersistedCaller): PersistedCall = {
+  def call(Caller: Caller): Call = {
     val now: Instant = OffsetDateTime.parse("2018-05-28T11:09:28+00:00").toInstant
-    PersistedCall(now, persistedCaller)
+    Call(now, Caller)
   }
 
-  val phoneNumber: PersistedPhoneNumber =
-    PersistedPhoneNumber("+44181811811", "+44 (181) 811811", Some("London"), NonEmptyList.of("England", "UK"))
-  val withheld: PersistedCall = call(PersistedWithheld)
+  val phoneNumber: PhoneNumber =
+    PhoneNumber("+44181811811", "+44 (181) 811811", Some("London"), NonEmptyList.of("England", "UK"))
+  val withheld: Call = call(Withheld)
   val _withheld: String = """{
                             |  "when" : 1527505768000,
                             |  "caller" : {
                             |    "type" : "withheld"
                             |  }
                             |}""".stripMargin
-  val known: PersistedCall = call(PersistedKnown("Freddie", "mobile", Some("http://freddie"), phoneNumber))
+  val known: Call = call(Known("Freddie", "mobile", Some("http://freddie"), phoneNumber))
   val _known: String = """{
                          |  "when" : 1527505768000,
                          |  "caller" : {
                          |    "name" : "Freddie",
                          |    "phoneType" : "mobile",
                          |    "avatarUrl" : "http://freddie",
-                         |    "persistedPhoneNumber" : {
+                         |    "phoneNumber" : {
                          |      "normalisedNumber" : "+44181811811",
                          |      "formattedNumber" : "+44 (181) 811811",
-                         |      "maybeCity" : "London",
+                         |      "city" : "London",
                          |      "countries" : [ "England", "UK" ]
                          |    },
                          |    "type" : "known"
                          |  }
                          |}""".stripMargin
-  val unknown: PersistedCall = call(PersistedUnknown(phoneNumber))
+  val unknown: Call = call(Unknown(phoneNumber))
   val _unknown: String = """{
                            |  "when" : 1527505768000,
                            |  "caller" : {
-                           |    "persistedPhoneNumber" : {
+                           |    "phoneNumber" : {
                            |      "normalisedNumber" : "+44181811811",
                            |      "formattedNumber" : "+44 (181) 811811",
-                           |      "maybeCity" : "London",
+                           |      "city" : "London",
                            |      "countries" : [ "England", "UK" ]
                            |    },
                            |    "type" : "unknown"
                            |  }
                            |}""".stripMargin
-  val undefinable: PersistedCall = call(PersistedUndefinable("unknown"))
+  val undefinable: Call = call(Undefinable("unknown"))
   val _undefinable: String = """{
                                |  "when" : 1527505768000,
                                |  "caller" : {
@@ -110,15 +111,15 @@ class PersistedCallSpec extends WordSpec with Matchers {
                                |}""".stripMargin
   
 
-  implicit class SerialiseImplicits(persistedCall: PersistedCall) {
-    def serialise(implicit persistedCallWrites: Writes[PersistedCall]): String = {
-      Json.prettyPrint(Json.toJson(persistedCall)(persistedCallWrites))
+  implicit class SerialiseImplicits(call: Call) {
+    def serialise(implicit CallWrites: Writes[Call]): String = {
+      Json.prettyPrint(Json.toJson(call)(CallWrites))
     }
   }
 
   implicit class DeserialiseImplicits(str: String) {
-    def deserialise(implicit persistedCallReads: Reads[PersistedCall]): PersistedCall = {
-      Json.parse(str).as[PersistedCall](persistedCallReads)
+    def deserialise(implicit CallReads: Reads[Call]): Call = {
+      Json.parse(str).as[Call](CallReads)
     }
   }
 }

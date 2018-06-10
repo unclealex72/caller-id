@@ -24,10 +24,8 @@
 
 package number
 
+import cats.data.NonEmptyList
 import javax.inject.Inject
-import number.LocationConfiguration._
-
-import scala.collection.immutable.List
 
 /**
  * @author alex
@@ -35,40 +33,27 @@ import scala.collection.immutable.List
  */
 class NumberFormatterImpl @Inject() (
   /**
-   * The location configuration object that can be used to decide whether a number is local or not.
+   * The local service object that can be used to decide whether a number is local or not.
    */
-  implicit locationConfiguration: LocationConfiguration) extends NumberFormatter {
+  localService: LocalService) extends NumberFormatter {
 
-  override def formatNumberAsInternational(phoneNumber: PhoneNumber): FormattableNumber =
-    formatNumber(phoneNumber, _ => true, _ => true, _ => false)
-
-  override def formatNumber(phoneNumber: PhoneNumber): FormattableNumber = {
-    val includeInternational: Country => Boolean = country =>
-      country.isNotLocal
-    val includeStd: ((Country, City)) => Boolean = {
-      case (country, city) => (country.isLocal && city.isNotLocal) || country.isNotLocal
+  def formatNumber(countries: NonEmptyList[Country], maybeCity: Option[City], number: String): String = {
+    val country: Country = countries.head
+    val countryCode: Seq[String] =
+      Seq(country).filterNot(localService.isLocalCountry).map(c => s"+${c.internationalDiallingCode}")
+    val internalPrefix = country.localStdPrefix.getOrElse("")
+    val nationalParts: Seq[String] = maybeCity match {
+      case Some(city) =>
+        if (localService.isLocalCity(city)) {
+          Seq(number)
+        }
+        else {
+          Seq(s"($internalPrefix${city.stdCode})", number)
+        }
+      case None => Seq(internalPrefix + number)
     }
-    formatNumber(phoneNumber, includeInternational, includeStd, _.isLocal)
+    (countryCode ++ nationalParts).mkString(" ")
   }
 
-  //noinspection ScalaUnnecessaryParentheses
-  def formatNumber(phoneNumber: PhoneNumber,
-                   includeInternational: Country => Boolean,
-                   includeStd: ((Country, City)) => Boolean,
-                   includeLocalStdPrefix: Country => Boolean): FormattableNumber = {
-    val country = phoneNumber.countries.head
-    val international = Some(country).filter(includeInternational).map(_.internationalDiallingCode)
-    val prefix = Some(country).filter(includeLocalStdPrefix).flatMap(_.localStdPrefix).getOrElse("")
-    val city = phoneNumber.city
-    val std = city.map(city => country -> city).filter(includeStd).map(_._2.stdCode)
-    FormattableNumber(
-      international,
-      std.map(prefix + _),
-      city.map(_ => "").getOrElse(prefix) + phoneNumber.number)
-  }
 
-  def formatAddress(phoneNumber: PhoneNumber): List[String] = {
-    val countryName = phoneNumber.countries.head.name
-    phoneNumber.city.map { city => List(city.name, countryName) }.getOrElse(List(countryName))
-  }
 }

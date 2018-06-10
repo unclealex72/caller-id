@@ -7,12 +7,12 @@ import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.people.v1.PeopleService
 import com.google.api.services.people.v1.model.{CoverPhoto, ListConnectionsResponse, Photo, PhoneNumber => GooglePhoneNumber}
-import number.NumberLocationService
+import number.PhoneNumberFactory
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
-class GoogleContactLoader(numberLocationService: NumberLocationService) extends ContactLoader {
+class GoogleContactLoader(numberLocationService: PhoneNumberFactory) extends ContactLoader {
 
   private val transport: HttpTransport = new NetHttpTransport()
   private val jacksonFactory: JsonFactory = new JacksonFactory()

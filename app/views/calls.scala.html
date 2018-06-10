@@ -1,6 +1,6 @@
-@import helper._
 
-@(name: String, calls: Seq[controllers.CallView])(implicit request: RequestHeader)
+
+@(name: String, calls: Seq[call.CallView])(implicit request: RequestHeader)
 
 
 <!DOCTYPE html>
@@ -59,12 +59,12 @@
                                           <p>@contact.name (@contact.phoneType)</p>
                                       }
                                       @for(phoneNumber <- call.maybePhoneNumber) {
-                                          <p>@phoneNumber._2.default</p>
+                                          <p>@phoneNumber.formattedNumber</p>
                                           <p>
-                                            @for(city <- phoneNumber._1.city) {
-                                                @city.name,
+                                            @for(city <- phoneNumber.city) {
+                                                @city,
                                             }
-                                            @phoneNumber._1.countries.toList.map(_.name).mkString(", ")
+                                            @phoneNumber.countries.toList.mkString(", ")
                                           </p>
                                       }
                                   </div>

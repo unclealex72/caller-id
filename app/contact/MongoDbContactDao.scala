@@ -10,10 +10,10 @@ import reactivemongo.play.json.collection.JSONCollection
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.implicitConversions
 
-class MongoDbContactDao(reactiveMongoApi: ReactiveMongoApi) extends
+class MongoDbContactDao(reactiveMongoApi: ReactiveMongoApi)(implicit executionContext: ExecutionContext) extends
   MongoDbDao(reactiveMongoApi, "contacts") with ContactDao {
 
-  override def upsertUser(user: User)(implicit ec: ExecutionContext): Future[Either[Seq[String], Unit]] = {
+  override def upsertUser(user: User): Future[Either[Seq[String], Unit]] = {
     collection().flatMap { contacts =>
       val upsert = for {
         _ <- deleteUser(contacts, user.emailAddress)
@@ -25,18 +25,18 @@ class MongoDbContactDao(reactiveMongoApi: ReactiveMongoApi) extends
     }
   }
 
-  def deleteUser(contacts: JSONCollection, emailAddress: String)(implicit ec: ExecutionContext): EitherT[Future, Seq[String], Unit] = {
-    EitherT(contacts.remove("emailAddress" === emailAddress ).map(_.toEither))
+  def deleteUser(contacts: JSONCollection, emailAddress: String): EitherT[Future, Seq[String], Unit] = {
+    EitherT(contacts.remove("userEmailAddress" === emailAddress ).map(_.toEither))
   }
 
-  def insertUser(contacts: JSONCollection, user: User)(implicit ec: ExecutionContext): EitherT[Future, Seq[String], Unit] = {
+  def insertUser(contacts: JSONCollection, user: User): EitherT[Future, Seq[String], Unit] = {
     val persistedContacts: Seq[PersistedContact] = user.contacts.map(contact =>
       PersistedContact(user.emailAddress, contact.normalisedPhoneNumber, contact.name, contact.phoneType, contact.avatarUrl))
     val insert: contacts.InsertBuilder[PersistedContact] = contacts.insert[PersistedContact](ordered = false)
     EitherT(insert.many(persistedContacts).map(_.toEither))
   }
 
-  override def findContactNameAndPhoneTypeForPhoneNumber(normalisedPhoneNumber: String)(implicit ec: ExecutionContext): Future[Option[Contact]] = {
+  override def findContactNameAndPhoneTypeForPhoneNumber(normalisedPhoneNumber: String): Future[Option[Contact]] = {
     for {
       contacts <- collection()
       cursor = contacts.find("normalisedPhoneNumber" === normalisedPhoneNumber).cursor[PersistedContact]()

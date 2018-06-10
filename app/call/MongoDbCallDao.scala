@@ -2,7 +2,7 @@ package call
 
 import java.time.Instant
 
-import call.PersistedCall._
+import call.Call._
 import contact.Contact
 import persistence.MongoDbDao
 import play.api.libs.json._
@@ -12,31 +12,32 @@ import reactivemongo.play.json._
 import reactivemongo.play.json.collection.JSONCollection
 
 import scala.concurrent.{ExecutionContext, Future}
+import call.Call._
 
-class MongoDbPersistedCallDao(reactiveMongoApi: ReactiveMongoApi) extends
-  MongoDbDao(reactiveMongoApi, "calls") with PersistedCallDao {
+class MongoDbCallDao(reactiveMongoApi: ReactiveMongoApi)(implicit ec: ExecutionContext) extends
+  MongoDbDao(reactiveMongoApi, "calls") with CallDao {
 
-  override def insert(persistedCall: PersistedCall)(implicit ec: ExecutionContext): Future[Either[Seq[String], Unit]] = {
+  override def insert(call: Call): Future[Either[Seq[String], Unit]] = {
     for {
       calls <- collection()
-      result <- calls.insert(persistedCall)
+      result <- calls.insert(call)
     } yield {
       result.toEither
     }
   }
 
-  override def calls(max: Option[Int], since: Option[Instant], until: Option[Instant])(implicit ec: ExecutionContext): Future[Seq[PersistedCall]] = {
+  override def calls(max: Option[Int], since: Option[Instant], until: Option[Instant]): Future[Seq[Call]] = {
     val maxDocs: Int = max.getOrElse(Int.MaxValue)
     for {
-      calls <- collection()
-      cursor = calls.find(("when" ?>= since) && ("when" ?<= until)).sort("when".desc).cursor[PersistedCall]()
-      persistedCalls <- cursor.collect[Seq](maxDocs, Cursor.FailOnError[Seq[PersistedCall]]())
+      collection <- collection()
+      cursor = collection.find(("when" ?>= since) && ("when" ?<= until)).sort("when".desc).cursor[Call]()
+      calls <- cursor.collect[Seq](maxDocs, Cursor.FailOnError[Seq[Call]]())
     } yield {
-      persistedCalls
+      calls
     }
   }
 
-  override def alterContacts(contacts: Seq[Contact])(implicit ec: ExecutionContext): Future[Either[Seq[String], Int]] = {
+  override def alterContacts(contacts: Seq[Contact]): Future[Either[Seq[String], Int]] = {
     def alter(calls: JSONCollection): Future[Either[Seq[String], Int]] = {
       contacts.toList match {
         case Nil =>
@@ -46,7 +47,7 @@ class MongoDbPersistedCallDao(reactiveMongoApi: ReactiveMongoApi) extends
           import UpdateCommand._
           def toUpdateElement(contact: Contact): UpdateElement = {
             val selector: JsObject =
-              "caller.type" === "unknown" && "caller.persistedPhoneNumber.normalisedNumber" === contact.normalisedPhoneNumber
+              "caller.type" === "unknown" && "caller.phoneNumber.normalisedNumber" === contact.normalisedPhoneNumber
             val update: JsObject = contact.avatarUrl.foldLeft(
               set("caller.name" -> JsString(contact.name),
                   "caller.type" -> JsString("known"),

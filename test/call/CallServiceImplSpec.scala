@@ -5,7 +5,7 @@ import java.time.{Clock, Instant, ZoneId}
 import cats.data._
 import cats.implicits._
 import contact.{Contact, ContactDao, User}
-import number.{City, Country, NumberLocationService, PhoneNumber}
+import number.{City, Country, PhoneNumberFactory, PhoneNumber}
 import org.scalatest.{AsyncWordSpec, Matchers}
 
 import scala.collection.SortedSet
@@ -19,19 +19,21 @@ class CallServiceImplSpec extends AsyncWordSpec with Matchers {
   val London: City = City("London", "181")
   val UK: Country = Country("United Kingdom", "44", "GB", None, SortedSet(London))
 
-  val knownPhoneNumber: PhoneNumber = PhoneNumber("+441818118181", NonEmptyList.one(UK), Some(London), "8118181")
-  val unknownPhoneNumber: PhoneNumber = PhoneNumber("+441818228282", NonEmptyList.one(UK), Some(London), "8228282")
-  val numberLocationService: NumberLocationService = (number: String) =>
+  val knownPhoneNumber: PhoneNumber =
+    PhoneNumber("+441818118181", "+44 (181) 8118181", Some("London"), NonEmptyList.one("UK"))
+  val unknownPhoneNumber: PhoneNumber =
+    PhoneNumber("+441818228282", "+44 (181) 8118181", Some("London"), NonEmptyList.one("UK"))
+  val numberLocationService: PhoneNumberFactory = (number: String) =>
     Seq(knownPhoneNumber, unknownPhoneNumber).
       find(_.normalisedNumber == number).
       toValidNel("Don't know that phone number!")
 
   val BBC = Contact("+441818118181", "The BBC", "main", Some("http://bbc"))
   val contactsService: ContactDao = new ContactDao {
-    override def upsertUser(user: User)(implicit ec: ExecutionContext): Future[Either[Seq[String], Unit]] = {
+    override def upsertUser(user: User): Future[Either[Seq[String], Unit]] = {
       throw new NotImplementedError("upsertUser")
     }
-    override def findContactNameAndPhoneTypeForPhoneNumber(normalisedPhoneNumber: String)(implicit ec: ExecutionContext): Future[Option[Contact]] = {
+    override def findContactNameAndPhoneTypeForPhoneNumber(normalisedPhoneNumber: String): Future[Option[Contact]] = {
       Future.successful(Seq(BBC).find(_.normalisedPhoneNumber == normalisedPhoneNumber))
     }
   }

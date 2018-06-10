@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class MongoDbDao(
                   val reactiveMongoApi: ReactiveMongoApi,
-                  val collectionName: String) {
+                  val collectionName: String)(implicit ec: ExecutionContext) {
 
   def database()(implicit ec: ExecutionContext): Future[DefaultDB] = reactiveMongoApi.database
 

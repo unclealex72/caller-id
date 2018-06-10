@@ -1,10 +1,10 @@
 package contact
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 trait ContactDao {
 
-  def upsertUser(user: User)(implicit ec: ExecutionContext): Future[Either[Seq[String], Unit]]
+  def upsertUser(user: User): Future[Either[Seq[String], Unit]]
 
-  def findContactNameAndPhoneTypeForPhoneNumber(normalisedPhoneNumber: String)(implicit ec: ExecutionContext): Future[Option[Contact]]
+  def findContactNameAndPhoneTypeForPhoneNumber(normalisedPhoneNumber: String): Future[Option[Contact]]
 }

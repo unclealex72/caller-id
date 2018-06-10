@@ -24,50 +24,27 @@
 
 package number
 
+import cats.data.NonEmptyList
+
 /**
  * A trait for formatting telephone numbers.
+ *
  * @author alex
  *
  */
 trait NumberFormatter {
 
   /**
-   * Format a telephone number as a list of strings (so any separator can be applied later).
-   * Numbers will be formatted as follows:
-   * <table>
-   *   <th><td>Number Type</td><td>Format</td></th>
-   *   <tr><td>International, Geographic</td><td>+xx yyy zzzzzz</td></tr>
-   *   <tr><td>International, Non-geographic</td><td>+xx yyyzzzzzz</td></tr>
-   *   <tr><td>National, Geographic</td><td>0yyy zzzzzz</td></tr>
-   *   <tr><td>National, Non-geographic</td><td>0yyyzzzzzz</td></tr>
-   *   <tr><td>Local</td><td>zzzzzz</td></tr>
-   * </table>
-   */
-  def formatNumber(phoneNumber: PhoneNumber): FormattableNumber
-
-  /**
-   * Format a number as a fully international normalised number.
-   */
-  def formatNumberAsInternational(phoneNumber: PhoneNumber): FormattableNumber
-
-  /**
-   * Format an address. Geographic numbers with always be of the form <code>city, country</code> whilst
-   * non-geographic numbers will only be formatted as the country with the most cities.
-   */
-  def formatAddress(phoneNumber: PhoneNumber): List[String]
-}
-
-object NumberFormatter {
-
-  implicit class NumberFormatterImplicits(phoneNumber: PhoneNumber) {
-
-    def format(implicit numberFormatter: NumberFormatter) =
-      numberFormatter.formatNumber(phoneNumber)
-
-    def formatInternational(implicit numberFormatter: NumberFormatter) =
-      numberFormatter.formatNumberAsInternational(phoneNumber)
-
-    def formatAddress(implicit numberFormatter: NumberFormatter) =
-      numberFormatter.formatAddress(phoneNumber)
-  }
+    * Format a telephone number as a list of strings (so any separator can be applied later).
+    * Numbers will be formatted as follows:
+    * <table>
+    * <th><td>Number Type</td><td>Format</td></th>
+    * <tr><td>International, Geographic</td><td>+xx yyy zzzzzz</td></tr>
+    * <tr><td>International, Non-geographic</td><td>+xx yyyzzzzzz</td></tr>
+    * <tr><td>National, Geographic</td><td>0yyy zzzzzz</td></tr>
+    * <tr><td>National, Non-geographic</td><td>0yyyzzzzzz</td></tr>
+    * <tr><td>Local</td><td>0yyy zzzzzz</td></tr>
+    * </table>
+    */
+  def formatNumber(countries: NonEmptyList[Country], maybeCity: Option[City], number: String): String
 }
