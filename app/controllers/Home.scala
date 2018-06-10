@@ -2,7 +2,7 @@ package controllers
 
 import java.time.Instant
 
-import auth.DefaultEnv
+import auth.{DefaultEnv, User}
 import call.{Call => _, _}
 import cats.data.Validated._
 import cats.data._
@@ -14,6 +14,7 @@ import contact.{Contact, ContactDao, ContactLoader}
 import modem.ModemSender
 import number.{FormattableNumber, NumberFormatter, NumberLocationService, PhoneNumber}
 import play.api.mvc.{Filters => _, _}
+import play.filters.csrf.CSRF
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -54,7 +55,7 @@ class Home(
                   CallView(when, Some(Contact(pn.normalisedNumber, contactName, phoneType, maybeAvatarUrl)), None))
               case PersistedUnknown(persistedPhoneNumber) =>
                 build(persistedPhoneNumber, pn => {
-                  val formattableNumber = numberFormatter.formatNumber(pn)
+                  val formattableNumber: FormattableNumber = numberFormatter.formatNumber(pn)
                   CallView(when, None, Some((pn, formattableNumber)))
                 })
               case PersistedUndefinable(_) => None
@@ -66,8 +67,12 @@ class Home(
     }
   }
 
+  def js = silhouette.SecuredAction(authorization) { implicit request =>
+    Ok(views.js.contacts())
+  }
+
   def updateContacts = silhouette.SecuredAction(authorization).async { implicit request =>
-    val user = request.identity
+    val user: User = request.identity
     val upload: EitherT[Future, Seq[String], Int] = for {
       emailAddress <- EitherT(Future.successful(user.email.toRight(Seq("Email address required"))))
       accessToken <- EitherT(authInfoDao.find(user.loginInfo).map(_.toRight(Seq("Access token required"))))
@@ -79,7 +84,7 @@ class Home(
     }
     upload.value.map {
       case Left(errs) => InternalServerError(errs.mkString("\n"))
-      case Right(_) => Redirect(routes.Home.index())
+      case Right(_) => NoContent
     }
   }
 

@@ -1,7 +1,6 @@
-@(name: String, formId: String)
+@(name: String)
 
 <li>
-    <form id="@formId" action="@routes.Home.updateContacts()" method="POST"></form>
-    <a href="javascript:document.forms['@formId'].submit()">Update contacts</a>
+    <a class="update-contacts" href="#">Update contacts</a>
 </li>
 <li><a href="#">Logout, @name</a></li>

@@ -50,7 +50,7 @@ class MongoDbContactDao(reactiveMongoApi: ReactiveMongoApi) extends
 }
 
 case class PersistedContact(
-                             emailAddress: String,
+                             userEmailAddress: String,
                              normalisedPhoneNumber: String,
                              name: String,
                              phoneType: PhoneType,

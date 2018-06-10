@@ -28,9 +28,11 @@ import play.api.ApplicationLoader
 import play.api.ConfigLoader._
 import play.api.cache.ehcache.EhCacheComponents
 import play.api.libs.ws.ahc.AhcWSComponents
-import play.api.mvc.{CookieHeaderEncoding, DefaultCookieHeaderEncoding, RequestHeader, Result}
+import play.api.mvc._
 import play.api.routing.Router
 import play.filters.HttpFiltersComponents
+import play.filters.csrf.CSRFFilter
+import play.filters.hosts.AllowedHostsFilter
 import play.modules.reactivemongo.{ReactiveMongoApiComponents, ReactiveMongoApiFromContext}
 import router.Routes
 
@@ -159,4 +161,8 @@ class AppComponents(context: ApplicationLoader.Context)
     socialAuthController,
     assets
   )
+
+  override def httpFilters: Seq[EssentialFilter] = {
+    super.httpFilters.filterNot(_.isInstanceOf[AllowedHostsFilter]).filterNot(_.isInstanceOf[CSRFFilter])
+  }
 }

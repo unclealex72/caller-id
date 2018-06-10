@@ -7,6 +7,7 @@
 GET         /caller-id/                         controllers.Home.index
 GET         /caller-id/index.html               controllers.Home.index
 GET         /caller-id/unauthorised.html        controllers.Home.unauthorised
+GET         /caller-id/contacts.js              controllers.Home.js
 POST        /caller-id/contacts                 controllers.Home.updateContacts
 POST        /caller-id/call                     controllers.Home.sendToModem
 
