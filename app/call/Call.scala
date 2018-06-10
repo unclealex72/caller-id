@@ -16,3 +16,4 @@ case class Known(name: String, phoneType: PhoneType, maybeAvatarUrl: Option[Stri
 case class Unknown(phoneNumber: PhoneNumber) extends Caller
 
 case class Undefinable(number: String) extends Caller
+

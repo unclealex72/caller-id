@@ -13,8 +13,9 @@ import com.mohiva.play.silhouette.persistence.daos.AuthInfoDAO
 import contact.{Contact, ContactDao, ContactLoader}
 import modem.ModemSender
 import number.{FormattableNumber, NumberFormatter, NumberLocationService, PhoneNumber}
+import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc.{Filters => _, _}
-import play.filters.csrf.CSRF
+import push.{BrowserPushService, PushSubscription}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -25,9 +26,11 @@ class Home(
             val contactLoader: ContactLoader,
             val contactService: ContactDao,
             val maybeModemSender: Option[ModemSender],
+            val browserPushService: BrowserPushService,
             val silhouette: Silhouette[DefaultEnv],
             val authorization: Authorization[DefaultEnv#I, DefaultEnv#A],
             val authInfoDao: AuthInfoDAO[OAuth2Info],
+            val assets: Assets,
             override val controllerComponents: ControllerComponents)(implicit val ec: ExecutionContext)
   extends AbstractController(controllerComponents) {
 
@@ -67,8 +70,19 @@ class Home(
     }
   }
 
+  def subscribe = silhouette.SecuredAction(authorization).async(parse.tolerantJson) { implicit request =>
+    request.body.validate[PushSubscription] match {
+      case JsSuccess(pushSubscription, _) => browserPushService.subscribe(pushSubscription).map(_ => Created(""))
+      case JsError(_) => Future.successful(BadRequest(Json.obj("error" -> "endpoint property is required")))
+    }
+  }
+
   def js = silhouette.SecuredAction(authorization) { implicit request =>
-    Ok(views.js.contacts())
+    Ok(views.js.index(browserPushService.publicKey()))
+  }
+
+  def serviceWorker = silhouette.SecuredAction(authorization).async { implicit request =>
+    assets.at("/javascripts/service-worker.js")(request)
   }
 
   def updateContacts = silhouette.SecuredAction(authorization).async { implicit request =>

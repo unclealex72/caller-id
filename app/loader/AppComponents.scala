@@ -3,7 +3,7 @@ package loader
 import java.time.Clock
 
 import notify.Notifier
-import notify.sinks.{LoggingSink, PersistingSink}
+import notify.sinks.{LoggingSink, PersistingSink, PushNotificationSink}
 import loader.ConfigLoaders._
 import auth._
 import call._
@@ -34,6 +34,7 @@ import play.filters.HttpFiltersComponents
 import play.filters.csrf.CSRFFilter
 import play.filters.hosts.AllowedHostsFilter
 import play.modules.reactivemongo.{ReactiveMongoApiComponents, ReactiveMongoApiFromContext}
+import push._
 import router.Routes
 
 import scala.concurrent.Future
@@ -78,6 +79,10 @@ class AppComponents(context: ApplicationLoader.Context)
     }
   }
 
+  val pushEndpointDao: PushEndpointDao = new MongoDbPushEndpointDao(reactiveMongoApi)
+  val browserPushService: BrowserPushService = new BrowserPushServiceImpl(
+    configuration.get[BrowserPushConfiguration]("push"),
+    pushEndpointDao)
   val userDao = new MongoDbUserDao(reactiveMongoApi)
   val userService = new UserServiceImpl(userDao)
   val httpLayer = new PlayHTTPLayer(wsClient)
@@ -136,22 +141,26 @@ class AppComponents(context: ApplicationLoader.Context)
     contactLoader,
     contactService,
     maybeModemSender,
+    browserPushService,
     silhouette,
     authorization,
     authInfoDao,
+    assets,
     controllerComponents)
 
 
   val notifier: Notifier = {
     val loggingSink = new LoggingSink(numberFormatter)
     val persistingSink = new PersistingSink(persistedCallFactory, persistedCallDao)
+    val pushNotificationSink = new PushNotificationSink(browserPushService)
     new Notifier(
       modem,
       callService,
       applicationLifecycle,
       NonEmptyList.of(
         loggingSink,
-        persistingSink
+        persistingSink,
+        pushNotificationSink,
       ))(actorSystem, materializer, executionContext)
   }
 

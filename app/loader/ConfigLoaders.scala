@@ -5,6 +5,7 @@ import com.mohiva.play.silhouette.impl.authenticators.{CookieAuthenticatorSettin
 import com.mohiva.play.silhouette.impl.providers.OAuth2Settings
 import com.typesafe.config.Config
 import play.api.{ConfigLoader, Configuration}
+import push.BrowserPushConfiguration
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -90,6 +91,16 @@ object ConfigLoaders {
       }
     }
   }
+
+  implicit val browserPushConfigurationConfigLoader: ConfigLoader[BrowserPushConfiguration] = new ConfigurationLoader[BrowserPushConfiguration] {
+    override def load(implicit path: String, configuration: Configuration): BrowserPushConfiguration = {
+      val privateKey = "keys.private".get[String]
+      val publicKey = "keys.public".get[String]
+      val domain = "domain".get[String]
+      BrowserPushConfiguration(publicKey = publicKey, privateKey = privateKey, domain = domain)
+    }
+  }
+
   implicit val cookieAuthenticatorSettingsConfigLoader: ConfigLoader[CookieAuthenticatorSettings] = new ConfigurationLoader[CookieAuthenticatorSettings] {
     override def load(implicit path: String, configuration: Configuration): CookieAuthenticatorSettings = {
       CookieAuthenticatorSettings().

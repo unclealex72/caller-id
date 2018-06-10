@@ -7,9 +7,10 @@
 GET         /caller-id/                         controllers.Home.index
 GET         /caller-id/index.html               controllers.Home.index
 GET         /caller-id/unauthorised.html        controllers.Home.unauthorised
-GET         /caller-id/contacts.js              controllers.Home.js
+GET         /caller-id/index.js                 controllers.Home.js
 POST        /caller-id/contacts                 controllers.Home.updateContacts
 POST        /caller-id/call                     controllers.Home.sendToModem
+POST        /caller-id/subscribe                controllers.Home.subscribe
 
 GET         /caller-id/authenticate             controllers.SocialAuthController.authenticate
 POST        /caller-id/authenticate             controllers.SocialAuthController.authenticate
@@ -17,5 +18,7 @@ GET         /caller-id/oauth2callback           controllers.SocialAuthController
 GET         /caller-id/signout                  controllers.SocialAuthController.signOut
 
 # Map static resources from the /public folder to the /assets URL path
+
 GET         /caller-id/assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
+GET         /caller-id/service-worker.js          controllers.Home.serviceWorker
