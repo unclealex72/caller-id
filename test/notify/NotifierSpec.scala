@@ -9,6 +9,7 @@ import call._
 import cats.data.NonEmptyList
 import com.typesafe.config.ConfigFactory
 import modem.{Modem, ModemResponse}
+import notify.sinks.CallSink
 import org.scalatest.{AsyncWordSpec, Matchers}
 import play.api.inject.ApplicationLifecycle
 
@@ -60,8 +61,11 @@ class NotifierSpec extends AsyncWordSpec with Matchers {
   def notify(modemResponse: ModemResponse): Future[(Call, Call)] = {
     val promise1: Promise[Call] = Promise[Call]()
     val promise2: Promise[Call] = Promise[Call]()
-    val sink1: Call => Unit = call => promise1.complete(Success(call))
-    val sink2: Call => Unit = call => promise2.complete(Success(call))
+    class PromiseCallSink(promise: Promise[Call]) extends CallSink {
+      override def consume(call: Call): Future[_] = Future.successful(promise1.complete(Success(call)))
+    }
+    val sink1 = new PromiseCallSink(promise1)
+    val sink2 = new PromiseCallSink(promise2)
     //noinspection ConvertExpressionToSAM
     val modem: Modem = new Modem {
       override def responses(): Source[ModemResponse, Disconnect] = {
@@ -73,7 +77,7 @@ class NotifierSpec extends AsyncWordSpec with Matchers {
         Source.single(modemResponse).concatMat(killSwitchSource)(Keep.right)
       }
     }
-    val fakeApplicationLifecycle = new ApplicationLifecycle {
+    val fakeApplicationLifecycle: ApplicationLifecycle = new ApplicationLifecycle {
       override def addStopHook(hook: () => Future[_]): Unit = {}
       override def stop(): Future[_] = Future.successful({})
     }

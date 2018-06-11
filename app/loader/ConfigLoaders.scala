@@ -92,6 +92,14 @@ object ConfigLoaders {
     }
   }
 
+  implicit val networkConfigurationConfigLoader: ConfigLoader[NetworkSqueezeboxConfiguration] = new ConfigurationLoader[NetworkSqueezeboxConfiguration] {
+    override def load(implicit path: String, configuration: Configuration): NetworkSqueezeboxConfiguration = {
+      val host = "host".get[String]
+      val port = "port".get[Int]
+      val duration = "duration".get[FiniteDuration]
+      NetworkSqueezeboxConfiguration(host = host, port = port, duration = duration)
+    }
+  }
   implicit val browserPushConfigurationConfigLoader: ConfigLoader[BrowserPushConfiguration] = new ConfigurationLoader[BrowserPushConfiguration] {
     override def load(implicit path: String, configuration: Configuration): BrowserPushConfiguration = {
       val privateKey = "keys.private".get[String]

@@ -1,24 +1,22 @@
 package notify.sinks
 
-import call.Call
+import call.{Call, CallView}
 import cats.data._
 import cats.implicits._
-import play.api.libs.json.Json
-import push.BrowserPushService
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PushNotificationSink(
-                      browserPushService: BrowserPushService)(implicit ec: ExecutionContext) extends CallSink {
+abstract class CallViewSink(implicit ec: ExecutionContext) extends CallSink {
 
   override def consume(call: Call): Future[_] = {
-    for {
+    val transform: OptionT[Future, Unit] = for {
       view <- OptionT(Future.successful(call.view))
-      _ <- OptionT(Some(browserPushService.notify(message)))
+      _ <- OptionT.some[Future](consumeView(view))
+    } yield {
+      {}
     }
-    call.view.foldLeft(Future.successful()) { (acc, view) =>
-      val message: String = Json.stringify(Json.toJson(view))
-      acc.flatMap(_ => browserPushService.notify(message))
-    }
+    transform.value
   }
+
+  def consumeView(callView: CallView): Future[_]
 }

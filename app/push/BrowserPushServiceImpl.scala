@@ -23,8 +23,7 @@ class BrowserPushServiceImpl(pushConfiguration: BrowserPushConfiguration, pushEn
     pushEndpointDao.upsert(pushSubscription)
   }
 
-  override def notify(call: CallView)(implicit ec: ExecutionContext): Future[Unit] = {
-    val message: String = Json.stringify(Json.toJson(call))
+  override def notify(message: String)(implicit ec: ExecutionContext): Future[Unit] = {
     for {
       pushSubscriptions <- pushEndpointDao.all()
       _ <- Future.sequence(pushSubscriptions.map { pushSubscription => notify(pushSubscription, message)})

@@ -12,6 +12,7 @@ import org.scalatest.{AsyncWordSpec, Matchers}
 
 import scala.concurrent.{Future, Promise}
 import scala.util.Success
+import scala.concurrent.duration._
 
 class SqueezeboxImplSpec extends AsyncWordSpec with Matchers with StrictLogging {
 
@@ -20,7 +21,7 @@ class SqueezeboxImplSpec extends AsyncWordSpec with Matchers with StrictLogging 
 
   "sending a request to display a message on all squeezeboxes" should {
     "elicit the correct responses from the media server" in {
-      val squeezeboxImpl: SqueezeboxImpl = new SqueezeboxImpl(messageDuration = 30)
+      val squeezeboxImpl: SqueezeboxImpl = new SqueezeboxImpl(messageDuration = 30.seconds)
       logger.info("Starting test")
       val (eventualRequests, eventualCompleted) = squeezeboxImpl.displayWithMaterializer(generateFlow(), "Hello")
       for {

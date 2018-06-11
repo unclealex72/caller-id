@@ -9,10 +9,13 @@ import com.google.api.client.util.escape.{Escaper, PercentEscaper}
 import com.typesafe.scalalogging.StrictLogging
 
 import scala.collection.immutable._
+import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.Success
 
-class SqueezeboxImpl(messageDuration: Int)(implicit materializer: Materializer, ec: ExecutionContext) extends Squeezebox with StrictLogging {
+class SqueezeboxImpl(messageDuration: FiniteDuration)(implicit materializer: Materializer, ec: ExecutionContext) extends Squeezebox with StrictLogging {
+
+  val messageDurationInSeconds: Long = messageDuration.toSeconds
 
   override def display(serverFlow: Flow[ByteString, ByteString, _], message: String): Future[Done] = displayWithMaterializer(serverFlow, message)._2
 
@@ -126,7 +129,7 @@ class SqueezeboxImpl(messageDuration: Int)(implicit materializer: Materializer, 
   object CountPlayers extends SqueezeboxRequest("player count ?")
   case class RequestId(index: Int) extends SqueezeboxRequest(s"player id $index ?")
   case class DisplayMessage(id: String, message: String) extends SqueezeboxRequest(
-    s"$id display ${percentEscaper.escape(message)} ${percentEscaper.escape(message)} $messageDuration")
+    s"$id display ${percentEscaper.escape(message)} ${percentEscaper.escape(message)} $messageDurationInSeconds")
   object Exit extends SqueezeboxRequest("exit") {
     override def toString: String = "Exit()"
   }

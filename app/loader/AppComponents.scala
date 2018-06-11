@@ -2,25 +2,28 @@ package loader
 
 import java.time.Clock
 
-import notify.Notifier
-import notify.sinks.{LoggingSink, PersistingSink, PushNotificationSink}
-import loader.ConfigLoaders._
+import akka.actor.ActorSystem
+import akka.stream.scaladsl.{Flow, Tcp}
+import akka.util.ByteString
 import auth._
 import call._
 import cats.data.NonEmptyList
 import com.mohiva.play.silhouette.api.actions._
 import com.mohiva.play.silhouette.api.crypto.{AuthenticatorEncoder, CrypterAuthenticatorEncoder}
 import com.mohiva.play.silhouette.api.util.{FingerprintGenerator, PlayHTTPLayer, Clock => SilhouetteClock}
+import notify.Notifier
+import notify.sinks.{LoggingSink, PersistingSink, PushNotificationSink, SqueezeboxSink}
 import com.mohiva.play.silhouette.api._
 import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings, JcaSigner, JcaSignerSettings}
 import com.mohiva.play.silhouette.impl.authenticators._
 import com.mohiva.play.silhouette.impl.providers.oauth2.GoogleProvider
-import com.mohiva.play.silhouette.impl.providers.{DefaultSocialStateHandler, OAuth2Settings, SocialProviderRegistry}
+import com.mohiva.play.silhouette.impl.providers.{DefaultSocialStateHandler, OAuth2Settings}
 import com.mohiva.play.silhouette.impl.util.{DefaultFingerprintGenerator, SecureRandomIDGenerator}
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 import com.typesafe.scalalogging.StrictLogging
 import contact.{ContactDao, GoogleContactLoader, MongoDbContactDao}
 import controllers.{AssetsComponents, Home, SocialAuthController}
+import loader.ConfigLoaders._
 import modem.{Modem, ModemSender, SendableAtzModem, TcpAtzModem}
 import number._
 import play.api
@@ -36,6 +39,7 @@ import play.filters.hosts.AllowedHostsFilter
 import play.modules.reactivemongo.{ReactiveMongoApiComponents, ReactiveMongoApiFromContext}
 import push._
 import router.Routes
+import squeezebox.{Squeezebox, SqueezeboxImpl}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -150,11 +154,17 @@ class AppComponents(context: ApplicationLoader.Context)
     assets,
     controllerComponents)
 
+  val networkSqueezeboxConfiguration: NetworkSqueezeboxConfiguration = configuration.get[NetworkSqueezeboxConfiguration]("squeezebox")
+  val squeezebox: Squeezebox = new SqueezeboxImpl(networkSqueezeboxConfiguration.duration)
 
   val notifier: Notifier = {
+    implicit val _ac: ActorSystem = actorSystem
     val loggingSink = new LoggingSink
     val persistingSink = new PersistingSink(callDao)
     val pushNotificationSink = new PushNotificationSink(browserPushService)
+    val flowFactory: () => Flow[ByteString, ByteString, Future[Tcp.OutgoingConnection]] = () =>
+      Tcp().outgoingConnection(networkSqueezeboxConfiguration.host, networkSqueezeboxConfiguration.port)
+    val squeezeboxSink = new SqueezeboxSink(squeezebox, flowFactory)
     new Notifier(
       modem,
       callService,
@@ -163,7 +173,8 @@ class AppComponents(context: ApplicationLoader.Context)
         loggingSink,
         persistingSink,
         pushNotificationSink,
-      ))(actorSystem, materializer, executionContext)
+        squeezeboxSink
+      ))
   }
 
   override def router: Router = new Routes(
