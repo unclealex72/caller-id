@@ -3,7 +3,7 @@ package loader
 import java.time.Clock
 
 import notify.Notifier
-import notify.sinks.{LoggingSink, PersistingSink}
+import notify.sinks.{LoggingSink, PersistingSink, PushNotificationSink}
 import loader.ConfigLoaders._
 import auth._
 import call._
@@ -34,6 +34,7 @@ import play.filters.HttpFiltersComponents
 import play.filters.csrf.CSRFFilter
 import play.filters.hosts.AllowedHostsFilter
 import play.modules.reactivemongo.{ReactiveMongoApiComponents, ReactiveMongoApiFromContext}
+import push._
 import router.Routes
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -81,6 +82,10 @@ class AppComponents(context: ApplicationLoader.Context)
   }
 
   val userDao = new MongoDbUserDao(reactiveMongoApi)(mongoExecutionContext)
+  val pushEndpointDao: PushEndpointDao = new MongoDbPushEndpointDao(reactiveMongoApi)
+  val browserPushService: BrowserPushService = new BrowserPushServiceImpl(
+    configuration.get[BrowserPushConfiguration]("push"),
+    pushEndpointDao)
   val userService = new UserServiceImpl(userDao)
   val httpLayer = new PlayHTTPLayer(wsClient)
   val socialStateSigner = new JcaSigner(configuration.get[JcaSignerSettings]("silhouette.socialStateHandler.signer"))
@@ -138,22 +143,26 @@ class AppComponents(context: ApplicationLoader.Context)
     contactLoader,
     contactService,
     maybeModemSender,
+    browserPushService,
     silhouette,
     authorization,
     authInfoDao,
+    assets,
     controllerComponents)
 
 
   val notifier: Notifier = {
     val loggingSink = new LoggingSink
     val persistingSink = new PersistingSink(callDao)
+    val pushNotificationSink = new PushNotificationSink(browserPushService)
     new Notifier(
       modem,
       callService,
       applicationLifecycle,
       NonEmptyList.of(
         loggingSink,
-        persistingSink
+        persistingSink,
+        pushNotificationSink,
       ))(actorSystem, materializer, executionContext)
   }
 

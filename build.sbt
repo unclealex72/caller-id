@@ -22,6 +22,7 @@ libraryDependencies ++= Seq(
   "com.mohiva" %% "play-silhouette-persistence" % "5.0.4",
   "org.webjars.npm" % "materialize-css" % "1.0.0-rc.1",
   "org.webjars" % "jquery" % "3.3.1-1",
+  "nl.martijndwars" % "web-push" % "3.1.0",
   "com.google.apis" % "google-api-services-people" % "v1-rev288-1.23.0"
 )
 
