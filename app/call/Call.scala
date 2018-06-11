@@ -38,8 +38,8 @@ case class Undefinable(number: String) extends Caller {
 
 case class CallView(
                      when: Instant,
-                     maybeContact: Option[Contact],
-                     maybePhoneNumber: Option[PhoneNumber])
+                     contact: Option[Contact],
+                     phoneNumber: Option[PhoneNumber])
 
 object Call {
   implicit val callFormat: OFormat[Call] = Json.format[Call]

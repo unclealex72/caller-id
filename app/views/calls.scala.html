@@ -43,22 +43,22 @@
                       <div class="col s12 m6">
                           <div class="card horizontal center">
                               <div class="card-image">
-                                  @call.maybeContact.flatMap(_.avatarUrl) match {
+                                  @call.contact.flatMap(_.avatarUrl) match {
                                       case Some(avatarUrl) => {
                                           <img class="contact-avatar" src="@avatarUrl">
                                       }
                                       case None => {
-                                          <img class="contact-avatar" src="@routes.Assets.versioned("/images/whocalled.png")">
+                                          <img class="contact-avatar" src="@routes.Assets.versioned("images/whocalled.png")">
                                       }
                                   }
                               </div>
                               <div class="card-stacked">
                                   <div class="card-content">
                                       <p>@call.when</p>
-                                      @for(contact <- call.maybeContact) {
+                                      @for(contact <- call.contact) {
                                           <p>@contact.name (@contact.phoneType)</p>
                                       }
-                                      @for(phoneNumber <- call.maybePhoneNumber) {
+                                      @for(phoneNumber <- call.phoneNumber) {
                                           <p>@phoneNumber.formattedNumber</p>
                                           <p>
                                             @for(city <- phoneNumber.city) {

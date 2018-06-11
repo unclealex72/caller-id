@@ -2,7 +2,7 @@ package push
 
 import java.security.Security
 
-import call.Call
+import call.{Call, CallView}
 import com.typesafe.scalalogging.StrictLogging
 import nl.martijndwars.webpush.{Notification, PushService}
 import org.apache.http.HttpResponse
@@ -23,7 +23,7 @@ class BrowserPushServiceImpl(pushConfiguration: BrowserPushConfiguration, pushEn
     pushEndpointDao.upsert(pushSubscription)
   }
 
-  override def notify(call: Call)(implicit ec: ExecutionContext): Future[Unit] = {
+  override def notify(call: CallView)(implicit ec: ExecutionContext): Future[Unit] = {
     val message: String = Json.stringify(Json.toJson(call))
     for {
       pushSubscriptions <- pushEndpointDao.all()

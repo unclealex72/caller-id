@@ -4,9 +4,27 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('push', function(e) {
+    var call = e.data.json();
+    var contact = call.contact;
+    var phoneNumber = call.phoneNumber;
+    var messageParts = [];
+
+    if (contact) {
+        messageParts.push(contact.name + " (" + contact.phoneType + ")");
+    }
+    if (phoneNumber) {
+        messageParts.push(phoneNumber.formattedNumber);
+        var address = phoneNumber.city ? phoneNumber.city + ", " : "";
+        messageParts.push(address + phoneNumber.countries[0]);
+    }
+    var body = messageParts.join("\n");
+
+    var useAvatar = contact && contact.avatarUrl;
+    var iconUrl = useAvatar ? contact.avatarUrl : "/caller-id/assets/images/whocalled.png";
+
     var options = {
-        body: 'This notification was generated from a push!',
-        icon: 'images/example.png',
+        body: body,
+        icon: iconUrl,
         vibrate: [100, 50, 100],
         data: {
             dateOfArrival: Date.now(),
@@ -20,6 +38,6 @@ self.addEventListener('push', function(e) {
         ]
     };
     e.waitUntil(
-        self.registration.showNotification('Hello world!', options)
+        self.registration.showNotification('Landline call received', options)
     );
 });

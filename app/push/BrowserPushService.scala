@@ -1,6 +1,6 @@
 package push
 
-import call.Call
+import call.{Call, CallView}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -10,5 +10,5 @@ trait BrowserPushService {
 
   def subscribe(pushSubscription: PushSubscription)(implicit ec: ExecutionContext): Future[Unit]
 
-  def notify(call: Call)(implicit ec: ExecutionContext): Future[Unit]
+  def notify(call: CallView)(implicit ec: ExecutionContext): Future[Unit]
 }
