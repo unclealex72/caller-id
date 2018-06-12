@@ -3,6 +3,7 @@ package squeezebox
 
 import akka.Done
 import akka.stream._
+import akka.stream.javadsl.BidiFlow
 import akka.stream.scaladsl.{Flow, Framing, Keep, Source}
 import akka.util.ByteString
 import com.google.api.client.util.escape.{Escaper, PercentEscaper}
