@@ -1,0 +1,28 @@
+{
+  "responseId": "731a06d0-27d5-4f5f-8fb8-5b789377b330",
+  "queryResult": {
+    "queryText": "who's calling?",
+    "parameters": {},
+    "allRequiredParamsPresent": true,
+    "fulfillmentMessages": [
+      {
+        "text": {
+          "text": [
+            ""
+          ]
+        }
+      }
+    ],
+    "intent": {
+      "name": "projects/landline-ca2de/agent/intents/fd8a8f54-fde7-4239-bce9-0f41536d8576",
+      "displayName": "last call"
+    },
+    "intentDetectionConfidence": 1,
+    "diagnosticInfo": {},
+    "languageCode": "en"
+  },
+  "originalDetectIntentRequest": {
+    "payload": {}
+  },
+  "session": "projects/landline-ca2de/agent/sessions/16304d39-0d56-2b38-298f-5cc4483dff5c"
+}

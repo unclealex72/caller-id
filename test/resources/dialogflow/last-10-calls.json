@@ -1,0 +1,30 @@
+{
+  "responseId": "d4c75d96-87da-416a-974d-dafb490f3fa3",
+  "queryResult": {
+    "queryText": "what were my last 10 calls?",
+    "parameters": {
+      "number": 10
+    },
+    "allRequiredParamsPresent": true,
+    "fulfillmentMessages": [
+      {
+        "text": {
+          "text": [
+            ""
+          ]
+        }
+      }
+    ],
+    "intent": {
+      "name": "projects/landline-ca2de/agent/intents/577e8964-745b-4275-8c40-10a84f1fd190",
+      "displayName": "last number of calls"
+    },
+    "intentDetectionConfidence": 1,
+    "diagnosticInfo": {},
+    "languageCode": "en"
+  },
+  "originalDetectIntentRequest": {
+    "payload": {}
+  },
+  "session": "projects/landline-ca2de/agent/sessions/16304d39-0d56-2b38-298f-5cc4483dff5c"
+}

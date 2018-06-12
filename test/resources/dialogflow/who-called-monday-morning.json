@@ -1,0 +1,34 @@
+{
+  "responseId": "667bf09c-a917-4a1f-ba81-5ac3533c5e4d",
+  "queryResult": {
+    "queryText": "who called me on monday morning?",
+    "parameters": {
+      "date": "2018-06-18T18:45:59+01:00",
+      "time-period": {
+        "startTime": "2018-06-13T08:00:00+01:00",
+        "endTime": "2018-06-13T12:00:00+01:00"
+      }
+    },
+    "allRequiredParamsPresent": true,
+    "fulfillmentMessages": [
+      {
+        "text": {
+          "text": [
+            ""
+          ]
+        }
+      }
+    ],
+    "intent": {
+      "name": "projects/landline-ca2de/agent/intents/aff2b5a6-3c0c-4254-9a8c-0bf1121e0c39",
+      "displayName": "calls during"
+    },
+    "intentDetectionConfidence": 1,
+    "diagnosticInfo": {},
+    "languageCode": "en"
+  },
+  "originalDetectIntentRequest": {
+    "payload": {}
+  },
+  "session": "projects/landline-ca2de/agent/sessions/16304d39-0d56-2b38-298f-5cc4483dff5c"
+}

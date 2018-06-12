@@ -1,0 +1,31 @@
+{
+  "responseId": "175a0d64-0e75-4a05-b607-a59af9b8cc4d",
+  "queryResult": {
+    "queryText": "who called me on tuesday",
+    "parameters": {
+      "date": "2018-06-12T18:44:47+01:00",
+      "time-period": ""
+    },
+    "allRequiredParamsPresent": true,
+    "fulfillmentMessages": [
+      {
+        "text": {
+          "text": [
+            ""
+          ]
+        }
+      }
+    ],
+    "intent": {
+      "name": "projects/landline-ca2de/agent/intents/aff2b5a6-3c0c-4254-9a8c-0bf1121e0c39",
+      "displayName": "calls during"
+    },
+    "intentDetectionConfidence": 1,
+    "diagnosticInfo": {},
+    "languageCode": "en"
+  },
+  "originalDetectIntentRequest": {
+    "payload": {}
+  },
+  "session": "projects/landline-ca2de/agent/sessions/16304d39-0d56-2b38-298f-5cc4483dff5c"
+}
