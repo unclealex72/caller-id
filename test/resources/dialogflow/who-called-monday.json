@@ -1,0 +1,31 @@
+{
+  "responseId": "272128db-fdd2-417e-be00-56ceb2183e9f",
+  "queryResult": {
+    "queryText": "who called on Monday?",
+    "parameters": {
+      "date": "2018-06-11T12:00:00+01:00",
+      "date-period": ""
+    },
+    "allRequiredParamsPresent": true,
+    "fulfillmentMessages": [
+      {
+        "text": {
+          "text": [
+            ""
+          ]
+        }
+      }
+    ],
+    "intent": {
+      "name": "projects/landline-ca2de/agent/intents/aff2b5a6-3c0c-4254-9a8c-0bf1121e0c39",
+      "displayName": "calls during"
+    },
+    "intentDetectionConfidence": 1,
+    "diagnosticInfo": {},
+    "languageCode": "en"
+  },
+  "originalDetectIntentRequest": {
+    "payload": {}
+  },
+  "session": "projects/landline-ca2de/agent/sessions/3bc568ac-e01c-e8e9-75ab-db5a8150ccfc"
+}

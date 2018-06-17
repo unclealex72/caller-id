@@ -1,13 +1,14 @@
 {
-  "responseId": "667bf09c-a917-4a1f-ba81-5ac3533c5e4d",
+  "responseId": "5706cd89-2db3-4ab8-b5e8-6137ecf30a3b",
   "queryResult": {
-    "queryText": "who called me on monday morning?",
+    "queryText": "who called last week?",
     "parameters": {
-      "date": "2018-06-18T18:45:59+01:00",
-      "time-period": {
-        "startTime": "2018-06-13T08:00:00+01:00",
-        "endTime": "2018-06-13T12:00:00+01:00"
-      }
+      "date": "",
+      "date-period": {
+        "startDate": "2018-06-04T12:00:00+01:00",
+        "endDate": "2018-06-10T12:00:00+01:00"
+      },
+      "time-period": ""
     },
     "allRequiredParamsPresent": true,
     "fulfillmentMessages": [
@@ -30,5 +31,5 @@
   "originalDetectIntentRequest": {
     "payload": {}
   },
-  "session": "projects/landline-ca2de/agent/sessions/16304d39-0d56-2b38-298f-5cc4483dff5c"
+  "session": "projects/landline-ca2de/agent/sessions/3bc568ac-e01c-e8e9-75ab-db5a8150ccfc"
 }

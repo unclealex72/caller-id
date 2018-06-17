@@ -15,6 +15,7 @@ libraryDependencies ++= Seq(
   ws,
   ehcache,
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0",
+  "com.beachape" %% "enumeratum" % "1.5.13",
   "org.typelevel" %% "cats-core" % "1.0.1",
   "org.reactivemongo" %% "play2-reactivemongo" % "0.13.0-play26",
   "com.mohiva" %% "play-silhouette" % "5.0.4",
