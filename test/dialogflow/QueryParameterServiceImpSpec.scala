@@ -12,7 +12,7 @@ class QueryParameterServiceImpSpec extends WordSpec with Matchers {
   val clock: Clock = Clock.fixed(now.toInstant, now.getOffset)
 
   val queryParameterService = new QueryParameterServiceImpl(clock)
-  def paramsFor(intent: Intent): QueryParameters = queryParameterService.createQueryParameters(intent)
+  def paramsFor(webhookRequest: WebhookRequest): QueryParameters = queryParameterService.createQueryParameters(webhookRequest)
 
   "Requesting the last call" should {
     "request one call" in {

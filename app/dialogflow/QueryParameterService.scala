@@ -2,5 +2,5 @@ package dialogflow
 
 trait QueryParameterService {
 
-  def createQueryParameters(intent: Intent): QueryParameters
+  def createQueryParameters(webhookRequest: WebhookRequest): QueryParameters
 }
