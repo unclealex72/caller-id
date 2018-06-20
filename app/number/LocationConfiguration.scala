@@ -23,17 +23,19 @@
  */
 package number
 
+import java.time.ZoneId
+
 /**
  * A JSON serialisable instance of LocationConfiguration.
  */
-case class LocationConfiguration(internationalCode : String, stdCode : String)
+case class LocationConfiguration(internationalCode : String, stdCode : String, zoneId: ZoneId)
 
 object LocationConfiguration {
 
   sealed abstract class Implicits[C](c: C, localCodeFactory: LocationConfiguration => String, codeFactory: C => String) {
     def isLocal(implicit locationConfiguration: LocationConfiguration): Boolean =
       codeFactory(c) == localCodeFactory(locationConfiguration)
-    def isNotLocal(implicit locationConfiguration: LocationConfiguration) = !isLocal
+    def isNotLocal(implicit locationConfiguration: LocationConfiguration): Boolean = !isLocal
   }
 
   implicit class CityImplicits(c: City) extends Implicits[City](c, _.stdCode, _.stdCode)

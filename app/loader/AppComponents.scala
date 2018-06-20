@@ -1,6 +1,6 @@
 package loader
 
-import java.time.Clock
+import java.time.{Clock, ZoneId}
 
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.{Flow, Tcp}
@@ -22,7 +22,8 @@ import com.mohiva.play.silhouette.impl.util.{DefaultFingerprintGenerator, Secure
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 import com.typesafe.scalalogging.StrictLogging
 import contact.{ContactDao, GoogleContactLoader, MongoDbContactDao}
-import controllers.{AssetsComponents, Home, SocialAuthController}
+import controllers.{AssetsComponents, DialogflowController, HomeController, SocialAuthController}
+import dialogflow._
 import loader.ConfigLoaders._
 import modem.{Modem, ModemSender, SendableAtzModem, TcpAtzModem}
 import number._
@@ -63,7 +64,8 @@ class AppComponents(context: ApplicationLoader.Context)
     val stdCodes: Set[String] = country.cities.map(_.stdCode).toSet
     val stdCode: String = configuration.getAndValidate[String]("location.stdCode", stdCodes)
     logger.info(s"Creating location configuration with international dialling code $countryCode and STD code $stdCode")
-    LocationConfiguration(countryCode, stdCode)
+    val zoneId: ZoneId = configuration.getOptional[ZoneId]("location.timezone").getOrElse(ZoneId.systemDefault())
+    LocationConfiguration(countryCode, stdCode, zoneId)
   }
   val localService: LocalService = new LocalServiceImpl(locationConfiguration.internationalCode, locationConfiguration.stdCode)
   val numberFormatter: NumberFormatter = new NumberFormatterImpl(localService)
@@ -140,7 +142,7 @@ class AppComponents(context: ApplicationLoader.Context)
   val silhouette: Silhouette[DefaultEnv] =
     new SilhouetteProvider[DefaultEnv](env, securedAction, unsecuredAction, userAwareAction)
   val contactLoader = new GoogleContactLoader(numberLocationService)
-  val home = new Home(
+  val homeController = new HomeController(
     numberLocationService,
     numberFormatter,
     callDao,
@@ -154,6 +156,13 @@ class AppComponents(context: ApplicationLoader.Context)
     assets,
     controllerComponents)
 
+  val callToSpeechService = new CallToSpeechServiceImpl(WebhookResponseDateTimeFormatter(), locationConfiguration.zoneId)
+  val queryParameterService = new QueryParameterServiceImpl(clock)
+  val dialogflowService = new DialogflowServiceImpl(queryParameterService,
+    callToSpeechService,
+    callDao)
+  val dialogflowToken: String = configuration.get[String]("dialogflow.token")
+  val dialogflowController = new DialogflowController(dialogflowService, dialogflowToken, controllerComponents)
   val networkSqueezeboxConfiguration: NetworkSqueezeboxConfiguration = configuration.get[NetworkSqueezeboxConfiguration]("squeezebox")
   val squeezebox: Squeezebox = new SqueezeboxImpl(networkSqueezeboxConfiguration.duration)
 
@@ -179,7 +188,8 @@ class AppComponents(context: ApplicationLoader.Context)
 
   override def router: Router = new Routes(
     httpErrorHandler,
-    home,
+    homeController,
+    dialogflowController,
     socialAuthController,
     assets
   )

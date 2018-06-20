@@ -17,7 +17,7 @@ import push.{BrowserPushService, PushSubscription}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class Home(
+class HomeController(
             val numberLocationService: PhoneNumberFactory,
             val numberFormatter: NumberFormatter,
             val callDao: CallDao,

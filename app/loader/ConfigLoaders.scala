@@ -1,11 +1,15 @@
 package loader
 
+import java.time.ZoneId
+
 import com.mohiva.play.silhouette.crypto.{JcaCrypterSettings, JcaSignerSettings}
 import com.mohiva.play.silhouette.impl.authenticators.{CookieAuthenticatorSettings, JWTAuthenticatorSettings}
 import com.mohiva.play.silhouette.impl.providers.OAuth2Settings
 import com.typesafe.config.Config
 import play.api.{ConfigLoader, Configuration}
 import push.BrowserPushConfiguration
+
+import scala.collection.JavaConverters._
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -89,6 +93,17 @@ object ConfigLoaders {
         val port = "port".get[Int]
         NetworkModemConfiguration(host, port)
       }
+    }
+  }
+
+  implicit def zoneIdConfigLoader(implicit stringConfigLoader: ConfigLoader[String]): ConfigLoader[ZoneId] = new ConfigLoader[ZoneId] {
+    override def load(config: Config, path: String): ZoneId = {
+      val validZoneIds = {
+        val empty: Set[String] = Set.empty
+        ZoneId.getAvailableZoneIds.asScala.foldLeft(empty)(_ + _)
+      }
+      val zoneId = Configuration(config).getAndValidate[String](path, validZoneIds)
+      ZoneId.of(zoneId)
     }
   }
 

@@ -94,5 +94,5 @@ class SocialAuthController @Inject()(
     }
   }
 
-  def redirectOnLogin = routes.Home.index()
+  def redirectOnLogin = routes.HomeController.index()
 }

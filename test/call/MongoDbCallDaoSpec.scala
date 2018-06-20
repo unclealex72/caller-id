@@ -56,7 +56,7 @@ class MongoDbCallDaoSpec extends MongoDbDaoSpec[MongoDbCallDao]("calls") {
 
   "Post updating a contact" should {
     "update all previous phone calls for their number with their details" in { f =>
-      val brian: Contact = Contact("+44181811811", "Brian", "home", Some("http://brian"))
+      val brian: Contact = Contact("+44181811811", "Brian", "homeController", Some("http://brian"))
       for {
         result <- f.dao.alterContacts(Seq(brian))
         calls <- f.dao.calls()
@@ -84,7 +84,7 @@ class MongoDbCallDaoSpec extends MongoDbDaoSpec[MongoDbCallDao]("calls") {
 
   val secondCallBrian: CallWithName = "2018-05-28T11:15:14+00:00".from(
     Known(
-      "Brian", "home", Some("http://brian"),
+      "Brian", "homeController", Some("http://brian"),
       PhoneNumber("+44181811811", "+44 (181) 811811", Some("London"), NonEmptyList.of("England", "UK")))).named("secondCallBrian")
 
   val thirdCall: CallWithName = "2018-05-29T12:19:15+00:00".from(
@@ -98,7 +98,7 @@ class MongoDbCallDaoSpec extends MongoDbDaoSpec[MongoDbCallDao]("calls") {
 
   val fourthCallBrian: CallWithName = "2018-05-30T11:15:14+00:00".from(
     Known(
-      "Brian", "home", Some("http://brian"),
+      "Brian", "homeController", Some("http://brian"),
       PhoneNumber("+44181811811", "+44 (181) 811811", Some("London"), NonEmptyList.of("England", "UK")))).named("fourthCallBrian")
 
   val fifthCall: CallWithName = "2018-05-30T13:50:19+00:00".from(Withheld).named("fifthCall")

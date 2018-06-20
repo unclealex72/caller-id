@@ -5,7 +5,7 @@ $(function() {
     // Add the action for updating contacts.
     $(".update-contacts").click(function() {
         $.ajax({
-            url: '@routes.Home.updateContacts()',
+            url: '@routes.HomeController.updateContacts()',
             type: 'post',
             success: function () {
                 window.location.reload(true);
@@ -20,7 +20,7 @@ $(function() {
     if ('serviceWorker' in navigator && 'PushManager' in window) {
         console.log('Service Worker and Push is supported');
 
-        navigator.serviceWorker.register('@routes.Home.serviceWorker()')
+        navigator.serviceWorker.register('@routes.HomeController.serviceWorker()')
             .then(function(swReg) {
                 console.log('Service Worker is registered', swReg);
                 return subscribeToPushNotifications(swReg);
@@ -55,7 +55,7 @@ $(function() {
             const body = JSON.stringify(sub);
             console.log("Sending subscription " + body);
             $.ajax({
-                url: '@routes.Home.subscribe()',
+                url: '@routes.HomeController.subscribe()',
                 type: 'post',
                 data: body,
                 success: function () {

@@ -3,14 +3,16 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
-# An example controller showing a sample home page
-GET         /caller-id/                         controllers.Home.index
-GET         /caller-id/index.html               controllers.Home.index
-GET         /caller-id/unauthorised.html        controllers.Home.unauthorised
-GET         /caller-id/index.js                 controllers.Home.js
-POST        /caller-id/contacts                 controllers.Home.updateContacts
-POST        /caller-id/call                     controllers.Home.sendToModem
-POST        /caller-id/subscribe                controllers.Home.subscribe
+# An example controller showing a sample homeController page
+GET         /caller-id/                         controllers.HomeController.index
+GET         /caller-id/index.html               controllers.HomeController.index
+GET         /caller-id/unauthorised.html        controllers.HomeController.unauthorised
+GET         /caller-id/index.js                 controllers.HomeController.js
+POST        /caller-id/contacts                 controllers.HomeController.updateContacts
+POST        /caller-id/call                     controllers.HomeController.sendToModem
+POST        /caller-id/subscribe                controllers.HomeController.subscribe
+
+POST        /caller-id/webhook                  controllers.DialogflowController.webhook
 
 GET         /caller-id/authenticate             controllers.SocialAuthController.authenticate
 POST        /caller-id/authenticate             controllers.SocialAuthController.authenticate
@@ -21,4 +23,4 @@ GET         /caller-id/signout                  controllers.SocialAuthController
 
 GET         /caller-id/assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
-GET         /caller-id/service-worker.js          controllers.Home.serviceWorker
+GET         /caller-id/service-worker.js          controllers.HomeController.serviceWorker
