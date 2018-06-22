@@ -1,6 +1,6 @@
 package call
 
-import java.time.Instant
+import java.time.{Instant, OffsetDateTime, ZoneId}
 
 import contact.{Contact, PhoneType}
 import number.PhoneNumber
@@ -39,7 +39,10 @@ case class Undefinable(number: String) extends Caller {
 case class CallView(
                      when: Instant,
                      contact: Option[Contact],
-                     phoneNumber: Option[PhoneNumber])
+                     phoneNumber: Option[PhoneNumber]) {
+
+  def whenWithTimezone(zoneId: ZoneId): OffsetDateTime = OffsetDateTime.ofInstant(when, zoneId)
+}
 
 object Call {
   implicit val callFormat: OFormat[Call] = Json.format[Call]

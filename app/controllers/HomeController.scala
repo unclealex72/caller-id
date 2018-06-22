@@ -29,6 +29,7 @@ class HomeController(
             val authorization: Authorization[DefaultEnv#I, DefaultEnv#A],
             val authInfoDao: AuthInfoDAO[OAuth2Info],
             val assets: Assets,
+            val callsTemplate: views.html.calls,
             override val controllerComponents: ControllerComponents)(implicit val ec: ExecutionContext)
   extends AbstractController(controllerComponents) {
 
@@ -41,7 +42,7 @@ class HomeController(
       case Some(name) =>
         callDao.calls(max = Some(20)).map { calls =>
           val callViews: Seq[CallView] = calls.flatMap(_.view)
-          Ok(views.html.calls(name, callViews))
+          Ok(callsTemplate(name, callViews))
         }
       case None => Future.successful(Forbidden(""))
     }

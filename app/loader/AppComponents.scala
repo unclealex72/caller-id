@@ -23,6 +23,7 @@ import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepo
 import com.typesafe.scalalogging.StrictLogging
 import contact.{ContactDao, GoogleContactLoader, MongoDbContactDao}
 import controllers.{AssetsComponents, DialogflowController, HomeController, SocialAuthController}
+import datetime.{DaySuffixes, DaySuffixesImpl}
 import dialogflow._
 import loader.ConfigLoaders._
 import modem.{Modem, ModemSender, SendableAtzModem, TcpAtzModem}
@@ -67,6 +68,8 @@ class AppComponents(context: ApplicationLoader.Context)
     val zoneId: ZoneId = configuration.getOptional[ZoneId]("location.timezone").getOrElse(ZoneId.systemDefault())
     LocationConfiguration(countryCode, stdCode, zoneId)
   }
+  val daySuffixes: DaySuffixes = DaySuffixesImpl
+
   val localService: LocalService = new LocalServiceImpl(locationConfiguration.internationalCode, locationConfiguration.stdCode)
   val numberFormatter: NumberFormatter = new NumberFormatterImpl(localService)
   val numberLocationService: PhoneNumberFactory = new PhoneNumberFactoryImpl(cityDao, numberFormatter, localService)
@@ -142,6 +145,7 @@ class AppComponents(context: ApplicationLoader.Context)
   val silhouette: Silhouette[DefaultEnv] =
     new SilhouetteProvider[DefaultEnv](env, securedAction, unsecuredAction, userAwareAction)
   val contactLoader = new GoogleContactLoader(numberLocationService)
+  val callsTemplate = new views.html.calls(locationConfiguration.zoneId, daySuffixes)
   val homeController = new HomeController(
     numberLocationService,
     numberFormatter,
@@ -154,9 +158,10 @@ class AppComponents(context: ApplicationLoader.Context)
     authorization,
     authInfoDao,
     assets,
+    callsTemplate,
     controllerComponents)
 
-  val callToSpeechService = new CallToSpeechServiceImpl(WebhookResponseDateTimeFormatter(), locationConfiguration.zoneId)
+  val callToSpeechService = new CallToSpeechServiceImpl(new WebhookResponseDateTimeFormatter(daySuffixes)(), locationConfiguration.zoneId)
   val queryParameterService = new QueryParameterServiceImpl(clock)
   val dialogflowService = new DialogflowServiceImpl(queryParameterService,
     callToSpeechService,
