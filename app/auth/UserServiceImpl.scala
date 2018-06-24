@@ -4,7 +4,6 @@ import java.util.UUID
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.CommonSocialProfile
-import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 

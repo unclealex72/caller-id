@@ -4,7 +4,7 @@ import java.time.Instant
 
 import contact.Contact
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 trait CallDao {
 

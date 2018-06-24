@@ -5,11 +5,11 @@ import java.time.{Clock, Instant, ZoneId}
 import cats.data._
 import cats.implicits._
 import contact.{Contact, ContactDao, User}
-import number.{City, Country, PhoneNumberFactory, PhoneNumber}
+import number.{City, Country, PhoneNumber, PhoneNumberFactory}
 import org.scalatest.{AsyncWordSpec, Matchers}
 
 import scala.collection.SortedSet
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class CallServiceImplSpec extends AsyncWordSpec with Matchers {
 

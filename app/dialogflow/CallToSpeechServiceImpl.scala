@@ -1,10 +1,10 @@
 package dialogflow
 
-import java.time.{OffsetDateTime, ZoneId}
 import java.time.format.DateTimeFormatter
-import misc.NonEmptyListExtensions._
+import java.time.{OffsetDateTime, ZoneId}
 
 import call.Call
+import misc.NonEmptyListExtensions._
 
 class CallToSpeechServiceImpl(dateTimeFormatter: DateTimeFormatter, zoneId: ZoneId) extends CallToSpeechService {
   override def speak(call: Call): Option[String] = {

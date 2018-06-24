@@ -10,7 +10,6 @@ import com.mohiva.play.silhouette.persistence.daos.AuthInfoDAO
 import contact.{ContactDao, ContactLoader}
 import modem.ModemSender
 import number.{NumberFormatter, PhoneNumberFactory}
-import number.{FormattableNumber, NumberFormatter, PhoneNumber}
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc.{Filters => _, _}
 import push.{BrowserPushService, PushSubscription}

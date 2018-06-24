@@ -3,12 +3,12 @@ package push
 import java.io.IOException
 import java.util.function.Consumer
 
-import org.apache.http.{HttpHost, HttpRequest, HttpResponse}
 import org.apache.http.client.methods.HttpUriRequest
 import org.apache.http.concurrent.FutureCallback
 import org.apache.http.nio.client.HttpAsyncClient
 import org.apache.http.nio.protocol.{HttpAsyncRequestProducer, HttpAsyncResponseConsumer}
 import org.apache.http.protocol.HttpContext
+import org.apache.http.{HttpHost, HttpRequest, HttpResponse}
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
 

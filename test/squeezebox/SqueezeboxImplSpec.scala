@@ -3,16 +3,16 @@ package squeezebox
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream._
-import akka.stream.scaladsl.{BidiFlow, Flow, Source}
+import akka.stream.scaladsl.{BidiFlow, Flow}
 import akka.stream.stage.{GraphStage, GraphStageLogic, InHandler, OutHandler}
 import akka.util.ByteString
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.StrictLogging
 import org.scalatest.{AsyncWordSpec, Matchers}
 
+import scala.concurrent.duration._
 import scala.concurrent.{Future, Promise}
 import scala.util.Success
-import scala.concurrent.duration._
 
 class SqueezeboxImplSpec extends AsyncWordSpec with Matchers with StrictLogging {
 

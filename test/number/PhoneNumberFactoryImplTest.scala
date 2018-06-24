@@ -1,8 +1,8 @@
 package number
 
 import cats.data.Validated.Valid
-import org.scalatest._
 import cats.data._
+import org.scalatest._
 
 class PhoneNumberFactoryImplTest extends WordSpec with Matchers {
 

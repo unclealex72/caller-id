@@ -33,7 +33,7 @@ case class PhoneNumber(normalisedNumber: String, formattedNumber: String, city: 
 object PhoneNumber {
   import play.api.libs.json._
   import json._
-  
+
   implicit val phoneNumberFormat: OFormat[PhoneNumber] = Json.format[PhoneNumber]
 
 }

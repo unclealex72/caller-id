@@ -10,7 +10,6 @@ import play.api.{ConfigLoader, Configuration}
 import push.BrowserPushConfiguration
 
 import scala.collection.JavaConverters._
-
 import scala.concurrent.duration.FiniteDuration
 
 object ConfigLoaders {

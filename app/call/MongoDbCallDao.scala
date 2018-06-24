@@ -12,7 +12,6 @@ import reactivemongo.play.json._
 import reactivemongo.play.json.collection.JSONCollection
 
 import scala.concurrent.{ExecutionContext, Future}
-import call.Call._
 
 class MongoDbCallDao(reactiveMongoApi: ReactiveMongoApi)(implicit ec: ExecutionContext) extends
   MongoDbDao(reactiveMongoApi, "calls") with CallDao {

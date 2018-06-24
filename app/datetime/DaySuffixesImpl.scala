@@ -1,7 +1,8 @@
 package datetime
 
-import java.util.{Map => JMap}
 import java.lang.{Long => JLong, String => JString}
+import java.util.{Map => JMap}
+
 import scala.collection.JavaConverters._
 
 object DaySuffixesImpl extends DaySuffixes {

@@ -2,10 +2,10 @@ package call
 
 import java.time.{Instant, OffsetDateTime}
 
-import cats.data.NonEmptyList
-import org.scalatest.{Matchers, WordSpec}
 import call.Call._
+import cats.data.NonEmptyList
 import number.PhoneNumber
+import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json._
 
 class CallSpec extends WordSpec with Matchers {

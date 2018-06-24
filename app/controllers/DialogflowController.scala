@@ -1,10 +1,10 @@
 package controllers
 
-import dialogflow.{DialogflowService, WebhookRequest}
 import dialogflow.WebhookRequest._
-import play.api.mvc.{AbstractController, ControllerComponents}
-import play.api.libs.json._
 import dialogflow.WebhookResponse._
+import dialogflow.{DialogflowService, WebhookRequest}
+import play.api.libs.json._
+import play.api.mvc.{AbstractController, ControllerComponents}
 
 import scala.concurrent.{ExecutionContext, Future}
 

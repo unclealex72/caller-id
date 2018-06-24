@@ -1,12 +1,13 @@
 package dialogflow
 
+import java.lang.{Long => JLong, String => JString}
 import java.time.format.{DateTimeFormatter, DateTimeFormatterBuilder, TextStyle}
 import java.time.temporal.ChronoField
 import java.util.{Map => JMap}
-import java.lang.{Long => JLong, String => JString}
-import scala.collection.JavaConverters._
 
 import datetime.DaySuffixes
+
+import scala.collection.JavaConverters._
 class WebhookResponseDateTimeFormatter(daySuffixes: DaySuffixes) {
 
   private val am_pm: JMap[JLong, JString] = Map(JLong.valueOf(0) -> "a m", JLong.valueOf(1) -> "p m").asJava

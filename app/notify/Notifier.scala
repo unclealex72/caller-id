@@ -1,5 +1,6 @@
 package notify
 
+import _root_.notify.sinks.CallSink
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.Materializer
@@ -8,10 +9,8 @@ import call.{Call, CallService}
 import cats.data.NonEmptyList
 import com.typesafe.scalalogging.StrictLogging
 import modem.Modem
-import _root_.notify.sinks.CallSink
-import play.api.inject.ApplicationLifecycle
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class Notifier(val modem: Modem,
                callService: CallService,

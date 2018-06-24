@@ -3,15 +3,14 @@ package notify
 import java.time.Instant
 
 import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, Materializer}
 import akka.stream.scaladsl.{Keep, Source}
+import akka.stream.{ActorMaterializer, Materializer}
 import call._
 import cats.data.NonEmptyList
 import com.typesafe.config.ConfigFactory
 import modem.{Modem, ModemResponse}
 import notify.sinks.{CallSink, LoggingSink}
 import org.scalatest.{AsyncWordSpec, Matchers}
-import play.api.inject.ApplicationLifecycle
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.Success
