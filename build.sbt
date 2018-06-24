@@ -1,11 +1,12 @@
-import sbt.Resolver
+import com.typesafe.sbt.packager.docker._
+import sbt.Keys._
+import sbt._
+import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
-name := """callerid"""
+name := """caller-id"""
 organization := "uk.co.unclealex"
 
-version := "1.0-SNAPSHOT"
-
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+lazy val root = (project in file(".")).enablePlugins(PlayScala, DockerPlugin, AshScriptPlugin)
 
 scalaVersion := "2.12.4"
 
@@ -32,8 +33,25 @@ libraryDependencies ++= Seq(
   "com.github.simplyscala" %% "scalatest-embedmongo" % "0.2.4"
 ).map(_ % Test)
 
-// Adds additional packages into Twirl
-//TwirlKeys.templateImports += "uk.co.unclealex.controllers._"
+// Docker
 
-// Adds additional packages into conf/routes
-// play.sbt.routes.RoutesKeys.routesImport += "uk.co.unclealex.binders._"
+dockerBaseImage := "openjdk:alpine"
+dockerExposedPorts := Seq(9000)
+maintainer := "Alex Jones <alex.jones@unclealex.co.uk>"
+dockerRepository := Some("unclealex72")
+version in Docker := "latest"
+
+// Releases
+
+releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies, // : ReleaseStep
+  inquireVersions, // : ReleaseStep
+  runTest, // : ReleaseStep
+  setReleaseVersion, // : ReleaseStep
+  commitReleaseVersion, // : ReleaseStep, performs the initial git checks
+  tagRelease, // : ReleaseStep
+  releaseStepCommand("docker:publish"), // : ReleaseStep, build server docker image.
+  setNextVersion, // : ReleaseStep
+  commitNextVersion, // : ReleaseStep
+  pushChanges // : ReleaseStep, also checks that an upstream branch is properly configured
+)
