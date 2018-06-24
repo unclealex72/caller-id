@@ -5,6 +5,7 @@ import java.time.{Instant, OffsetDateTime, ZoneId}
 import contact.{Contact, PhoneType}
 import number.PhoneNumber
 import play.api.libs.json._
+import json._
 
 case class Call(when: Instant, caller: Caller) {
   val view: Option[CallView] = caller.view(when)
