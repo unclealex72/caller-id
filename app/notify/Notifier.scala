@@ -15,7 +15,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class Notifier(val modem: Modem,
                callService: CallService,
-               applicationLifecycle: ApplicationLifecycle,
                sinkActions: NonEmptyList[CallSink])
               (implicit val actorSystem: ActorSystem, materializer: Materializer, ec: ExecutionContext) extends StrictLogging {
 
@@ -45,7 +44,9 @@ class Notifier(val modem: Modem,
     }
   }
 
-  val disconnect: modem.Disconnect = callsSource.to(sink).run()
+  val _disconnect: modem.Disconnect = callsSource.to(sink).run()
 
-  applicationLifecycle.addStopHook(() => Future.successful(disconnect.disconnect()))
+  def disconnect(): Unit = {
+    _disconnect.disconnect()
+  }
 }

@@ -4,12 +4,14 @@ import java.time.{Instant, OffsetDateTime, ZoneId}
 
 import call._
 import cats.data.NonEmptyList
+import datetime.DaySuffixesImpl
 import number.PhoneNumber
 import org.scalatest.{Matchers, WordSpec}
 
 class CallToSpeechServiceImplSpec extends WordSpec with Matchers {
 
-  val callToSpeechService = new CallToSpeechServiceImpl(WebhookResponseDateTimeFormatter(), ZoneId.of("Europe/London"))
+  val callToSpeechService = new CallToSpeechServiceImpl(
+    new WebhookResponseDateTimeFormatter(DaySuffixesImpl)(), ZoneId.of("Europe/London"))
   val now: Instant = OffsetDateTime.parse("2018-05-28T11:09:28+01:00").toInstant
 
   def speak(caller: Caller): Option[String] = {

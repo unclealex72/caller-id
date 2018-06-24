@@ -2,13 +2,14 @@ package dialogflow
 
 import java.time.format.DateTimeFormatter
 
+import datetime.DaySuffixesImpl
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{Matchers, PropSpec}
 
 class WebhookResponseDateTimeFormatterSpec extends PropSpec with TableDrivenPropertyChecks with Matchers {
 
   val isoDateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
-  val webhookResponseDateTimeFormatter: DateTimeFormatter = WebhookResponseDateTimeFormatter()
+  val webhookResponseDateTimeFormatter: DateTimeFormatter = new WebhookResponseDateTimeFormatter(DaySuffixesImpl)()
 
   val examples = Table(
     "times",

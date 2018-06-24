@@ -18,7 +18,7 @@ abstract class AtzModem(implicit actorSystem: ActorSystem, materializer: Materia
     val numberRegex: Regex = """NMBR = ([0-9]+)""".r
 
     val initialCommandsSource: Source[ByteString, NotUsed] =
-      Source(Seq("ATZ", "AT+FCLASS=1.0", "AT+VCID=1").map(ByteString(_)))
+      Source(Seq("ATZ", "AT+VCID=1", "AT+FCLASS=8").map(str => ByteString(s"$str\r\n")))
     val killSwitchSource: Source[ByteString, Disconnect] = Source.maybe[ByteString].mapMaterializedValue { promise =>
       new Disconnect {
         override def disconnect(): Unit = promise.success(None)
@@ -32,12 +32,12 @@ abstract class AtzModem(implicit actorSystem: ActorSystem, materializer: Materia
       filterNot(_.isEmpty).
       map {
         case "OK" => Ok
-        case "RING" => Ring
+        case "R" => Ring
         case "NMBR = P" => Withheld
         case numberRegex(digits) => Number(digits)
         case line =>
-          val bytes = line.getBytes.toList
-          val decodedLine = bytes.filter(by => by >= 32 && by <= 127).map(_.toChar).mkString("")
+          val bytes: List[Byte] = line.getBytes.toList
+          val decodedLine: String = bytes.filter(by => by >= 32 && by <= 127).map(_.toChar).mkString("")
           Unknown(decodedLine)
       }
   }

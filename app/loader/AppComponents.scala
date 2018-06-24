@@ -12,7 +12,7 @@ import com.mohiva.play.silhouette.api.actions._
 import com.mohiva.play.silhouette.api.crypto.{AuthenticatorEncoder, CrypterAuthenticatorEncoder}
 import com.mohiva.play.silhouette.api.util.{FingerprintGenerator, PlayHTTPLayer, Clock => SilhouetteClock}
 import notify.Notifier
-import notify.sinks.{LoggingSink, PersistingSink, PushNotificationSink, SqueezeboxSink}
+import notify.sinks._
 import com.mohiva.play.silhouette.api._
 import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings, JcaSigner, JcaSignerSettings}
 import com.mohiva.play.silhouette.impl.authenticators._
@@ -173,22 +173,23 @@ class AppComponents(context: ApplicationLoader.Context)
 
   val notifier: Notifier = {
     implicit val _ac: ActorSystem = actorSystem
-    val loggingSink = new LoggingSink
+    val loggingSink: CallSink = LoggingSink
     val persistingSink = new PersistingSink(callDao)
     val pushNotificationSink = new PushNotificationSink(browserPushService)
     val flowFactory: () => Flow[ByteString, ByteString, Future[Tcp.OutgoingConnection]] = () =>
       Tcp().outgoingConnection(networkSqueezeboxConfiguration.host, networkSqueezeboxConfiguration.port)
     val squeezeboxSink = new SqueezeboxSink(squeezebox, flowFactory)
-    new Notifier(
+    val notifier = new Notifier(
       modem,
       callService,
-      applicationLifecycle,
       NonEmptyList.of(
         loggingSink,
         persistingSink,
         pushNotificationSink,
         squeezeboxSink
       ))
+    applicationLifecycle.addStopHook { () => Future.successful(notifier.disconnect()) }
+    notifier
   }
 
   override def router: Router = new Routes(

@@ -5,7 +5,7 @@ import com.typesafe.scalalogging.StrictLogging
 
 import scala.concurrent.Future
 
-class LoggingSink extends CallSink with StrictLogging {
+object LoggingSink extends CallSink with StrictLogging {
   override def consume(call: Call): Future[_] = Future.successful {
     val formattedCaller: String = call.caller match {
       case Withheld => "Withheld"

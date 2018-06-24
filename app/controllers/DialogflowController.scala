@@ -20,7 +20,7 @@ extends AbstractController(controllerComponents) {
   def webhook = Action.async(parse.json[WebhookRequest]) { implicit request =>
     request.headers.toSimpleMap.get(authorizationHeader) match {
       case Some(headerValue) if headerValue == requiredAuthorizationValue =>
-        val webhookRequest = request.body
+        val webhookRequest: WebhookRequest = request.body
         dialogflowService.response(webhookRequest).map(webhookResponse => Ok(Json.toJson(webhookResponse)))
       case None => Future.successful(Unauthorized(JsString("Authorisation is required for access to this resource.")))
       case _ => Future.successful(Forbidden(JsString("You do not have access to this resource.")))

@@ -10,7 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class SqueezeboxSink(squeezebox: Squeezebox, flowFactory: () => Flow[ByteString, ByteString, _])(implicit ec: ExecutionContext) extends CallViewSink {
   override def consumeView(callView: CallView): Future[_] = {
     val message: String = (callView.contact, callView.phoneNumber) match {
-      case (Some(contact), _) => s"${contact.name} (s${contact.phoneType})"
+      case (Some(contact), _) => s"${contact.name} (${contact.phoneType})"
       case (_, Some(phoneNumber)) =>
         val address: String = (phoneNumber.city.toSeq :+ phoneNumber.countries.head).mkString(", ")
         s"${phoneNumber.formattedNumber} @ $address"
