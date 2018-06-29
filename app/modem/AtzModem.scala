@@ -8,6 +8,7 @@ import akka.util.ByteString
 
 import scala.collection.immutable.Seq
 import scala.util.matching.Regex
+import scala.concurrent.duration._
 
 /**
  * An implementation for AT modems.
@@ -25,7 +26,7 @@ abstract class AtzModem(implicit actorSystem: ActorSystem, materializer: Materia
       }
     }
     initialCommandsSource.concatMat(killSwitchSource)(Keep.right).
-      via(createConnection()).
+      via(restartableConnection()).
       via(Framing.delimiter(delimiter = ByteString('\n'), maximumFrameLength = Int.MaxValue, allowTruncation = true)).
       map(bs => bs.filter(by => by >= 32 && by <= 127)).
       map(_.utf8String.trim).
@@ -43,4 +44,16 @@ abstract class AtzModem(implicit actorSystem: ActorSystem, materializer: Materia
   }
 
   def createConnection(): Flow[ByteString, ByteString, _]
+
+  /**
+    * Wrap the flow created using [[createConnection()]] so that it restarts on failure.
+    * @return A flow that restarts when upstream fails.
+    */
+  def restartableConnection(): Flow[ByteString, ByteString, _] = {
+    RestartFlow.onFailuresWithBackoff(
+      minBackoff = 1.second,
+      maxBackoff = 1.minute,
+      randomFactor = 0.2,
+      maxRestarts = -1)(() => createConnection())
+  }
 }
