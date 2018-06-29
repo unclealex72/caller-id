@@ -18,15 +18,13 @@ abstract class AtzModem(implicit actorSystem: ActorSystem, materializer: Materia
   def responses(): Source[ModemResponse, Disconnect] = {
     val numberRegex: Regex = """NMBR = ([0-9]+)""".r
 
-    val initialCommandsSource: Source[ByteString, NotUsed] =
-      Source(Seq("ATZ", "AT+VCID=1", "AT+FCLASS=8").map(str => ByteString(s"$str\r\n")))
     val killSwitchSource: Source[ByteString, Disconnect] = Source.maybe[ByteString].mapMaterializedValue { promise =>
       new Disconnect {
         override def disconnect(): Unit = promise.success(None)
       }
     }
-    initialCommandsSource.concatMat(killSwitchSource)(Keep.right).
-      via(restartableConnection()).
+    killSwitchSource.
+      merge(restartableConnection()).
       via(Framing.delimiter(delimiter = ByteString('\n'), maximumFrameLength = Int.MaxValue, allowTruncation = true)).
       map(bs => bs.filter(by => by >= 32 && by <= 127)).
       map(_.utf8String.trim).
@@ -49,11 +47,16 @@ abstract class AtzModem(implicit actorSystem: ActorSystem, materializer: Materia
     * Wrap the flow created using [[createConnection()]] so that it restarts on failure.
     * @return A flow that restarts when upstream fails.
     */
-  def restartableConnection(): Flow[ByteString, ByteString, _] = {
-    RestartFlow.onFailuresWithBackoff(
+  def restartableConnection(): Source[ByteString, _] = {
+    RestartSource.withBackoff(
       minBackoff = 1.second,
       maxBackoff = 1.minute,
       randomFactor = 0.2,
-      maxRestarts = -1)(() => createConnection())
+      maxRestarts = -1) { () =>
+      val initialCommandsSource: Source[ByteString, NotUsed] =
+        Source(Seq("ATZ", "AT+VCID=1", "AT+FCLASS=8").map(str => ByteString(s"$str\r\n")))
+      val connection: Flow[ByteString, ByteString, _] = createConnection()
+      initialCommandsSource.concat(Source.maybe).via(connection)
+    }
   }
 }
