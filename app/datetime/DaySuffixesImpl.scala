@@ -5,6 +5,9 @@ import java.util.{Map => JMap}
 
 import scala.collection.JavaConverters._
 
+/**
+  * The default implementation of [[DaySuffixes]].
+  */
 object DaySuffixesImpl extends DaySuffixes {
 
   override val suffixes: JMap[JLong, JString] = Range(1, 31).map { day =>

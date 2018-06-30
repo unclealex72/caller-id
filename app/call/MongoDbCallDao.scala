@@ -13,6 +13,11 @@ import reactivemongo.play.json.collection.JSONCollection
 
 import scala.concurrent.{ExecutionContext, Future}
 
+/**
+  * An implementation of [[CallDao]] that uses MongoDB
+  * @param reactiveMongoApi The underlying MongoDB api.
+  * @param ec The execution context for futures.
+  */
 class MongoDbCallDao(reactiveMongoApi: ReactiveMongoApi)(implicit ec: ExecutionContext) extends
   MongoDbDao(reactiveMongoApi, "calls") with CallDao {
 

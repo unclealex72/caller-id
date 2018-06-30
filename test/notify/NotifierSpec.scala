@@ -12,7 +12,7 @@ import modem.{Modem, ModemResponse}
 import notify.sinks.{CallSink, LoggingSink}
 import org.scalatest.{AsyncWordSpec, Matchers}
 
-import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.concurrent.{Future, Promise}
 import scala.util.Success
 
 class NotifierSpec extends AsyncWordSpec with Matchers {
@@ -20,21 +20,20 @@ class NotifierSpec extends AsyncWordSpec with Matchers {
   implicit val actorSystem: ActorSystem = ActorSystem("notifierSpec", ConfigFactory.empty())
   implicit val materializer: Materializer = ActorMaterializer()
 
-  val now: Instant = Instant.parse("2018-05-20T15:39:00Z")
+  val now: Long = Instant.parse("2018-05-20T15:39:00Z").toEpochMilli
+
   val aCall: Call = Call(now, Withheld)
 
-  val callService: CallService = new CallService {
-    override def call(modemResponse: ModemResponse)(implicit ec: ExecutionContext): Future[Option[Call]] = Future.successful {
-      modemResponse match {
-        case modem.Withheld => Some(aCall)
-        case _ => None
-      }
+  val callService: CallService = (modemResponse: ModemResponse) => Future.successful {
+    modemResponse match {
+      case modem.Withheld => Some(aCall)
+      case _ => None
     }
   }
 
   "The notifier" should {
     "notify when a call comes in" in {
-      val eventualResponses = notify(modem.Withheld)
+      val eventualResponses: Future[(Call, Call)] = notify(modem.Withheld)
       eventualResponses.map {
         case (response1, response2) =>
           response1 should ===(aCall)

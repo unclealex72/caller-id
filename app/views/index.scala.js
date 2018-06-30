@@ -52,7 +52,11 @@ $(function() {
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array('@publicKey')
         }).then(function(sub) {
-            const body = JSON.stringify(sub);
+            const subscriptionWithUserAgent = JSON.parse(JSON.stringify(sub));
+            subscriptionWithUserAgent.user = {
+                    userAgent: navigator.userAgent
+            };
+            const body = JSON.stringify(subscriptionWithUserAgent);
             console.log("Sending subscription " + body);
             $.ajax({
                 url: '@routes.HomeController.subscribe()',

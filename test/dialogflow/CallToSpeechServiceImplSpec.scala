@@ -12,16 +12,10 @@ class CallToSpeechServiceImplSpec extends WordSpec with Matchers {
 
   val callToSpeechService = new CallToSpeechServiceImpl(
     new WebhookResponseDateTimeFormatter(DaySuffixesImpl)(), ZoneId.of("Europe/London"))
-  val now: Instant = OffsetDateTime.parse("2018-05-28T11:09:28+01:00").toInstant
+  val now: Long = OffsetDateTime.parse("2018-05-28T11:09:28+01:00").toInstant.toEpochMilli
 
-  def speak(caller: Caller): Option[String] = {
+  def speak(caller: Caller): String = {
     callToSpeechService.speak(Call(now, caller))
-  }
-
-  "An undefinable call" should {
-    "not be spoken" in {
-      speak(Undefinable("1234")) should === (None)
-    }
   }
 
   "An unknown non-geographic call" should {
@@ -32,8 +26,8 @@ class CallToSpeechServiceImplSpec extends WordSpec with Matchers {
             "+448001234567",
             "0800 1234567",
             None,
-            NonEmptyList.of("UK", "Guernsey")))) should === (Some(
-        "There was a call from 0800 1234567 in UK or Guernsey on Monday the 28th of May at 11 09 a m"))
+            NonEmptyList.of("UK", "Guernsey")))) should === (
+        "There was a call from 0800 1234567 in UK or Guernsey on Monday the 28th of May at 11 09 a m")
     }
   }
 
@@ -45,8 +39,8 @@ class CallToSpeechServiceImplSpec extends WordSpec with Matchers {
             "+441483234567",
             "01483 1234567",
             Some("Guildford"),
-            NonEmptyList.one("UK")))) should === (Some(
-        "There was a call from 01483 1234567 in Guildford, UK on Monday the 28th of May at 11 09 a m"))
+            NonEmptyList.one("UK")))) should === (
+        "There was a call from 01483 1234567 in Guildford, UK on Monday the 28th of May at 11 09 a m")
     }
   }
 
@@ -61,8 +55,8 @@ class CallToSpeechServiceImplSpec extends WordSpec with Matchers {
             "+441483234567",
             "01483 1234567",
             Some("Guildford"),
-            NonEmptyList.one("UK")))) should === (Some(
-        "Freddie called on Monday the 28th of May at 11 09 a m"))
+            NonEmptyList.one("UK")))) should === (
+        "Freddie called on Monday the 28th of May at 11 09 a m")
     }
   }
 }

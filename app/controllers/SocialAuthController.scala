@@ -19,7 +19,6 @@ import scala.concurrent.{ExecutionContext, Future}
  * The social auth controller.
  *
  * @param components The ControllerComponents.
- * @param silhouette The Silhouette stack.
  * @param userService The user service implementation.
  * @param authInfoRepository The auth info service implementation.
  */
@@ -53,7 +52,7 @@ class SocialAuthController @Inject()(
    *
    * @return The result to display.
    */
-  def authenticate() = Action.async { implicit request =>
+  def authenticate: Action[AnyContent] = Action.async { implicit request =>
       // build a new JSON body as our ng2-ui-auth client put the data somewhere specific
       val body = AnyContentAsJson(getAuthenticationPayload(request.body.asJson))
       googleProvider.authenticate()(request.withBody(body)).flatMap {
@@ -84,7 +83,7 @@ class SocialAuthController @Inject()(
   /**
     * Manages the sign out action.
     */
-  def signOut = userAwareAction(env).async { implicit request =>
+  def signOut: Action[AnyContent] = userAwareAction(env).async { implicit request =>
     (request.identity, request.authenticator) match {
       case (Some(identity), Some(authenticator)) =>
         env.eventBus.publish(LogoutEvent(identity, request))
@@ -94,5 +93,5 @@ class SocialAuthController @Inject()(
     }
   }
 
-  def redirectOnLogin = routes.HomeController.index()
+  def redirectOnLogin: Call = routes.HomeController.index()
 }

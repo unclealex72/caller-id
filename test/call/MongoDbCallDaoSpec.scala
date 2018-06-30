@@ -180,7 +180,7 @@ class MongoDbCallDaoSpec extends MongoDbDaoSpec[MongoDbCallDao]("calls") {
 
   implicit class CreateCallImplicits(when: String) {
     def from(caller: Caller): Call = {
-      Call(instantAt(when), caller)
+      Call(instantAt(when).toEpochMilli, caller)
     }
   }
   def instantAt(when: String): Instant = {

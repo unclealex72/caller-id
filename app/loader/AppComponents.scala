@@ -22,7 +22,7 @@ import com.mohiva.play.silhouette.impl.util.{DefaultFingerprintGenerator, Secure
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 import com.typesafe.scalalogging.StrictLogging
 import contact.{ContactDao, GoogleContactLoader, MongoDbContactDao}
-import controllers.{AssetsComponents, DialogflowController, HomeController, SocialAuthController}
+import controllers._
 import datetime.{DaySuffixes, DaySuffixesImpl}
 import dialogflow._
 import loader.ConfigLoaders._
@@ -45,6 +45,10 @@ import squeezebox.{Squeezebox, SqueezeboxImpl}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+/**
+  * Create all the components needed to run this application.
+  * @param context The Play Context.
+  */
 class AppComponents(context: ApplicationLoader.Context)
   extends ReactiveMongoApiFromContext(context)
     with AhcWSComponents
@@ -152,7 +156,6 @@ class AppComponents(context: ApplicationLoader.Context)
     callDao,
     contactLoader,
     contactService,
-    maybeModemSender,
     browserPushService,
     silhouette,
     authorization,
@@ -161,6 +164,7 @@ class AppComponents(context: ApplicationLoader.Context)
     callsTemplate,
     controllerComponents)
 
+  val debugModemController = new DebugModemController(maybeModemSender, controllerComponents)
   val callToSpeechService = new CallToSpeechServiceImpl(new WebhookResponseDateTimeFormatter(daySuffixes)(), locationConfiguration.zoneId)
   val queryParameterService = new QueryParameterServiceImpl(clock)
   val dialogflowService = new DialogflowServiceImpl(queryParameterService,
@@ -197,7 +201,8 @@ class AppComponents(context: ApplicationLoader.Context)
     homeController,
     dialogflowController,
     socialAuthController,
-    assets
+    assets,
+    debugModemController
   )
 
   override def httpFilters: Seq[EssentialFilter] = {

@@ -28,12 +28,6 @@ class CallSpec extends WordSpec with Matchers {
     }
   }
 
-  "Serialising a call from an undefinable number" should {
-    "serialise correctly" in {
-      undefinable.serialise should ===(_undefinable)
-    }
-  }
-
   "Deserialising a withheld call" should {
     "deserialise correctly" in {
       _withheld.deserialise should ===(withheld)
@@ -52,14 +46,8 @@ class CallSpec extends WordSpec with Matchers {
     }
   }
 
-  "Deserialising a call from an undefinable number" should {
-    "deserialise correctly" in {
-      _undefinable.deserialise should ===(undefinable)
-    }
-  }
-
   def call(Caller: Caller): Call = {
-    val now: Instant = OffsetDateTime.parse("2018-05-28T11:09:28+00:00").toInstant
+    val now: Long = OffsetDateTime.parse("2018-05-28T11:09:28+00:00").toInstant.toEpochMilli
     Call(now, Caller)
   }
 
@@ -101,15 +89,7 @@ class CallSpec extends WordSpec with Matchers {
                            |    "type" : "unknown"
                            |  }
                            |}""".stripMargin
-  val undefinable: Call = call(Undefinable("unknown"))
-  val _undefinable: String = """{
-                               |  "when" : 1527505768000,
-                               |  "caller" : {
-                               |    "number" : "unknown",
-                               |    "type" : "undefinable"
-                               |  }
-                               |}""".stripMargin
-  
+
 
   implicit class SerialiseImplicits(call: Call) {
     def serialise(implicit CallWrites: Writes[Call]): String = {

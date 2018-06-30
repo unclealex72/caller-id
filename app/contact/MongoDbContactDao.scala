@@ -10,12 +10,17 @@ import reactivemongo.play.json.collection.JSONCollection
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.implicitConversions
 
+/**
+  * An implementation of [[ContactDao]] that uses MongoDB
+  * @param reactiveMongoApi The underlying mongo API.
+  * @param executionContext The execution context for futures.
+  */
 class MongoDbContactDao(reactiveMongoApi: ReactiveMongoApi)(implicit executionContext: ExecutionContext) extends
   MongoDbDao(reactiveMongoApi, "contacts") with ContactDao {
 
   override def upsertUser(user: User): Future[Either[Seq[String], Unit]] = {
     collection().flatMap { contacts =>
-      val upsert = for {
+      val upsert: EitherT[Future, Seq[String], Unit] = for {
         _ <- deleteUser(contacts, user.emailAddress)
         result <- insertUser(contacts, user)
       } yield {
@@ -49,11 +54,19 @@ class MongoDbContactDao(reactiveMongoApi: ReactiveMongoApi)(implicit executionCo
   }
 }
 
+/**
+  * The persisted, non-normalised, form of a contact.
+  * @param userEmailAddress The email address of the user associated with the contact.
+  * @param normalisedPhoneNumber The contact's normalised phone number.
+  * @param name The name of the contact.
+  * @param phoneType The phone type.
+  * @param avatarUrl The contact's avatar URL, if they have one.
+  */
 case class PersistedContact(
                              userEmailAddress: String,
                              normalisedPhoneNumber: String,
                              name: String,
-                             phoneType: PhoneType,
+                             phoneType: String,
                              avatarUrl: Option[String])
 object PersistedContact {
   implicit val persistedContactReads: Reads[PersistedContact] = Json.reads[PersistedContact]

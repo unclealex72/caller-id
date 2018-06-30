@@ -1,6 +1,11 @@
 package dialogflow
 
 import java.time._
+
+/**
+  * The default implementation of [[QueryParameterService]]
+  * @param clock The clock used to find out the current date and time.
+  */
 class QueryParameterServiceImpl(clock: Clock) extends QueryParameterService {
 
   override def createQueryParameters(webhookRequest: WebhookRequest): QueryParameters = {

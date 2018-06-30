@@ -64,7 +64,7 @@ class PhoneNumberFactoryImplTest extends WordSpec with Matchers {
 
   implicit class TestCase(receivedNumber: String) {
     def toLocation: ValidatedNel[String, (Option[String], String, String, Seq[String])] = {
-      val phoneNumber = phoneNumberFactory.decompose(receivedNumber)
+      val phoneNumber = phoneNumberFactory.apply(receivedNumber)
       phoneNumber.map { phoneNumber =>
         (phoneNumber.city, phoneNumber.normalisedNumber, phoneNumber.formattedNumber, phoneNumber.countries.toList)
       }

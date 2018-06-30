@@ -12,12 +12,16 @@ import number.PhoneNumberFactory
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
-class GoogleContactLoader(numberLocationService: PhoneNumberFactory) extends ContactLoader {
+/**
+  * The default implementation of [[ContactLoader]] that uses Google API calls.
+  * @param numberLocationService
+  */
+class GoogleContactLoader(numberLocationService: PhoneNumberFactory)(implicit ec: ExecutionContext) extends ContactLoader {
 
   private val transport: HttpTransport = new NetHttpTransport()
   private val jacksonFactory: JsonFactory = new JacksonFactory()
 
-  override def loadContacts(emailAddress: String, accessToken: String)(implicit ec: ExecutionContext): Future[User] = Future {
+  override def loadContacts(emailAddress: String, accessToken: String): Future[User] = Future {
     val googleCredential: GoogleCredential = new GoogleCredential.Builder().build().setAccessToken(accessToken)
     val peopleService: PeopleService =
       new PeopleService.Builder(transport, jacksonFactory, googleCredential).setApplicationName("Caller ID").build()
@@ -33,7 +37,7 @@ class GoogleContactLoader(numberLocationService: PhoneNumberFactory) extends Con
       name <- person.getNames.asScala
       googlePhoneNumber <- Option(person.getPhoneNumbers).map(_.asScala).getOrElse(Seq.empty[GooglePhoneNumber])
       canonicalForm <- Option(googlePhoneNumber.getCanonicalForm).toSeq
-      phoneNumber <- numberLocationService.decompose(canonicalForm).toOption.toSeq
+      phoneNumber <- numberLocationService.apply(canonicalForm).toOption.toSeq
     } yield {
       val maybePhoto: Option[Photo] = Option(person.getPhotos).map(_.asScala).flatMap(_.headOption)
       Contact(

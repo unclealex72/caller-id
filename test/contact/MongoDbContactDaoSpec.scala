@@ -58,7 +58,7 @@ class MongoDbContactDaoSpec extends MongoDbDaoSpec[MongoDbContactDao]("contacts"
     }
   }
 
-  def contact(emailAddress: String, normalisedPhoneNumber: String, name: String, phoneType: PhoneType, maybeAvatarUrl: Option[String]): BSONDocument = {
+  def contact(emailAddress: String, normalisedPhoneNumber: String, name: String, phoneType: String, maybeAvatarUrl: Option[String]): BSONDocument = {
     BSONDocument(Seq(
       "userEmailAddress" -> BSONString(emailAddress),
       "normalisedPhoneNumber" -> BSONString(normalisedPhoneNumber),

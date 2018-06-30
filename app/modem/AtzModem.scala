@@ -11,7 +11,8 @@ import scala.util.matching.Regex
 import scala.concurrent.duration._
 
 /**
- * An implementation for AT modems.
+ * An base implementation for AT modems. This class contains the logic on how to interpret a stream of
+  * ATZ responses but not how to connect to the modem.
  */
 abstract class AtzModem(implicit actorSystem: ActorSystem, materializer: Materializer) extends Modem {
 
@@ -41,6 +42,10 @@ abstract class AtzModem(implicit actorSystem: ActorSystem, materializer: Materia
       }
   }
 
+  /**
+    * Create the connection to a modem.
+    * @return
+    */
   def createConnection(): Flow[ByteString, ByteString, _]
 
   /**

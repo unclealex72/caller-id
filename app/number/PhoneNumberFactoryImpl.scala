@@ -43,7 +43,7 @@ class PhoneNumberFactoryImpl(
                                   */
                                  localService: LocalService) extends PhoneNumberFactory {
 
-  override def decompose(number: String): ValidatedNel[String, PhoneNumber] = {
+  override def apply(number: String): ValidatedNel[String, PhoneNumber] = {
     val trimmedNumber: String = number.replaceAll("\\s+", "")
     val functionsByPrefix =
       List(

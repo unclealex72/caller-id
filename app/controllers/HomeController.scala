@@ -10,19 +10,34 @@ import com.mohiva.play.silhouette.persistence.daos.AuthInfoDAO
 import contact.{ContactDao, ContactLoader}
 import modem.ModemSender
 import number.{NumberFormatter, PhoneNumberFactory}
-import play.api.libs.json.{JsError, JsSuccess, Json}
+import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc.{Filters => _, _}
 import push.{BrowserPushService, PushSubscription}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+/**
+  * The main controller used for interacting with browsers.
+  * @param numberLocationService
+  * @param numberFormatter
+  * @param callDao
+  * @param contactLoader
+  * @param contactService
+  * @param browserPushService
+  * @param silhouette
+  * @param authorization
+  * @param authInfoDao
+  * @param assets
+  * @param callsTemplate
+  * @param controllerComponents
+  * @param ec
+  */
 class HomeController(
             val numberLocationService: PhoneNumberFactory,
             val numberFormatter: NumberFormatter,
             val callDao: CallDao,
             val contactLoader: ContactLoader,
             val contactService: ContactDao,
-            val maybeModemSender: Option[ModemSender],
             val browserPushService: BrowserPushService,
             val silhouette: Silhouette[DefaultEnv],
             val authorization: Authorization[DefaultEnv#I, DefaultEnv#A],
@@ -36,33 +51,52 @@ class HomeController(
     Forbidden(views.html.goaway())
   }
 
-  def index = silhouette.SecuredAction(authorization).async { implicit request =>
+  def index: Action[AnyContent] = silhouette.SecuredAction(authorization).async { implicit request =>
     request.identity.fullName match {
       case Some(name) =>
         callDao.calls(max = Some(20)).map { calls =>
-          val callViews: Seq[CallView] = calls.flatMap(_.view)
+          val callViews: Seq[CallView] = calls.map(_.view)
           Ok(callsTemplate(name, callViews))
         }
       case None => Future.successful(Forbidden(""))
     }
   }
 
-  def subscribe = silhouette.SecuredAction(authorization).async(parse.tolerantJson) { implicit request =>
+  /**
+    * Subscribe to a push service for notifications.
+    * @return
+    */
+  def subscribe: Action[JsValue] = silhouette.SecuredAction(authorization).async(parse.tolerantJson) { implicit request =>
     request.body.validate[PushSubscription] match {
-      case JsSuccess(pushSubscription, _) => browserPushService.subscribe(pushSubscription).map(_ => Created(""))
+      case JsSuccess(pushSubscription, _) => {
+        val pushSubscriptionWithUser: PushSubscription = pushSubscription.copy(user = request.identity.email)
+        browserPushService.subscribe(pushSubscriptionWithUser).map(_ => Created(""))
+      }
       case JsError(_) => Future.successful(BadRequest(Json.obj("error" -> "endpoint property is required")))
     }
   }
 
-  def js = silhouette.SecuredAction(authorization) { implicit request =>
+  /**
+    * Serve javascript for the main page.
+    * @return
+    */
+  def js: Action[AnyContent] = silhouette.SecuredAction(authorization) { implicit request =>
     Ok(views.js.index(browserPushService.publicKey()))
   }
 
-  def serviceWorker = silhouette.SecuredAction(authorization).async { implicit request =>
+  /**
+    * Serve javascript for the service worker.
+    * @return
+    */
+  def serviceWorker: Action[AnyContent] = silhouette.SecuredAction(authorization).async { implicit request =>
     assets.at("/javascripts/service-worker.js")(request)
   }
 
-  def updateContacts = silhouette.SecuredAction(authorization).async { implicit request =>
+  /**
+    * Update a user's contacts.
+    * @return
+    */
+  def updateContacts: Action[AnyContent] = silhouette.SecuredAction(authorization).async { implicit request =>
     val user: User = request.identity
     val upload: EitherT[Future, Seq[String], Int] = for {
       emailAddress <- EitherT(Future.successful(user.email.toRight(Seq("Email address required"))))
@@ -78,16 +112,5 @@ class HomeController(
       case Right(_) => NoContent
     }
   }
-
-  def sendToModem = Action(parse.tolerantText(100)) { implicit request =>
-    maybeModemSender match {
-      case Some(modemSender) =>
-        modemSender.send(request.body)
-        NoContent
-      case None =>
-        NotFound
-    }
-  }
-
 }
 

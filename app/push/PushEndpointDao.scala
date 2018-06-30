@@ -1,10 +1,30 @@
 package push
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
+/**
+  * Persist browser push endpoints.
+  */
 trait PushEndpointDao {
 
-  def upsert(pushSubscription: PushSubscription)(implicit ec: ExecutionContext): Future[Unit]
+  /**
+    * Remove a stale push subscription.
+    * @param endpoint The endpoint to remove.
+    * @return
+    */
+  def remove(endpoint: String): Future[Unit]
 
-  def all()(implicit ec: ExecutionContext): Future[Seq[PushSubscription]]
+  /**
+    * Add or update a push subscription.
+    *
+    * @param pushSubscription The subscription to add or insert.
+    * @return
+    */
+  def upsert(pushSubscription: PushSubscription): Future[Unit]
+
+  /**
+    * Get all stored push subscriptions.
+    * @return
+    */
+  def all(): Future[Seq[PushSubscription]]
 }

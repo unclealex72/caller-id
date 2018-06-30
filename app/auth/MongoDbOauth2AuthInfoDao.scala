@@ -10,13 +10,20 @@ import play.modules.reactivemongo.json._
 
 import scala.concurrent.{ExecutionContext, Future}
 
+/**
+  * A DAO for oauth2 tokens that uses MongoDB
+  * @param reactiveMongoApi The underlying Mongo API
+  * @param executionContext The execution context used for future chaining.
+  */
 class MongoDbOauth2AuthInfoDao(val reactiveMongoApi: ReactiveMongoApi)
                               (implicit executionContext: ExecutionContext) extends DelegableAuthInfoDAO[OAuth2Info] {
 
   trait LoginInfoQuery {
     def query(loginInfo: LoginInfo): JsObject
   }
-  private val dao = new MongoDbDao(reactiveMongoApi, "oauth2") with LoginInfoQuery {
+
+  private val dao: MongoDbDao with LoginInfoQuery =
+    new MongoDbDao(reactiveMongoApi, "oauth2") with LoginInfoQuery {
 
     def query(loginInfo: LoginInfo): JsObject =
       "loginInfo.providerID" === loginInfo.providerID && "loginInfo.providerKey" === loginInfo.providerKey

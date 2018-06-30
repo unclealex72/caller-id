@@ -12,6 +12,15 @@ import modem.Modem
 
 import scala.concurrent.ExecutionContext
 
+/**
+  * The class that listens for modem response events and pushes them to a list of sinks.
+  * @param modem       The [[Modem]] to listen to.
+  * @param callService The [[CallService]] used to turn [[modem.ModemResponse]]s into [[Call]]s.
+  * @param sinkActions The list of sink actions to send calls to.
+  * @param actorSystem
+  * @param materializer
+  * @param ec
+  */
 class Notifier(val modem: Modem,
                callService: CallService,
                sinkActions: NonEmptyList[CallSink])

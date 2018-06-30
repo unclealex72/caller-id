@@ -14,7 +14,7 @@ import scala.concurrent.Future
 class CallServiceImplSpec extends AsyncWordSpec with Matchers {
 
   val clock: Clock = Clock.fixed(Instant.parse("2018-05-20T15:39:00Z"), ZoneId.of("Europe/London"))
-  val now: Instant = clock.instant()
+  val now: Long = clock.instant().toEpochMilli
 
   val London: City = City("London", "181")
   val UK: Country = Country("United Kingdom", "44", "GB", None, SortedSet(London))
@@ -66,14 +66,6 @@ class CallServiceImplSpec extends AsyncWordSpec with Matchers {
     }
   }
 
-  "UNKNOWN responses" should {
-    "show up as undefinable" in {
-      callService.call(modem.Unknown("xyz")).map { response =>
-        response should ===(callOf(Undefinable("xyz")))
-      }
-    }
-  }
-
   "Contacts' telephone numbers" should {
     "identify the contact" in {
       callService.call(modem.Number("+441818118181")).map { response =>
@@ -86,14 +78,6 @@ class CallServiceImplSpec extends AsyncWordSpec with Matchers {
     "echo the phone number" in {
       callService.call(modem.Number("+441818228282")).map { response =>
         response should ===(callOf(Unknown(unknownPhoneNumber)))
-      }
-    }
-  }
-
-  "Unparseable telephone numbers" should {
-    "show up as undefinable" in {
-      callService.call(modem.Number("+441818338383")).map { response =>
-        response should ===(callOf(Undefinable("+441818338383")))
       }
     }
   }

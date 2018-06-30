@@ -8,6 +8,11 @@ import com.typesafe.scalalogging.StrictLogging
 
 import scala.concurrent.Future
 
+/**
+  * A fake modem that actually takes its commands from strings that are sent to it.
+  * @param actorSystem
+  * @param materializer
+  */
 class SendableAtzModem(implicit actorSystem: ActorSystem, materializer: Materializer)
   extends AtzModem with ModemSender with StrictLogging {
 

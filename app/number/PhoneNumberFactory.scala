@@ -10,6 +10,6 @@ trait PhoneNumberFactory {
   /**
    * Decompose a telephone number into a normalised [[PhoneNumber]].
    */
-  def decompose(number: String): ValidatedNel[String, PhoneNumber]
+  def apply(number: String): ValidatedNel[String, PhoneNumber]
 
 }

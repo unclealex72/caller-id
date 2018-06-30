@@ -32,7 +32,7 @@ import play.api.libs.json.{JsError, JsSuccess, Json}
  * An implementation of [[CityDao]] that uses a JSON resource
  * to store countries and cities.
  */
-class CityDaoImpl(val countries: List[Country]) extends CityDao {
+class CityDaoImpl(val countries: Seq[Country]) extends CityDao {
 
   /**
    * A multimap of all countries keyed by their international dialling codes. The collection values of this map are ordered
